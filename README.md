@@ -2,7 +2,7 @@
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum:** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer sistem optimizasyonu ve onarım özellikleri şu an için deneysel kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir.
+> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
 
 ## Açık Kaynak
 
@@ -73,9 +73,10 @@ Son komut, `dist` klasöründe ZIP paketini oluşturur. Sistemde [Inno Setup 6](
 Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirliği için gerçek veya sanal bir Windows ortamında elle test edilmesi gerekir:
 
 - Hizmet (Service) kurma/kaldırma ve DPI Sıfırlama (sanal makine anlık görüntüsü ile test edilmesi önerilir).
+- Uygulamayı kaldırma ("Bilgi" penceresindeki "FoxFix'i kaldır" düğmesi) ve işlemler sonrası otomatik yeniden başlatma.
+- Hile önleme sistemleriyle (EasyAntiCheat, Vanguard, FACEIT) uyumluluk: oyun bazında değişir, test edilmemiştir.
 - Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
 - Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.
-
 
 ## Lisans ve Telif Hakları
 
