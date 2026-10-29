@@ -196,7 +196,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             _clipboard.SetText(RepoUrl);
-            ShareRepoText = "Bağlantı kopyalandı";
+            ShareRepoText = "Kopyalandı";
         }
         catch (Exception ex)
         {

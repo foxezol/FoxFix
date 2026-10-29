@@ -1,42 +1,52 @@
-﻿# Hata kodları
+﻿# Hata Kodları ve Çözüm Adımları
 
-FoxFix bir şey ters gittiğinde mesajın başına `[FX-xxxx]` biçiminde bir kod koyar. Bu sayfa her kodun ne demek olduğunu ve ne yapılabileceğini anlatır.
+FoxFix, sistemde beklenmeyen bir durumla karşılaşıldığında hata mesajlarının başına `[FX-xxxx]` formatında bir kod ekler. Bu doküman, ilgili hata kodlarının anlamlarını ve uygulanabilecek çözüm adımlarını açıklamaktadır.
 
-Kodun ilk hanesi alanı gösterir: 1 uygulama, 2 FoxDPI, 3 zamanlanmış görev, 4 sistemde yapılan değişiklikler, 5 raporlar, 6 ölçümler, 9 beklenmedik hatalar.
+Hata kodunun ilk hanesi, sorunun kaynaklandığı sistem bileşenini belirtir:
 
-| Kod | Anlamı | Ne yapılabilir |
+- **1:** Uygulama Arayüzü ve Temel İşlemler
+- **2:** FoxDPI Modülü ve Ağ Tünelleme
+- **3:** Zamanlanmış Görevler (Task Scheduler)
+- **4:** Sistem Değişiklikleri ve Konfigürasyon
+- **5:** Loglama ve Raporlama Sistemi
+- **6:** Ağ Performans Ölçümleri
+- **9:** Beklenmeyen Kritik Hatalar (Crash)
+
+| Hata Kodu | Anlamı | Uygulanabilecek Çözüm Adımları |
 |---|---|---|
-| `FX-1001` | Yönetici izni gerekli | Uygulamaya sağ tıklayıp "Yönetici olarak çalıştır" de. |
-| `FX-1002` | Yönetici izni verilmedi | Windows sorusuna "Evet" de. Hiçbir şey değişmedi, istediğin zaman yeniden dene. |
-| `FX-1003` | Bağlantı açılamadı | Varsayılan tarayıcının ayarlı olduğundan emin ol, adresi elle açabilirsin. |
-| `FX-1004` | Panoya kopyalanamadı | Pano başka bir program tarafından tutuluyor olabilir. Birkaç saniye sonra yeniden dene. |
-| `FX-1005` | Geri alma kayıtları okunamadı | Kayıt dosyası bozulmuş olabilir. FoxFix o kayıtlar olmadan açılır; eski değişiklikler Geri Al listesinde görünmez. |
-| `FX-2001` | Dosya doğrulaması tutmadı | Antivirüs dosyayı silmiş ya da değiştirmiş olabilir. FoxFix klasörünü antivirüs istisnasına ekle ve DPI Sıfırlama ile yeniden dene. |
-| `FX-2002` | FoxDPI başlatılamadı | Yönetici izniyle çalıştığından emin ol, antivirüsü kontrol et. Ayrıntı satırındaki Windows mesajı nedeni söyler. |
-| `FX-2003` | FoxDPI başlayıp hemen kapandı | Antivirüs engelliyor olabilir ya da başka bir DPI aracı çalışıyordur. DPI Sıfırlama yapıp yeniden dene. |
-| `FX-2004` | FoxDPI beklenmedik şekilde durdu | FoxDPI'yı yeniden başlat. Sürekli oluyorsa bilgisayarı yeniden başlatıp DPI Sıfırlama yap. |
-| `FX-2005` | Başka bir DPI aracı çalışıyor | Diğer GoodbyeDPI/Zapret/WinDivert araçlarını kapat ya da DPI Sıfırlama ile kaldır. |
-| `FX-2006` | FoxDPI zaten çalışıyor | FoxDPI penceresini kapat ya da hizmeti durdur, sonra yeniden dene. |
-| `FX-2007` | Hizmet kurulamadı ya da başlamadı | Yapılan her şey geri alındı. Antivirüsü kontrol et, FoxDPI penceresiyle çalıştırmayı dene. |
-| `FX-2008` | Deneme bir dosya hatasıyla durdu | Sürücü bellekte kalmış olabilir. Bilgisayarı yeniden başlat ya da DPI Sıfırlama yap, sonra yeniden dene. |
-| `FX-2009` | Deneme başlatılamadı | İlk ayar bile başlamadıysa neden hepsinde aynıdır: antivirüs ya da yönetici izni. FX-2002 çözümlerine bak. |
-| `FX-2010` | Durum okunamadı | Windows hizmet listesi okunamadı. Uygulamayı yönetici olarak yeniden aç. |
-| `FX-2011` | FoxDPI durdurulamadı | Görev Yöneticisi'nden goodbyedpi.exe işlemini bitir ya da DPI Sıfırlama yap. |
-| `FX-2012` | İlk çalıştırma gerekli | Önce FoxFix.exe'yi bir kez aç, sonra FoxDPI.exe kullanılabilir. |
-| `FX-3001` | Zamanlanmış görev ayarlanamadı | Yönetici izniyle çalıştığından emin ol. Görev Zamanlayıcı hizmeti kapalı olabilir. |
-| `FX-3002` | FoxFix'in yeri bulunamadı | FoxFix.exe'yi sabit bir klasörden aç (örneğin kurulum klasörü) ve kutuyu yeniden işaretle. |
-| `FX-4001` | Önizleme hazırlanamadı | Hiçbir şey değişmedi. Yeniden dene; sürerse raporu kaydedip gönder. |
-| `FX-4002` | Uygulanırken hata çıktı | Ayrıntı satırına bak. Bir kısmı uygulanmış olabilir: Rapor ve geçmiş sayfasından Geri Al. |
-| `FX-4003` | Geri alınamadı | Yönetici izniyle yeniden dene. Eski hizmet ya da DNS ayarını elle de geri kurabilirsin. |
-| `FX-4004` | DNS ayarı değiştirilemedi | Bağlantı adı değişmiş ya da bağlantı kopmuş olabilir. Bağlantıyı kontrol edip yeniden dene. |
-| `FX-4005` | Hizmet durdurulamadı ya da geri kurulamadı | Hizmet başka bir program tarafından kullanılıyor olabilir. Bilgisayarı yeniden başlatıp dene. |
-| `FX-4006` | Açılış ayarı değiştirilemedi | Kayıt defteri girdisi korumalı olabilir. Yönetici izniyle yeniden dene. |
-| `FX-4007` | Dosyalar temizlenemedi | Dosyalar kullanımda olabilir. İlgili programları kapatıp yeniden dene. |
-| `FX-4008` | Yeniden başlatma ayarlanamadı ya da iptal edilemedi | Bilgisayarı kendin yeniden başlat. İptal gerekiyorsa komut satırında shutdown /a yaz. |
-| `FX-5001` | Rapor hazırlanamadı | Yeniden dene. Sürerse uygulamayı kapatıp aç. |
-| `FX-5002` | Rapor kaydedilemedi | Başka bir klasör seç ya da dosya adının geçerli olduğundan emin ol. |
-| `FX-6001` | Hız ölçülemedi | İnternet bağlantını ve Cloudflare'e erişimini kontrol et, yeniden dene. |
-| `FX-6002` | Bir kontrol çalışırken hata çıktı | Diğer kontroller etkilenmez. "Yeniden kontrol et" ile tekrar dene. |
-| `FX-9001` | Beklenmedik hata | Ayrıntılar crash.txt dosyasındadır (günlük klasöründe). Dosyayı bildirirsen bakarım. |
+| `FX-1001` | Yönetici yetkisi gereksinimi | Uygulama kısayoluna veya yürütülebilir dosyaya sağ tıklayarak "Yönetici olarak çalıştır" seçeneğini kullanınız. |
+| `FX-1002` | Yönetici izni reddedildi | Kullanıcı Hesabı Denetimi (UAC) uyarısına "Evet" yanıtı verilmelidir. Sistemde hiçbir değişiklik yapılmamıştır; işlemi dilediğiniz zaman tekrarlayabilirsiniz. |
+| `FX-1003` | Dış bağlantı açılamadı | Sistemde varsayılan bir web tarayıcısının ayarlandığından emin olunuz. İlgili bağlantıyı tarayıcınızın adres çubuğuna manuel olarak kopyalayabilirsiniz. |
+| `FX-1004` | Panoya kopyalama başarısız | İşletim sisteminin panosu (Clipboard) başka bir uygulama tarafından kullanılıyor olabilir. Kısa bir süre sonra işlemi tekrarlayınız. |
+| `FX-1005` | Geri alma kayıtları okunamadı | Log dosyası hasar görmüş olabilir. Uygulama, mevcut kayıtlar olmadan başlatılacaktır; önceki değişiklikler "Rapor ve Geçmiş" listesinde görüntülenemeyecektir. |
+| `FX-2001` | Dosya bütünlüğü doğrulanamadı | Güvenlik yazılımları (Antivirüs vb.) ilgili çekirdek dosyayı silmiş veya değiştirmiş olabilir. FoxFix dizinini tarama istisnalarına ekleyiniz ve "DPI Sıfırlama" işleminin ardından tekrar deneyiniz. |
+| `FX-2002` | FoxDPI modülü başlatılamadı | Uygulamanın yönetici haklarıyla çalıştığından ve antivirüs tarafından engellenmediğinden emin olunuz. Detaylar satırındaki hata mesajı sorunun teknik kaynağını belirtecektir. |
+| `FX-2003` | FoxDPI işlemi sonlandırıldı | Antivirüs müdahalesi veya arka planda çalışan başka bir DPI aracı çakışmaya neden oluyor olabilir. DPI Sıfırlama işlemini gerçekleştirip tekrar deneyiniz. |
+| `FX-2004` | FoxDPI beklenmeyen şekilde durduruldu | FoxDPI modülünü yeniden başlatınız. Sorun tekrarlanırsa, bilgisayarınızı yeniden başlatarak DPI Sıfırlama işlemini uygulayınız. |
+| `FX-2005` | Çakışan DPI aracı tespit edildi | Arka planda çalışan diğer GoodbyeDPI, Zapret veya WinDivert işlemlerini Görev Yöneticisi'nden sonlandırınız veya DPI Sıfırlama aracıyla sistemden temizleyiniz. |
+| `FX-2006` | FoxDPI zaten aktif | Arka planda açık olan FoxDPI penceresini kapatınız veya sistem hizmetini durdurarak işlemi tekrarlayınız. |
+| `FX-2007` | Sistem hizmeti kurulamadı/başlatılamadı | Uygulanan işlemler otomatik olarak geri alınmıştır. Antivirüs yazılımınızı kontrol ediniz veya FoxDPI modülünü bağımsız pencere moduyla çalıştırmayı deneyiniz. |
+| `FX-2008` | Optimizasyon testi dosya hatasıyla sonlandı | Ağ sürücüsü (driver) önbellekte takılı kalmış olabilir. Sisteminizi yeniden başlatınız veya DPI Sıfırlama yaparak işlemi tekrarlayınız. |
+| `FX-2009` | Optimizasyon testi başlatılamadı | İşlemin ilk aşaması başlatılamadıysa, sorun genellikle yetki eksikliği veya antivirüs müdahalesidir. Lütfen FX-2002 çözüm adımlarını inceleyiniz. |
+| `FX-2010` | Durum bilgisi alınamadı | Windows hizmet listesine erişilemedi. Uygulamayı yönetici haklarıyla yeniden başlatınız. |
+| `FX-2011` | FoxDPI işlemi sonlandırılamadı | Görev Yöneticisi üzerinden goodbyedpi.exe veya ilgili işlemi manuel olarak sonlandırınız ya da DPI Sıfırlama aracını kullanınız. |
+| `FX-2012` | İlk yapılandırma gereksinimi | FoxDPI bağımsız olarak çalıştırılmadan önce, sistemin yapılandırılabilmesi için FoxFix.exe'nin en az bir kez çalıştırılması gerekmektedir. |
+| `FX-3001` | Zamanlanmış görev oluşturulamadı | Uygulamanın yönetici haklarıyla çalıştığından emin olunuz. Windows Görev Zamanlayıcı (Task Scheduler) hizmetinin aktif olup olmadığını kontrol ediniz. |
+| `FX-3002` | Kurulum dizini tespit edilemedi | FoxFix.exe'yi sabit bir dizinden (ör. kurulum klasöründen) çalıştırınız ve ilgili zamanlama seçeneğini yeniden işaretleyiniz. |
+| `FX-4001` | İşlem önizlemesi oluşturulamadı | Sistemde değişiklik yapılmamıştır. İşlemi tekrarlayınız; sorun devam ederse hata raporunu kaydedip geliştiriciye iletiniz. |
+| `FX-4002` | Değişiklikler uygulanırken hata oluştu | Hata detaylarını inceleyiniz. İşlemlerin yalnızca bir kısmı uygulanmış olabilir; "Rapor ve geçmiş" sekmesinden yapılan değişiklikleri geri alınız. |
+| `FX-4003` | Geri alma işlemi başarısız | Yönetici haklarıyla yeniden deneyiniz. Gerekirse eski sistem hizmetini veya ağ/DNS ayarlarınızı manuel olarak yapılandırabilirsiniz. |
+| `FX-4004` | DNS yapılandırması başarısız | Ağ bağdaştırıcısı adı değişmiş veya bağlantı kesilmiş olabilir. Aktif ağ bağlantınızı kontrol edip tekrar deneyiniz. |
+| `FX-4005` | Hizmet yönetimi başarısız | Sistem hizmeti başka bir işlem tarafından kullanılıyor (kilitlenmiş) olabilir. Bilgisayarınızı yeniden başlatarak işlemi tekrarlayınız. |
+| `FX-4006` | Başlangıç kaydı değiştirilemedi | İlgili kayıt defteri (Registry) girdisi korunuyor olabilir. Uygulamayı yönetici yetkileriyle başlatıp yeniden deneyiniz. |
+| `FX-4007` | Dosya temizleme işlemi başarısız | Hedef dosyalar halihazırda başka bir sistem işlemi tarafından kullanılıyor olabilir. İlgili uygulamaları kapatarak tekrar deneyiniz. |
+| `FX-4008` | Yeniden başlatma komutu işlenemedi | Bilgisayarınızı manuel olarak yeniden başlatınız. Mevcut bir yeniden başlatma zamanlayıcısını iptal etmek için komut satırına (CMD) shutdown /a yazabilirsiniz. |
+| `FX-5001` | Rapor oluşturulamadı | İşlemi tekrarlayınız. Sorun devam ederse uygulamayı tamamen kapatıp yeniden başlatınız. |
+| `FX-5002` | Rapor dosyası kaydedilemedi | Kayıt işlemi için farklı bir dizin seçiniz veya dosya adının işletim sistemi standartlarında (geçerli karakterlerle) yazıldığından emin olunuz. |
+| `FX-6001` | Hız testi başarısız | İnternet bağlantınızın aktif olduğunu ve Cloudflare sunucularına erişim engeli bulunmadığını doğrulayıp tekrar deneyiniz. |
+| `FX-6002` | Alt test işlemi sırasında hata | Bu durum, devam eden diğer teşhis süreçlerini etkilemez. "Yeniden kontrol et" butonuyla taramayı tekrarlayınız. |
+| `FX-9001` | Beklenmeyen kritik hata | Hata detayları log dizinindeki crash.txt dosyasına kaydedilmiştir. Sorunun tespiti için bu dosyayı Discord üzerinden bana iletebilirsiniz. |
 
-Çözüm bulamazsan hata kodunu ve mesajın ayrıntı satırını [Discord](https://discord.com/users/381533632852131841) üzerinden bildir. "Rapor ve geçmiş" sayfasından alınan rapor da işe yarar.
+## Geri Bildirim ve Destek
+
+Öneri, geri bildirim veya çözemediğiniz hatalar için [Discord](https://discord.com/users/381533632852131841) üzerinden `foxezol` kullanıcı adıma doğrudan özel mesaj (DM) gönderebilirsiniz. Hata bildirimi yaparken, uygulamanın "Rapor ve geçmiş" sekmesinden oluşturduğunuz sistem raporunu mesaja eklemeniz destek sürecini hızlandıracaktır.

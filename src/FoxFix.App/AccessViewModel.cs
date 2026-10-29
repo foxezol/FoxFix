@@ -33,7 +33,7 @@ public sealed partial class AccessRow : ObservableObject
     {
         StatusText = result.Text;
         Kind = result.Opened ? "Ok" : "Bad";
-        ElapsedText = result.Opened ? $"{result.Elapsed.TotalSeconds:0.0} sn" : "";
+        ElapsedText = result.Opened ? $" · {result.Elapsed.TotalSeconds:0.0} sn" : "";
     }
 }
 
@@ -69,7 +69,10 @@ public sealed partial class AccessViewModel : ObservableObject
     private string _hosts = GoodbyeDpiViewModel.DefaultHosts;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSummary))]
     private string _summaryText = "";
+
+    public bool HasSummary => SummaryText.Length > 0;
 
     [ObservableProperty]
     private bool _isRunning;

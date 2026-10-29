@@ -22,7 +22,7 @@ public sealed class ErrorCodeTests
     {
         ErrorCodes.All.Select(e => e.Code).Should().OnlyHaveUniqueItems();
         ErrorCodes.All.Should().OnlyContain(e => Regex.IsMatch(e.Code, @"^FX-[1-9]\d{3}$") && e.Title.Length > 5 && e.Remedy.Length > 10);
-        ErrorCodes.Find("FX-2001")!.Title.Should().Contain("doğrulaması");
+        ErrorCodes.Find("FX-2001")!.Title.Should().Contain("bütünlüğü");
         ErrorCodes.Find("FX-0000").Should().BeNull();
     }
 

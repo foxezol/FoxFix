@@ -199,6 +199,7 @@ public partial class App : Application
         await Task.Delay(320);
         await Task.WhenAll(window.FadeInAsync(), splash.FadeOutAsync());
         splash.Close();
+        WindowFocus.BringToFront(window);
 
         // Screenshot helpers: "--goster=foxdpi" opens the small FoxDPI window and "--goster=bildirim" a sample message, without changing anything.
         if (e.Args.Contains("--goster=foxdpi"))
@@ -272,13 +273,13 @@ public partial class App : Application
         if (_mainWindow is { IsLoaded: true } open)
         {
             open.Show();
-            open.WindowState = WindowState.Normal;
-            open.Activate();
+            WindowFocus.BringToFront(open);
             return;
         }
 
         var window = CreateMainWindow();
         window.Show();
+        WindowFocus.BringToFront(window);
         await window.FadeInAsync();
     }
 

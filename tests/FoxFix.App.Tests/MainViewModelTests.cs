@@ -282,6 +282,34 @@ public sealed class MainViewModelTests : IDisposable
         }
     }
 
+    [Fact]
+    public async Task Share_copies_the_project_address_and_says_so_for_a_moment()
+    {
+        SynchronizationContext.SetSynchronizationContext(null);
+        var vm = CreateWithChecks();
+        vm.ShareRepoText.Should().Be("Paylaş");
+
+        var running = vm.ShareRepoCommand.ExecuteAsync(null);
+
+        _clipboard.Copied.Should().ContainSingle().Which.Should().Be(MainViewModel.RepoUrl).And.Be("https://github.com/foxezol/FoxFix");
+        vm.ShareRepoText.Should().Be("Kopyalandı");
+        await running;
+        vm.ShareRepoText.Should().Be("Paylaş");
+    }
+
+    [Fact]
+    public async Task A_clipboard_that_fails_during_share_opens_a_coded_message_and_the_button_stays_as_it_was()
+    {
+        SynchronizationContext.SetSynchronizationContext(null);
+        _clipboard.Throws = true;
+        var vm = CreateWithChecks();
+
+        await vm.ShareRepoCommand.ExecuteAsync(null);
+
+        vm.Notice.IsOpen.Should().BeTrue();
+        vm.Notice.Message.Should().StartWith("[FX-1004]");
+        vm.ShareRepoText.Should().Be("Paylaş");
+    }
     private sealed class FakeClipboard : IClipboardService
     {
         public List<string> Copied { get; } = [];

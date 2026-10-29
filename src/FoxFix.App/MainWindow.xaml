@@ -41,109 +41,12 @@
     </Window.Resources>
     <Grid>
     <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="220" />
+        <ColumnDefinition Width="0" />
         <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
-    <!-- ============ SIDEBAR: the product's name and the six places, always in view ============ -->
-    <Border Background="{DynamicResource Card}">
-        <DockPanel Margin="14,22,14,18">
-            <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0" Orientation="Horizontal">
-                <Button Command="{Binding Info.OpenCommand}" Style="{StaticResource NavItem}" HorizontalAlignment="Left"
-                        ToolTip="Sürüm, yapımcı ve kullanılan açık kaynak proje" AutomationProperties.Name="Bilgi">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Width="15" Height="15" Stretch="Uniform"
-                              Data="M8,1.5 A6.5,6.5 0 1 0 8,14.5 A6.5,6.5 0 1 0 8,1.5 M8,7 L8,11.2 M8,4.6 L8,4.7"
-                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
-                        <TextBlock Text="Bilgi" Margin="9,0,0,0" />
-                    </StackPanel>
-                </Button>
-                <Button Command="{Binding ShareRepoCommand}" Style="{StaticResource NavItem}" Margin="6,0,0,0"
-                        ToolTip="FoxFix'in GitHub bağlantısını kopyala" AutomationProperties.Name="Bağlantıyı paylaş">
-                    <StackPanel Orientation="Horizontal">
-                        <Path Width="15" Height="15" Stretch="Uniform"
-                              Data="M4,9 L4,13.5 L12,13.5 L12,9 M8,10 L8,2.5 M5.2,5.2 L8,2.4 L10.8,5.2"
-                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
-                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
-                        <TextBlock Text="{Binding ShareRepoText}" Margin="9,0,0,0" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="8,0,0,26">
-                    <Image Source="Assets/FoxLogo.png" Height="40" RenderOptions.BitmapScalingMode="HighQuality"
-                           AutomationProperties.Name="FoxFix logosu" />
-                    <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
-                               Margin="10,0,0,0" VerticalAlignment="Center" />
-                </StackPanel>
-
-                <Button Content="Genel bakış" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Home}"
-                        AutomationProperties.Name="Genel bakış">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsHome}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="Bağlantı kontrolü" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}"
-                        AutomationProperties.Name="Bağlantı kontrolü">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsConnection}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="Bilgisayarı hızlandır" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Speedup}"
-                        AutomationProperties.Name="Bilgisayarı hızlandır">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsSpeedup}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="DNS ve DPI" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}"
-                        AutomationProperties.Name="DNS ve DPI">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsDnsDpi}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="Erişim testi" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Access}"
-                        AutomationProperties.Name="Erişim testi">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsAccess}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                <Button Content="Rapor ve geçmiş" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Report}"
-                        AutomationProperties.Name="Rapor ve geçmiş">
-                    <Button.Style>
-                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsReport}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-            </StackPanel>
-        </DockPanel>
-    </Border>
-
-    <ScrollViewer x:Name="Scroller" Grid.Column="1" VerticalScrollBarVisibility="Auto">
-        <StackPanel x:Name="PageHost" MaxWidth="740" Margin="36,28,36,40">
+    <ScrollViewer x:Name="Scroller" Grid.Column="1" Margin="220,0,0,0" VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="PageHost" MaxWidth="740" Margin="36,28,36,16">
             <StackPanel.RenderTransform>
                 <TranslateTransform />
             </StackPanel.RenderTransform>
@@ -180,7 +83,7 @@
                 </StackPanel>
 
                 <!-- The line from this computer to the internet: the layers really are a sequence -->
-                <TextBlock Text="Bağlantı hattı" Style="{StaticResource BodyMuted}" Margin="0,44,0,12"
+                <TextBlock Text="Bağlantı hattı" Style="{StaticResource BodyMuted}" Margin="0,28,0,10"
                            Visibility="{Binding HasRows, Converter={StaticResource BoolToVis}}" />
                 <ItemsControl ItemsSource="{Binding Rows}" Visibility="{Binding HasRows, Converter={StaticResource BoolToVis}}">
                     <ItemsControl.ItemsPanel>
@@ -229,7 +132,7 @@
                 </ItemsControl>
 
                 <!-- FoxDPI: one calm card, one action. It is closed by closing its own window, so there is no stop here -->
-                <Border Background="{DynamicResource Card}" CornerRadius="14" Padding="22,18" Margin="0,36,0,0">
+                <Border Background="{DynamicResource Card}" CornerRadius="14" Padding="22,18" Margin="0,24,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -265,7 +168,7 @@
                 </Border>
 
                 <!-- The numbers, as type -->
-                <Grid Margin="0,40,0,0">
+                <Grid Margin="0,28,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -582,8 +485,9 @@
                                 Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Testi durdur" />
                     </StackPanel>
                     <TextBlock Text="{Binding Access.SummaryText}" Margin="0,16,0,0" FontWeight="SemiBold" TextWrapping="Wrap"
+                               Visibility="{Binding Access.HasSummary, Converter={StaticResource BoolToVis}}"
                                AutomationProperties.LiveSetting="Polite" />
-                    <ItemsControl ItemsSource="{Binding Access.Rows}" Margin="0,10,0,0">
+                    <ItemsControl ItemsSource="{Binding Access.Rows}" Margin="0,18,0,0">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,6">
@@ -609,7 +513,7 @@
                                             </Ellipse.Style>
                                         </Ellipse>
                                         <TextBlock Text="{Binding StatusText}" Style="{StaticResource BodyMuted}" />
-                                        <TextBlock Text="{Binding ElapsedText, StringFormat=' · {0}'}" Style="{StaticResource BodyMuted}" />
+                                        <TextBlock Text="{Binding ElapsedText}" Style="{StaticResource BodyMuted}" />
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate>
@@ -673,6 +577,120 @@
             </StackPanel>
         </StackPanel>
     </ScrollViewer>
+
+    <!-- ============ SIDEBAR: the product's name and the six places, always in view ============ -->
+    <Grid x:Name="SidebarHost" Grid.ColumnSpan="2" Width="220" HorizontalAlignment="Left">
+    <Grid.RenderTransform>
+        <TranslateTransform x:Name="SidebarShift" />
+    </Grid.RenderTransform>
+    <Border x:Name="Sidebar" Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="0,0,1,0"
+            MouseEnter="OnSidebarMouseChanged" MouseLeave="OnSidebarMouseChanged">
+      <Grid>
+        <DockPanel x:Name="SidebarContent" Margin="14,60,14,18">
+            <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0" Orientation="Horizontal">
+                <Button Command="{Binding Info.OpenCommand}" Style="{StaticResource NavItem}" HorizontalAlignment="Left"
+                        ToolTip="Sürüm, yapımcı ve kullanılan açık kaynak proje" AutomationProperties.Name="Bilgi">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="15" Height="15" Stretch="Uniform"
+                              Data="M8,1.5 A6.5,6.5 0 1 0 8,14.5 A6.5,6.5 0 1 0 8,1.5 M8,7 L8,11.2 M8,4.6 L8,4.7"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                        <TextBlock Text="Bilgi" Margin="9,0,0,0" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ShareRepoCommand}" Style="{StaticResource NavItem}" Margin="6,0,0,0"
+                        ToolTip="FoxFix'in GitHub bağlantısını kopyala" AutomationProperties.Name="Bağlantıyı paylaş">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="15" Height="15" Stretch="Uniform"
+                              Data="M4,9 L4,13.5 L12,13.5 L12,9 M8,10 L8,2.5 M5.2,5.2 L8,2.4 L10.8,5.2"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        <TextBlock Text="{Binding ShareRepoText}" Margin="9,0,0,0" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0,0,26">
+                    <Image Source="Assets/FoxLogo.png" Height="40" RenderOptions.BitmapScalingMode="HighQuality"
+                           AutomationProperties.Name="FoxFix logosu" />
+                    <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
+                               Margin="10,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Button Content="Genel bakış" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Home}"
+                        AutomationProperties.Name="Genel bakış">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHome}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Bağlantı kontrolü" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}"
+                        AutomationProperties.Name="Bağlantı kontrolü">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsConnection}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Bilgisayarı hızlandır" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Speedup}"
+                        AutomationProperties.Name="Bilgisayarı hızlandır">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSpeedup}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="DNS ve DPI" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}"
+                        AutomationProperties.Name="DNS ve DPI">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDnsDpi}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Erişim testi" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Access}"
+                        AutomationProperties.Name="Erişim testi">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccess}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Rapor ve geçmiş" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Report}"
+                        AutomationProperties.Name="Rapor ve geçmiş">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsReport}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+      </Grid>
+    </Border>
+    </Grid>
+
+    <!-- Three lines: fold the whole menu away (only these stay); point at them to see the menu again; press once more to keep it open -->
+    <Button x:Name="SidebarToggle" Click="OnSidebarToggle" Style="{StaticResource IconButton}" Width="32" Height="32"
+            Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,14,0,0"
+            MouseEnter="OnSidebarMouseChanged" MouseLeave="OnSidebarMouseChanged"
+            ToolTip="Menüyü daralt" AutomationProperties.Name="Menüyü daralt ya da aç">
+        <Path Width="16" Height="16" Stretch="Uniform" Data="M2,4 L14,4 M2,8 L14,8 M2,12 L14,12"
+              Stroke="{DynamicResource Muted}" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+    </Button>
 
     <!-- ============ CHANGES: preview, apply, result, restart (pop-up) ============ -->
     <Grid Grid.ColumnSpan="2" Visibility="{Binding Fix.IsPanelVisible, Converter={StaticResource BoolToVis}}"

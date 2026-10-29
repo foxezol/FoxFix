@@ -74,7 +74,6 @@ Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirli�
 - Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
 - Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.
 
-Adım adım test yönergeleri için [docs/VM-TEST-REHBERI.md](docs/VM-TEST-REHBERI.md) dosyasına bakabilirsiniz.
 
 ## Lisans ve Telif Hakları
 

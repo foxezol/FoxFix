@@ -62,6 +62,47 @@ public partial class MainWindow : Window
         };
     }
 
+    private bool _sidebarFolded;
+
+    private void OnSidebarToggle(object sender, RoutedEventArgs e)
+    {
+        _sidebarFolded = !_sidebarFolded;
+        SidebarToggle.ToolTip = _sidebarFolded ? "Menüyü sabitle" : "Menüyü daralt";
+        ApplySidebar();
+    }
+
+    /// <summary>
+    /// The mouse leaves one element a moment before it enters the next, so the decision waits until both events are through;
+    /// otherwise the menu would blink when the pointer travels from the three lines onto the menu.
+    /// </summary>
+    private void OnSidebarMouseChanged(object sender, MouseEventArgs e) =>
+        Dispatcher.BeginInvoke(ApplySidebar, System.Windows.Threading.DispatcherPriority.Background);
+
+    /// <summary>
+    /// Folded: the menu is gone and only the three lines stay; the page takes the room. Pointing at the three lines slides the
+    /// menu in over the page (the page does not move) and leaving slides it out. Pressing the lines again unfolds it for good.
+    /// </summary>
+    private void ApplySidebar()
+    {
+        var shown = !_sidebarFolded || Sidebar.IsMouseOver || SidebarToggle.IsMouseOver;
+
+        SidebarShift.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, Slide(shown ? 0 : -SidebarHost.Width));
+        Scroller.BeginAnimation(
+            FrameworkElement.MarginProperty,
+            new System.Windows.Media.Animation.ThicknessAnimation(new Thickness(_sidebarFolded ? 56 : SidebarHost.Width, 0, 0, 0), Duration())
+            {
+                EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut },
+            });
+        SidebarHost.IsHitTestVisible = shown;
+    }
+
+    private static TimeSpan Duration() => SystemParameters.ClientAreaAnimation ? TimeSpan.FromMilliseconds(170) : TimeSpan.Zero;
+
+    private static System.Windows.Media.Animation.DoubleAnimation Slide(double to) =>
+        new(to, Duration())
+        {
+            EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut },
+        };
     public MainWindow(ThemeManager theme)
         : this()
     {
