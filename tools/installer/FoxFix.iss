@@ -48,7 +48,7 @@ Name: "{group}\FoxDPI"; Filename: "{app}\FoxDPI.exe"
 Name: "{autodesktop}\FoxFix"; Filename: "{app}\FoxFix.exe"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\FoxFix.exe"; Description: "FoxFix'i aç (FoxDPI.exe için ilk çalıştırma)"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\FoxFix.exe"; Description: "FoxFix'i aç (FoxDPI.exe için ilk çalıştırma)"; Flags: nowait postinstall skipifsilent shellexec
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\Veri"
