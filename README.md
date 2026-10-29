@@ -1,3 +1,5 @@
+#FoxFix
+
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
 > **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
