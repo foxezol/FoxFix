@@ -1,4 +1,4 @@
-﻿# FoxFix
+<img width="986" height="773" alt="image" src="https://github.com/user-attachments/assets/4d7e0ee8-edd4-4410-95b8-f4cbd6919262" />﻿# FoxFix
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
@@ -31,6 +31,8 @@ Made by foxezol, Claude Code
 - **Sistem Hızlandırma:** Başlangıç uygulamalarını yönetmenizi ve gereksiz geçici dosyaları temizlemenizi sağlar.
 - **DPI Sıfırlama:** Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını ve manuel DNS girişlerini temizleyerek ağ ayarlarını Windows varsayılanlarına döndürür.
 - **Güvenli Raporlama:** Sorun tespiti için paylaşılabilir bir rapor oluşturur. Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri gibi hassas veriler varsayılan olarak maskelenir. Teşhis için yalnızca `1.1.1.1` gibi bilinen genel DNS adresleri ve `127.0.0.1` görünür bırakılır. İstendiğinde maskeleme devre dışı bırakılabilir.
+
+- <img width="986" height="773" alt="image" src="https://github.com/user-attachments/assets/5967ae25-b091-428d-9205-f8cca651d928" />
 
 **Önemli Not:** Sistemde yapılacak tüm değişiklikler öncesinde ekranda listelenir ve onayınız olmadan hiçbir işlem uygulanmaz. Yapılan değişiklikler kaydedilir ve "Geri Al" özelliği ile geri döndürülebilir.
 
