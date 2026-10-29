@@ -66,7 +66,7 @@ public sealed class FoxDpiHost
             if (!_session.IsRunning)
             {
                 // A stopped session has no profile any more; a dead one does.
-                _ = EndAsync(_session.Profile is null ? null : "FoxDPI beklenmedik şekilde durdu. Yeniden başlatabilirsin.");
+                _ = EndAsync(_session.Profile is null ? null : $"{FoxFix.Core.ErrorCodes.Tag(FoxFix.Core.ErrorCodes.DpiStoppedUnexpectedly)}FoxDPI beklenmedik şekilde durdu. Yeniden başlatabilirsin.");
             }
         };
         _watch.Start();

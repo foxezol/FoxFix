@@ -334,7 +334,7 @@ public sealed class MainViewModelTests : IDisposable
         await vm.RunDiagnosticsCommand.ExecuteAsync(null);
 
         vm.Verdict.Should().Be(VerdictState.Ok);
-        vm.VerdictTitle.Should().Be("Her şey yolunda");
+        vm.VerdictTitle.Should().Be("Sistem Durumu Normal");
         vm.Rows.Select(r => r.Title).Should().Equal("Ağ bağlantısı", "DNS");
         vm.HasRows.Should().BeTrue();
         vm.IsBusy.Should().BeFalse();

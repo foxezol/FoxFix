@@ -52,7 +52,7 @@ public partial class App : Application
         {
             var logPath = CrashLog.Write(args.Exception);
             MessageBox.Show(
-                $"FoxFix beklenmedik bir hata verdi ve kapanacak.\n\n{args.Exception.Message}\n\nAyrıntılar şu dosyada: {logPath}",
+                $"{ErrorCodes.Tag(ErrorCodes.Unexpected)}FoxFix beklenmedik bir hata verdi ve kapanacak.\n\n{args.Exception.Message}\n\nAyrıntılar şu dosyada: {logPath}",
                 "FoxFix", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
             Shutdown(1);
@@ -72,6 +72,7 @@ public partial class App : Application
         {
             splash = new SplashWindow();
             splash.Show();
+            splash.Report(0.08);
             await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.Render);
         }
 
@@ -109,23 +110,13 @@ public partial class App : Application
         var gdpiInstall = new GoodbyeDpiInstallFix(payload, launcher, serviceManager, gdpiStatus, gdpiFolder);
         var gdpiTeardown = new GoodbyeDpiTeardown(serviceManager, launcher, gdpiFolder);
         var gdpiRemove = new GoodbyeDpiRemoveFix(gdpiStatus, gdpiTeardown, gdpiFolder);
-        var zapretFolder = ZapretLayout.DefaultFolder;
-        var zapretLauncher = new SystemGoodbyeDpiLauncher("winws");
-        var zapretPayload = new EmbeddedGoodbyeDpiPayload("Zapret.");
-        var zapretTeardown = new GoodbyeDpiTeardown(serviceManager, zapretLauncher, zapretFolder, ZapretLayout.ServiceName);
-        var zapretRemove = new ZapretRemoveFix(zapretTeardown, zapretLauncher, zapretFolder);
-        var zapretInstall = new GoodbyeDpiInstallFix(
-            zapretPayload, zapretLauncher, serviceManager, gdpiStatus, zapretFolder,
-            engine: DpiEngines.Zapret, serviceName: ZapretLayout.ServiceName, fixId: ZapretLayout.InstallFixId);
-        var foxDpi = new FoxDpiSession(
-            payload, launcher, gdpiStatus, gdpiFolder,
-            otherEngines: [new DpiRuntime(DpiEngines.Zapret, zapretPayload, zapretLauncher, zapretFolder)]);
+        var foxDpi = new FoxDpiSession(payload, launcher, gdpiStatus, gdpiFolder);
         var notice = new NoticeViewModel();
         var autoStart = new FoxDpiAutoStart(runner);
         var autoStartFix = new FoxDpiAutoStartFix(autoStart, () => Environment.ProcessPath, () => Environment.UserDomainName + "\\" + Environment.UserName);
         var elevation = new WindowsElevation();
         var fixFlow = new FixFlowViewModel(
-            [cleanup, gdpiRemove, zapretRemove, dnsRepair, dnsReset, gdpiInstall, zapretInstall, autoStartFix, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
+            [cleanup, gdpiRemove, dnsRepair, dnsReset, gdpiInstall, autoStartFix, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
 
         Func<string?> trialBlocker = () =>
         {
@@ -135,17 +126,13 @@ public partial class App : Application
         var trial = new GoodbyeDpiTrial(
             payload, launcher, new SystemHttpsProbe(), serviceManager, gdpiFolder + "-trial",
             blocker: trialBlocker,
-            flushDns: ct => dnsConfigurator.FlushCacheAsync(ct));
-        var zapretTrial = new GoodbyeDpiTrial(
-            zapretPayload, zapretLauncher, new SystemHttpsProbe(), serviceManager, zapretFolder + "-trial",
-            blocker: trialBlocker,
             flushDns: ct => dnsConfigurator.FlushCacheAsync(ct),
-            engine: DpiEngines.Zapret);
+            latency: new SystemLatencyProbe());
         var gdpi = new GoodbyeDpiViewModel(
-            trial, gdpiInstall, gdpiStatus, gdpiTeardown, foxDpi, fixFlow, elevation, new DpiChoiceStore(), notice, autoStart, autoStartFix, zapretTrial, zapretInstall, zapretTeardown);
+            trial, gdpiInstall, gdpiStatus, gdpiTeardown, foxDpi, fixFlow, elevation, new DpiChoiceStore(), notice, autoStart, autoStartFix);
 
         var reports = new DiagnosticReportService(network, detector, journal, new SystemInfo());
-        var speed = new SpeedTestViewModel(new SpeedTestService(new CloudflareSpeedTransport(), new StopwatchClock()));
+        var speed = new SpeedTestViewModel(new SpeedTestService(new CloudflareSpeedTransport(), new StopwatchClock()), new WpfSpeedCardClipboard());
         var startupStore = new RegistryStartupStore();
         var startupVm = new StartupViewModel(
             startupStore, startupFix.SetDesired, () => fixFlow.StartOptionalCommand.ExecuteAsync(StartupFix.FixIdValue), StartupIcons.Load);
@@ -154,18 +141,23 @@ public partial class App : Application
         _main = new MainViewModel(
             engine, fixFlow, reports, new WpfClipboardService(), new WindowsReportFileSaver(),
             speed, startupVm, cleanupVm, gdpi, OpenLink, notice, new AccessViewModel(new AccessTester(new SystemHttpsProbe()), gdpi));
+        splash?.Report(0.45);
 
         // The small FoxDPI window (and its notification-area icon) exists exactly while FoxDPI runs.
         _foxDpiHost = new FoxDpiHost(
             foxDpi, _theme, openFoxFix: () => _ = OpenMainWindowAsync(), openSettings: () => _ = OpenMainWindowAsync(AppPage.DnsDpi), notify: notice.Show,
             ended: () =>
             {
+                // The overview card must stop saying "Pencereyi göster" once the window is gone.
+                _ = gdpi.RefreshStatusAsync();
                 if (_mainWindow is not { IsLoaded: true })
                 {
                     Shutdown();
                 }
             });
         gdpi.FoxDpiStarted += profile => _foxDpiHost.Show(profile);
+        gdpi.FoxDpiStarting += ShowStartingScreen;
+        gdpi.FoxDpiStartEnded += () => _ = HideStartingScreenAsync();
 
         if (onlyFoxDpi)
         {
@@ -178,6 +170,16 @@ public partial class App : Application
 
         // Built but not shown: nothing of it is on screen until it is ready.
         var window = CreateMainWindow();
+        splash!.Report(0.7);
+
+        // The last part of the bar is the first check itself.
+        _main.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(MainViewModel.DiagnosisPercent))
+            {
+                splash.Report(0.7 + 0.3 * _main.DiagnosisPercent / 100);
+            }
+        };
 
         // Looking is read-only, so the first thing the user sees is already the answer.
         var firstCheck = _main.RunDiagnosticsCommand.ExecuteAsync(null);
@@ -193,7 +195,9 @@ public partial class App : Application
         // Shown fully transparent, given a moment to draw its first frame, then revealed as the splash fades away.
         window.Show();
         await Dispatcher.InvokeAsync(() => { }, System.Windows.Threading.DispatcherPriority.Render);
-        await Task.WhenAll(window.FadeInAsync(), splash!.FadeOutAsync());
+        splash.Report(1);
+        await Task.Delay(320);
+        await Task.WhenAll(window.FadeInAsync(), splash.FadeOutAsync());
         splash.Close();
 
         // Screenshot helpers: "--goster=foxdpi" opens the small FoxDPI window and "--goster=bildirim" a sample message, without changing anything.
@@ -224,7 +228,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Geri alma kayıtları okunamadı: {ex.Message}", "FoxFix", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show($"{ErrorCodes.Tag(ErrorCodes.JournalUnreadable)}Geri alma kayıtları okunamadı: {ex.Message}", "FoxFix", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 
@@ -281,7 +285,7 @@ public partial class App : Application
     /// <summary>What FoxDPI.exe does: start with the saved setting and open only the small FoxDPI window.</summary>
     private async Task RunFoxDpiOnlyAsync(FoxDpiSession session)
     {
-        var (profile, error) = DirectStart.Resolve(new DpiChoiceStore().Load(), new DpiChoiceStore().LoadCustom());
+        var (profile, error) = DirectStart.Resolve(new DpiChoiceStore().Load());
         if (profile is null)
         {
             MessageBox.Show(error, "FoxDPI", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -289,7 +293,9 @@ public partial class App : Application
             return;
         }
 
+        ShowStartingScreen();
         var result = await session.StartAsync(profile, CancellationToken.None);
+        await HideStartingScreenAsync();
         if (!result.Started)
         {
             MessageBox.Show(result.Message, "FoxDPI başlamadı", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -299,6 +305,36 @@ public partial class App : Application
 
         _foxDpiHost.Show(profile);
     }
+    private SplashWindow? _startingScreen;
+
+    /// <summary>FoxDPI needs a few seconds to start; a screen with a filling bar says it is working.</summary>
+    private void ShowStartingScreen()
+    {
+        if (_startingScreen is not null)
+        {
+            return;
+        }
+
+        _startingScreen = new SplashWindow("FoxDPI", "Assets/FoxDpiLogo.png", "FoxDPI başlatılıyor…");
+        _startingScreen.Show();
+        _startingScreen.Report(0.92, TimeSpan.FromSeconds(3.2));
+    }
+
+    private async Task HideStartingScreenAsync()
+    {
+        var screen = _startingScreen;
+        _startingScreen = null;
+        if (screen is null)
+        {
+            return;
+        }
+
+        screen.Report(1);
+        await Task.Delay(260);
+        await screen.FadeOutAsync();
+        screen.Close();
+    }
+
     private static void OpenLink(string url) =>
         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
 

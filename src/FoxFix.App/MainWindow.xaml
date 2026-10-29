@@ -48,7 +48,7 @@
     <!-- ============ SIDEBAR: the product's name and the six places, always in view ============ -->
     <Border Background="{DynamicResource Card}">
         <DockPanel Margin="14,22,14,18">
-            <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0">
+            <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0" Orientation="Horizontal">
                 <Button Command="{Binding Info.OpenCommand}" Style="{StaticResource NavItem}" HorizontalAlignment="Left"
                         ToolTip="Sürüm, yapımcı ve kullanılan açık kaynak proje" AutomationProperties.Name="Bilgi">
                     <StackPanel Orientation="Horizontal">
@@ -57,6 +57,16 @@
                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                         <TextBlock Text="Bilgi" Margin="9,0,0,0" />
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ShareRepoCommand}" Style="{StaticResource NavItem}" Margin="6,0,0,0"
+                        ToolTip="FoxFix'in GitHub bağlantısını kopyala" AutomationProperties.Name="Bağlantıyı paylaş">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="15" Height="15" Stretch="Uniform"
+                              Data="M4,9 L4,13.5 L12,13.5 L12,9 M8,10 L8,2.5 M5.2,5.2 L8,2.4 L10.8,5.2"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
+                        <TextBlock Text="{Binding ShareRepoText}" Margin="9,0,0,0" />
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -158,10 +168,11 @@
                                AutomationProperties.LiveSetting="Polite" />
                 </StackPanel>
                 <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource BodyMuted}" Margin="24,6,0,0" />
-                <ProgressBar IsIndeterminate="True" Height="3" Margin="24,16,0,0" Foreground="{DynamicResource Accent}"
-                             Background="{DynamicResource Divider}" BorderThickness="0"
-                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
-                <StackPanel Orientation="Horizontal" Margin="24,20,0,0">
+                <StackPanel Margin="24,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding DiagnosisPercent}" Height="3" Foreground="{DynamicResource Accent}"
+                                 Background="{DynamicResource Divider}" BorderThickness="0" AutomationProperties.Name="Kontrol ilerlemesi" />
+                    <TextBlock Text="{Binding DiagnosisProgressText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0" />
+                </StackPanel>                <StackPanel Orientation="Horizontal" Margin="24,20,0,0">
                     <Button Content="Beni Düzelt" Command="{Binding RepairPicker.OpenCommand}"
                             Style="{StaticResource HeroButton}" AutomationProperties.Name="Beni Düzelt" />
                     <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
@@ -217,46 +228,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- The numbers, as type -->
-                <Grid Margin="0,44,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock Text="{Binding Speed.DownloadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
-                        <TextBlock Text="İndirme" Style="{StaticResource BodyMuted}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="1">
-                        <TextBlock Text="{Binding Speed.UploadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
-                        <TextBlock Text="Yükleme" Style="{StaticResource BodyMuted}" />
-                    </StackPanel>
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="{Binding Speed.LatencyText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
-                        <TextBlock Text="Ping" Style="{StaticResource BodyMuted}" />
-                    </StackPanel>
-                </Grid>
-                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0">
-                    <Run Text="Titreşim:" />
-                    <Run Text="{Binding Speed.JitterText, Mode=OneWay}" />
-                </TextBlock>
-                <ProgressBar IsIndeterminate="True" Height="4" Margin="0,16,0,0" Foreground="{DynamicResource Accent}"
-                             Background="{DynamicResource Divider}" BorderThickness="0"
-                             Visibility="{Binding Speed.IsRunning, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding Speed.Status}" Style="{StaticResource BodyMuted}" Margin="0,8,0,0"
-                           AutomationProperties.LiveSetting="Polite" />
-                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                    <Button Content="Hız testini başlat" Command="{Binding Speed.StartCommand}"
-                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini başlat" />
-                    <Button Content="Durdur" Command="{Binding Speed.CancelCommand}"
-                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini durdur" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,2,0,0"
-                           Text="Cloudflare'in hız testi sunucusuna bağlanır. Hızına göre yüzlerce MB veri kullanabilir. Sunucu yalnızca IP adresini görür." />
-
                 <!-- FoxDPI: one calm card, one action. It is closed by closing its own window, so there is no stop here -->
-                <Border Background="{DynamicResource Card}" CornerRadius="14" Padding="22,18" Margin="0,40,0,0">
+                <Border Background="{DynamicResource Card}" CornerRadius="14" Padding="22,18" Margin="0,36,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -290,6 +263,57 @@
                         </StackPanel>
                     </Grid>
                 </Border>
+
+                <!-- The numbers, as type -->
+                <Grid Margin="0,40,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Speed.DownloadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="İndirme" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding Speed.UploadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="Yükleme" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{Binding Speed.LatencyText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="Ping" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0">
+                    <Run Text="Titreşim:" />
+                    <Run Text="{Binding Speed.JitterText, Mode=OneWay}" />
+                </TextBlock>
+                <ProgressBar IsIndeterminate="True" Height="4" Margin="0,16,0,0" Foreground="{DynamicResource Accent}"
+                             Background="{DynamicResource Divider}" BorderThickness="0"
+                             Visibility="{Binding Speed.IsRunning, Converter={StaticResource BoolToVis}}" />
+                <TextBlock Text="{Binding Speed.Status}" Style="{StaticResource BodyMuted}" Margin="0,8,0,0"
+                           AutomationProperties.LiveSetting="Polite" />
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <Button Content="Hız testini başlat" Command="{Binding Speed.StartCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini başlat" />
+                    <Button Content="Durdur" Command="{Binding Speed.CancelCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini durdur" />
+                    <Button Content="Sonucu paylaş" Command="{Binding Speed.ShareCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testi sonucunu paylaş"
+                            Visibility="{Binding Speed.HasResult, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+                <!-- After the picture is copied: say so -->
+                <StackPanel Margin="0,10,0,0" Visibility="{Binding Speed.HasShareStatus, Converter={StaticResource BoolToVis}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="14" Height="14" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
+                              StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Speed.ShareStatus}" FontWeight="SemiBold" Margin="8,0,0,0" VerticalAlignment="Center"
+                                   AutomationProperties.LiveSetting="Polite" />
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,2,0,0"
+                           Text="Cloudflare altyapısı kullanılarak ölçüm yapılır. Bağlantı hızınıza bağlı olarak yüksek veri kullanımı (MB) gerçekleşebilir. Karşı sunucuya yalnızca IP adresiniz iletilir." />
+
             </StackPanel>
 
             <!-- ============ CONNECTION ============ -->
@@ -300,10 +324,11 @@
                     <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
                             Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Yeniden kontrol et" />
                 </StackPanel>
-                <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Foreground="{DynamicResource Accent}"
-                             Background="{DynamicResource Divider}" BorderThickness="0"
-                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
-                <TextBlock Text="{Binding VerdictTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
+                <StackPanel Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding DiagnosisPercent}" Height="3" Foreground="{DynamicResource Accent}"
+                                 Background="{DynamicResource Divider}" BorderThickness="0" AutomationProperties.Name="Kontrol ilerlemesi" />
+                    <TextBlock Text="{Binding DiagnosisProgressText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0" />
+                </StackPanel>                <TextBlock Text="{Binding VerdictTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
                            TextWrapping="Wrap" Margin="0,20,0,0" />
                 <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
 
@@ -349,7 +374,7 @@
                 <StackPanel Margin="0,24,0,0">
                     <TextBlock Text="Açılışta başlayan programlar" Style="{StaticResource SectionTitle}" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="Bilgisayar açılınca kendiliğinden başlayan programlar. İşaretini kaldırdığın program açılışta başlamaz, silinmez. Ne olduğunu bilmediğin bir programa dokunma." />
+                               Text="Sistem başlangıcında otomatik çalışan uygulamaları yönetin. İşaretini kaldırdığınız uygulamalar silinmez, yalnızca başlangıçta çalışmaları engellenir. Sistemin kararlılığı için kaynağını bilmediğiniz işlemleri devre dışı bırakmaktan kaçının." />
 
                     <TextBlock Text="{Binding Startup.LoadError}" Foreground="{DynamicResource StatusBad}" Margin="0,10,0,0" TextWrapping="Wrap"
                                Visibility="{Binding Startup.HasLoadError, Converter={StaticResource BoolToVis}}" />
@@ -376,7 +401,7 @@
                     <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,24" />
                     <TextBlock Text="Disk temizliği" Style="{StaticResource SectionTitle}" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="Önce her birinin ne kadar yer tuttuğunu görürsün, sen seçersin. Silinenler geri getirilemez ve çöp kutusuna gitmez." />
+                               Text="Sisteminizdeki gereksiz dosyaları analiz edip temizleyerek disk alanı açın. Bu işlem kalıcıdır; silinen dosyalar Geri Dönüşüm Kutusu'na taşınmaz." />
 
                     <ItemsControl ItemsSource="{Binding Cleanup.Items}" Margin="0,8,0,0">
                         <ItemsControl.ItemTemplate>
@@ -419,8 +444,8 @@
                 <StackPanel Margin="0,20,0,0">
                     <TextBlock Text="FoxDPI" Style="{StaticResource SectionTitle}" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="FoxDPI, engelli sitelerin açılmasını sağlar. Açık kaynaklı GoodbyeDPI (Türkiye sürümü 0.2.3rc3) ve Zapret üzerine kuruludur, ikisinin de dosyalarını taşır. Önce senin internetinde hangi ayarın çalıştığını dener, sonra kurar ya da başlatır." />
-                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,4,0,0" Text="GoodbyeDPI, Zapret ve WinDivert kendi lisanslarıyla dağıtılır. Lisans dosyaları FoxDPI klasöründe durur." />
+                               Text="FoxDPI, erişim engeli bulunan sitelere güvenli bağlantı sağlar. Açık kaynaklı GoodbyeDPI tabanlıdır ve ağınız için en uygun konfigürasyonu tespit edip uygular. Çekirdek bileşenlere ait lisans dosyaları FoxDPI dizininde yer almaktadır." />
+                    
                     <TextBlock Text="{Binding Dpi.StatusText}" Margin="0,12,0,0" FontWeight="SemiBold" TextWrapping="Wrap"
                                AutomationProperties.LiveSetting="Polite" />
 
@@ -436,7 +461,7 @@
                     <TextBox Text="{Binding Dpi.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler"
                              IsEnabled="{Binding Dpi.CanAct}" />
                     <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0"
-                               Text="Birden fazla siteyi virgülle ayır. Her ayar için bu siteler açılmayı dener, kontrol için bir de normal bir site denenir. Deneme birkaç dakika sürer, bu sırada internet kısa süre kesilebilir." />
+                               Text="Birden fazla siteyi virgülle ayırarak girebilirsiniz. Sistem, her konfigürasyonu bu siteler üzerinde test eder. İşlem birkaç dakika sürebilir ve bu süreçte kısa süreli ağ kesintileri yaşanabilir." />
 
                     <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                         <Button Content="En uygun ayarı bul" Command="{Binding Dpi.RunTrialCommand}"
@@ -455,23 +480,6 @@
                                AutomationProperties.LiveSetting="Polite"
                                Visibility="{Binding Dpi.HasResult, Converter={StaticResource BoolToVis}}" />
 
-                    <!-- Which program the settings below belong to -->
-                    <StackPanel Visibility="{Binding Dpi.HasZapret, Converter={StaticResource BoolToVis}}" Margin="0,18,0,0">
-                        <TextBlock Text="Yöntem" Style="{StaticResource BodyMuted}" Margin="0,0,0,6" />
-                        <StackPanel Orientation="Horizontal">
-                            <RadioButton GroupName="engine" Content="GoodbyeDPI" Margin="0,0,22,0"
-                                         IsChecked="{Binding Dpi.IsGoodbyeDpi, Mode=OneWay}"
-                                         Command="{Binding Dpi.SelectEngineCommand}" CommandParameter="goodbyedpi"
-                                         AutomationProperties.Name="GoodbyeDPI" />
-                            <RadioButton GroupName="engine" Content="Zapret"
-                                         IsChecked="{Binding Dpi.IsZapret, Mode=OneWay}"
-                                         Command="{Binding Dpi.SelectEngineCommand}" CommandParameter="zapret"
-                                         AutomationProperties.Name="Zapret" />
-                        </StackPanel>
-                        <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"
-                                   Visibility="{Binding Dpi.IsZapret, Converter={StaticResource BoolToVis}}"
-                                   Text="Zapret, GoodbyeDPI'dan farklı bir yöntemle çalışır. GoodbyeDPI işe yaramadıysa onu dene. Ayarlar internet sağlayıcına göre ayrılmıştır." />
-                    </StackPanel>
                     <!-- The settings, one per line: pick the one to install -->
                     <ItemsControl ItemsSource="{Binding Dpi.Rows}" Margin="0,14,0,0">
                         <ItemsControl.ItemTemplate>
@@ -508,25 +516,13 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <!-- Zapret: run the chosen setting with text the user changed -->
-                    <StackPanel Visibility="{Binding Dpi.IsZapret, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
-                        <CheckBox Content="Seçili ayarı düzenle" IsChecked="{Binding Dpi.IsEditingSetting}" HorizontalAlignment="Left"
-                                  AutomationProperties.Name="Seçili ayarı düzenle" />
-                        <StackPanel Visibility="{Binding Dpi.IsEditingSetting, Converter={StaticResource BoolToVis}}">
-                            <TextBox Text="{Binding Dpi.CustomArguments, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
-                                     TextWrapping="Wrap" AcceptsReturn="False" AutomationProperties.Name="Zapret ayarı" />
-                            <TextBlock Text="{Binding Dpi.CustomArgumentsError}" Margin="0,6,0,0" TextWrapping="Wrap"
-                                       Foreground="{DynamicResource StatusBad}"
-                                       Visibility="{Binding Dpi.HasCustomArgumentsError, Converter={StaticResource BoolToVis}}" />
-                            <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"
-                                       Text="Burası Zapret'in (winws) kendi parametreleridir. Yanlış bir ayar internetini bozabilir, bozulursa FoxDPI'yı kapat ya da DPI Sıfırlama'yı kullan. Düzenlediğin ayar FoxDPI penceresinde, FoxDPI.exe'de ve hizmette bu metinle çalışır." />
-                        </StackPanel>
-                    </StackPanel>
                     <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,14,0,0"
-                               Text="Hizmet kurarsan FoxDPI, bilgisayar her açıldığında kendiliğinden başlar. Hizmet istemiyorsan Genel bakış sayfasındaki &quot;FoxDPI Başlat&quot; düğmesini kullan, ya da aşağıdaki kutuyla Windows açılınca başlat. Pencere kapanınca DPI de kapanır." />
+                               Text="FoxDPI'ı sistem hizmeti (Service) olarak kurduğunuzda, Windows her başladığında arka planda otomatik olarak çalışır. Hizmet kurmak istemiyorsanız, Genel Bakış sayfasından manuel başlatabilir veya &quot;Windows açılınca başlat&quot; seçeneğini kullanabilirsiniz." />
                     <WrapPanel Margin="0,12,0,0">
                         <Button Content="Hizmet olarak kur" Command="{Binding Dpi.InstallServiceCommand}"
                                 Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmet olarak kur" />
+                        <Button Content="{Binding Dpi.FoxDpiButtonText}" Command="{Binding Dpi.ToggleFoxDpiCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="FoxDPI'yı başlat" />
                         <Button Content="Hizmeti kaldır" Command="{Binding Dpi.RemoveServiceCommand}"
                                 Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmeti kaldır"
                                 Visibility="{Binding Dpi.IsServiceInstalled, Converter={StaticResource BoolToVis}}" />
@@ -537,14 +533,34 @@
                               Command="{Binding Dpi.ToggleAutoStartCommand}" Margin="0,16,0,0" HorizontalAlignment="Left"
                               AutomationProperties.Name="FoxDPI'yı Windows açılınca başlat" />
                     <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="28,4,0,0" TextWrapping="Wrap"
-                               Text="Hizmet kurmadan çalışır. Her girişte kendiliğinden başlar, UAC sormaz. Kapatmak için aynı kutuyu kaldır." />
+                               Text="Sistem hizmeti kurmadan, zamanlanmış görev olarak çalışır. UAC (Kullanıcı Hesabı Denetimi) uyarısı gerektirmez." />
                 </StackPanel>
                 <Border Height="1" Background="{DynamicResource Divider}" Margin="0,36,0,0" />
 
 <StackPanel Margin="0,30,0,0">
                     <TextBlock Text="DPI Sıfırlama" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını, FoxDPI'yı ve elle girilmiş DNS ayarını kaldırıp Windows'un kendi ayarlarına döner. Senin kendi GoodbyeDPI'ın da silinir. Önce neyin değişeceğini gösterir, onaylamadan hiçbir şey yapmaz. DNS ayarı ve silinen hizmetler Geri Al ile geri gelir." />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="Bu işlem, ağ ayarlarınızı temizleyerek Windows varsayılanlarına döndürür:" />
+                    <Grid Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="•" Style="{StaticResource BodyMuted}" />
+                        <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource BodyMuted}" TextWrapping="Wrap"
+                                   Text="Eski GoodbyeDPI, WinDivert, Zapret kalıntıları, FoxDPI ve manuel DNS ayarları silinir." />
+                        <TextBlock Grid.Row="1" Text="•" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Text="Değişiklikler önce ekranda listelenir, onayınız olmadan hiçbir işlem yapılmaz." />
+                        <TextBlock Grid.Row="2" Text="•" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,0"
+                                   Text="Sıfırlanan DNS ayarları ve silinen hizmetler daha sonra &quot;Geri Al&quot; ile geri yüklenebilir." />
+                    </Grid>
                     <Button Content="DPI Sıfırlama" Command="{Binding Dpi.ResetCommand}"
                             Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Margin="0,16,0,0"
                             AutomationProperties.Name="DPI Sıfırlama" />
@@ -554,11 +570,11 @@
             <StackPanel Visibility="{Binding IsAccess, Converter={StaticResource BoolToVis}}">
                 <StackPanel Margin="0,20,0,0">
                     <TextBlock Style="{StaticResource BodyMuted}" TextWrapping="Wrap"
-                               Text="Yazdığın siteler tarayıcı gibi güvenli bağlantıyla denenir ve hangisinin açıldığı gösterilir. Hiçbir şeyi değiştirmez." />
+                               Text="Belirttiğiniz web sitelerinin erişilebilirliğini güvenli bağlantı (HTTPS) üzerinden test edin. Bu işlem ağ ayarlarınızda hiçbir değişiklik yapmaz." />
                     <TextBlock Text="Siteler" Style="{StaticResource BodyMuted}" Margin="0,20,0,6" />
                     <TextBox Text="{Binding Access.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler" />
                     <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0"
-                               Text="Birden fazla siteyi virgülle ayır. Karşılaştırma için normal bir site her zaman eklenir." />
+                               Text="Birden fazla siteyi virgülle ayırarak girebilirsiniz. Karşılaştırma için normal bir site her zaman eklenir." />
                     <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                         <Button Content="Testi başlat" Command="{Binding Access.RunCommand}"
                                 Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Testi başlat" />
@@ -607,7 +623,7 @@
 
                 <StackPanel Margin="0,24,0,0">
                     <TextBlock Text="Yapılan değişiklikler" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Text="Her birini istediğin zaman geri alabilirsin." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    <TextBlock Text="Sistemde yapılan önceki değişiklikleri buradan görüntüleyebilir ve istediğiniz zaman geri alabilirsiniz." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                     <TextBlock Text="FoxFix henüz bir değişiklik yapmadı." Margin="0,12,0,0">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource BodyMuted}">
@@ -643,16 +659,16 @@
                     <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,24" />
                     <TextBlock Text="Rapor" Style="{StaticResource SectionTitle}" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="Bir arkadaşına ya da destek forumuna gönderebileceğin düz metin rapor. Kullanıcı adın, bilgisayar adın ve MAC adreslerin gizlenir." />
+                               Text="Destek talepleri için kullanılabilecek sistem durum raporu oluşturur. Varsayılan olarak kullanıcı adı, bilgisayar adı, MAC ve IP adresleri gibi hassas veriler maskelenir." />
                     <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                         <Button Content="Raporu kopyala" Command="{Binding CopyReportCommand}"
                                 Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kopyala" />
                         <Button Content="Raporu kaydet…" Command="{Binding SaveReportCommand}"
                                 Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kaydet" />
                     </StackPanel>
-                    <CheckBox Content="Kişisel bilgilerimi de göster (kullanıcı adı, bilgisayar adı, MAC ve IP). Göndermeden önce raporu oku."
+                    <CheckBox Content="Maskelemeyi devre dışı bırak (Kullanıcı adı, Bilgisayar adı, MAC ve IP adreslerini rapora dahil et)."
                               IsChecked="{Binding ShowPersonalData}"
-                              AutomationProperties.Name="Kişisel bilgilerimi de göster" />
+                              AutomationProperties.Name="Maskelemeyi devre dışı bırak" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
@@ -790,20 +806,22 @@
                     </StackPanel>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" LineHeight="22" Margin="0,18,0,0"
-                           Text="FoxDPI, açık kaynaklı GoodbyeDPI projesini kullanır. Dosyaları FoxFix'in içinde gelir ve her kullanımdan önce doğrulanır. Lisansları FoxDPI klasöründe durur." />
-                <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
-                    <Button Content="GoodbyeDPI (GitHub)" Command="{Binding Info.OpenGoodbyeDpiCommand}"
+                           Text="FoxDPI modülü, açık kaynaklı GoodbyeDPI projesini temel alır. İlgili çekirdek dosyalar FoxFix ile bütünleşik olarak gelir ve güvenlik amacıyla her başlatmada doğrulanır. Lisans dosyaları FoxDPI klasöründe yer almaktadır." />
+                <WrapPanel Margin="0,18,0,0">
+                    <Button Content="GoodbyeDPI" Command="{Binding Info.OpenGoodbyeDpiCommand}"
                             Style="{StaticResource SecondaryButton}" AutomationProperties.Name="GoodbyeDPI GitHub sayfası" />
                     <Button Content="Türkiye sürümü" Command="{Binding Info.OpenTurkeyForkCommand}"
-                            Style="{StaticResource SecondaryButton}" Margin="0" AutomationProperties.Name="GoodbyeDPI Türkiye sürümü GitHub sayfası" />
-                </StackPanel>
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="GoodbyeDPI Türkiye sürümü GitHub sayfası" />
+                    <Button Content="Hata kodları" Command="{Binding Info.OpenErrorCodesCommand}"
+                            Style="{StaticResource SecondaryButton}" ToolTip="Mesajlardaki [FX-xxxx] kodlarının anlamı" AutomationProperties.Name="Hata kodları tablosu" />
+                </WrapPanel>
                 <Border Height="1" Background="{DynamicResource Divider}" Margin="0,22,0,0" />
                 <Grid Margin="0,14,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="made by foxezol w Claude Code" VerticalAlignment="Center" />
+                    <TextBlock Text="Made by foxezol, Claude Code" VerticalAlignment="Center" />
                     <Button Grid.Column="1" Command="{Binding OpenFeedbackCommand}" Style="{StaticResource IconButton}"
                             ToolTip="Geri bildirim: Discord profilime ulaş" AutomationProperties.Name="Geri bildirim gönder">
                         <StackPanel Orientation="Horizontal">

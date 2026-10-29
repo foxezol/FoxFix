@@ -91,6 +91,9 @@ public class PersonalDataMaskerTests
     [InlineData("Maske 255.255.255.0 ve 0.0.0.0", "Maske 255.255.255.0 ve 0.0.0.0")]
     [InlineData("Genel IP 85.105.44.201 görünüyor", "Genel IP <ip> görünüyor")]
     [InlineData("Sürüm 10.0.26200.1 çalışıyor", "Sürüm 10.0.26200.1 çalışıyor")]
+    [InlineData("Modem 192.168.1.1. Sonra", "Modem <ip>. Sonra")]
+    [InlineData("Adres (85.105.44.201), DNS: 1.1.1.1.", "Adres (<ip>), DNS: 1.1.1.1.")]
+    [InlineData("1.2.3.4.5 bir sürüm numarası", "1.2.3.4.5 bir sürüm numarası")]
     public void Loopback_and_subnet_masks_say_something_about_the_diagnosis_and_stay(string text, string expected)
     {
         PersonalDataMasker.Mask(text, "", "").Should().Be(expected);

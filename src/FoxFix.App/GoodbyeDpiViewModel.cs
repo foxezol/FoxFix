@@ -30,41 +30,6 @@ public sealed class DpiChoiceStore
         }
     }
 
-    private string CustomPath => Path.Combine(Path.GetDirectoryName(_path)!, "zapret-custom.txt");
-
-    /// <summary>The Zapret setting the user edited by hand; null when there is none.</summary>
-    public string? LoadCustom()
-    {
-        try
-        {
-            return File.Exists(CustomPath) && File.ReadAllText(CustomPath).Trim() is { Length: > 0 } text ? text : null;
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            return null;
-        }
-    }
-
-    /// <summary>An empty text forgets the edited setting.</summary>
-    public void SaveCustom(string arguments)
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(arguments))
-            {
-                File.Delete(CustomPath);
-                return;
-            }
-
-            Directory.CreateDirectory(Path.GetDirectoryName(CustomPath)!);
-            File.WriteAllText(CustomPath, arguments.Trim());
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            // Only a convenience, like the choice itself.
-        }
-    }
-
     public void Save(string profileId)
     {
         try
@@ -105,13 +70,17 @@ public sealed partial class TrialRow : ObservableObject
     [ObservableProperty]
     private bool _isSelected;
 
+    /// <summary>" · google.com 34 ms" when the ping was measured.</summary>
+    private static string PingText(TrialStep step) =>
+        step.PingMs is { } ms ? $" · {GoodbyeDpiTrial.PingHost} {Math.Round(ms):0} ms" : "";
+
     public void Apply(TrialStep step)
     {
         (StatusText, Kind) = step.Status switch
         {
             TrialStatus.Testing => ("Deneniyor…", "Neutral"),
-            TrialStatus.AllOpened => ($"Hepsi açıldı ({step.Reached}/{step.Total})", "Ok"),
-            TrialStatus.SomeOpened => ($"Bir kısmı açıldı ({step.Reached}/{step.Total})", "Warn"),
+            TrialStatus.AllOpened => ($"Hepsi açıldı ({step.Reached}/{step.Total}){PingText(step)}", "Ok"),
+            TrialStatus.SomeOpened => ($"Bir kısmı açıldı ({step.Reached}/{step.Total}){PingText(step)}", "Warn"),
             TrialStatus.NothingOpened => ("Hiçbiri açılmadı", "Bad"),
             TrialStatus.FailedToStart => ("Başlamadı", "Bad"),
             _ => ("Sırada", "Neutral"),
@@ -127,7 +96,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 {
     public const string RelaunchArgument = "--foxdpi";
 
-    private static readonly string[] ResetFixIds = [DpiCleanupFix.FixId, GoodbyeDpiRemoveFix.FixIdValue, ZapretRemoveFix.FixIdValue, DnsResetFix.FixIdValue];
+    private static readonly string[] ResetFixIds = [DpiCleanupFix.FixId, GoodbyeDpiRemoveFix.FixIdValue, DnsResetFix.FixIdValue];
 
     private readonly GoodbyeDpiTrial _trial;
     private readonly GoodbyeDpiInstallFix _install;
@@ -140,10 +109,6 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     private readonly NoticeViewModel? _notice;
     private readonly FoxDpiAutoStart? _autoStart;
     private readonly FoxDpiAutoStartFix? _autoStartFix;
-    private readonly GoodbyeDpiTrial? _zapretTrial;
-    private readonly GoodbyeDpiInstallFix? _zapretInstall;
-    private readonly GoodbyeDpiTeardown? _zapretTeardown;
-    private GoodbyeDpiStatus? _lastStatus;
 
     public GoodbyeDpiViewModel(
         GoodbyeDpiTrial trial,
@@ -156,14 +121,8 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         DpiChoiceStore? choice = null,
         NoticeViewModel? notice = null,
         FoxDpiAutoStart? autoStart = null,
-        FoxDpiAutoStartFix? autoStartFix = null,
-        GoodbyeDpiTrial? zapretTrial = null,
-        GoodbyeDpiInstallFix? zapretInstall = null,
-        GoodbyeDpiTeardown? zapretTeardown = null)
+        FoxDpiAutoStartFix? autoStartFix = null)
     {
-        _zapretTrial = zapretTrial;
-        _zapretInstall = zapretInstall;
-        _zapretTeardown = zapretTeardown;
         _autoStart = autoStart;
         _autoStartFix = autoStartFix;
         _notice = notice;
@@ -177,19 +136,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         _choice = choice;
 
         _selectedProfile = GoodbyeDpiProfiles.Find(choice?.Load()) ?? GoodbyeDpiProfiles.All[0];
-        if (_selectedProfile.Engine == DpiEngines.ZapretId && zapretTrial is null)
-        {
-            _selectedProfile = GoodbyeDpiProfiles.All[0];
-        }
-
-        BuildRows(DpiEngines.Of(_selectedProfile));
-
-        // A setting edited by hand last time comes back as it was.
-        if (zapretTrial is not null && IsZapret && choice?.LoadCustom() is { } savedCustom && ZapretProfiles.Validate(savedCustom) is null)
-        {
-            CustomArguments = savedCustom;
-            IsEditingSetting = true;
-        }
+        BuildRows();
 
         // A finished install, reset or undo changes what is running, so read it again.
         flow.PropertyChanged += (_, e) =>
@@ -203,12 +150,10 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
     public const string DefaultHosts = "discord.com";
 
-    /// <summary>One row per ready-made setting of the chosen program, with the current setting picked.</summary>
-    private void BuildRows(DpiEngine engine)
+    /// <summary>One row per ready-made setting, with the current one picked.</summary>
+    private void BuildRows()
     {
-        Rows.Clear();
-
-        foreach (var profile in engine.Profiles)
+        foreach (var profile in GoodbyeDpiProfiles.All)
         {
             var row = new TrialRow(profile);
             row.PropertyChanged += (_, e) =>
@@ -221,79 +166,16 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
             Rows.Add(row);
         }
 
-        var pick = engine.Profiles.FirstOrDefault(p => p.Id == SelectedProfile.Id) ?? engine.Profiles[0];
-        Rows.First(r => r.Profile.Id == pick.Id).IsSelected = true;
-    }
-
-    /// <summary>The tick box under the Zapret list: run the setting with text the user changed.</summary>
-    [ObservableProperty]
-    private bool _isEditingSetting;
-
-    [ObservableProperty]
-    private string _customArguments = "";
-
-    partial void OnIsEditingSettingChanged(bool value)
-    {
-        if (value && CustomArguments.Length == 0)
-        {
-            CustomArguments = SelectedProfile.Arguments;
-        }
-
-        if (value)
-        {
-            _choice?.SaveCustom(CustomArguments);
-        }
-        else
-        {
-            _choice?.SaveCustom("");
-        }
-
-        OnPropertyChanged(nameof(CustomArgumentsError));
-        OnPropertyChanged(nameof(HasCustomArgumentsError));
-    }
-
-    partial void OnCustomArgumentsChanged(string value)
-    {
-        if (IsEditingSetting && ZapretProfiles.Validate(value) is null)
-        {
-            _choice?.SaveCustom(value);
-        }
-
-        OnPropertyChanged(nameof(CustomArgumentsError));
-        OnPropertyChanged(nameof(HasCustomArgumentsError));
-    }
-
-    /// <summary>Empty when the edited text can be used (or is not in use).</summary>
-    public string CustomArgumentsError => IsZapret && IsEditingSetting ? ZapretProfiles.Validate(CustomArguments) ?? "" : "";
-
-    public bool HasCustomArgumentsError => CustomArgumentsError.Length > 0;
-
-    /// <summary>What FoxDPI and the service actually run: the chosen ready-made setting, or the edited one.</summary>
-    private GoodbyeDpiProfile EffectiveProfile => IsZapret && IsEditingSetting ? ZapretProfiles.Custom(CustomArguments) : SelectedProfile;
-
-    /// <summary>Zapret is offered only when the app gave this view model a trial for it.</summary>
-    public bool HasZapret => _zapretTrial is not null;
-
-    public bool IsZapret => SelectedProfile.Engine == DpiEngines.ZapretId;
-
-    public bool IsGoodbyeDpi => !IsZapret;
-
-    /// <summary>The two-way choice above the list: which program the settings below belong to.</summary>
-    [RelayCommand(CanExecute = nameof(IsNotTesting))]
-    private void SelectEngine(string engineId)
-    {
-        var engine = engineId == DpiEngines.ZapretId ? DpiEngines.Zapret : DpiEngines.GoodbyeDpi;
-        if (engine.Id == DpiEngines.Of(SelectedProfile).Id || (engine.Id == DpiEngines.ZapretId && !HasZapret))
-        {
-            return;
-        }
-
-        ResultText = "";
-        BuildRows(engine);
+        Rows.First(r => r.Profile.Id == SelectedProfile.Id).IsSelected = true;
     }
 
     /// <summary>Raised when FoxDPI is running; the app then opens its small FoxDPI window.</summary>
     public event Action<GoodbyeDpiProfile>? FoxDpiStarted;
+
+    /// <summary>Starting takes a few seconds; these two let the app show a loading screen so nobody thinks it froze.</summary>
+    public event Action? FoxDpiStarting;
+
+    public event Action? FoxDpiStartEnded;
 
     private void Notify(string title, string message)
     {
@@ -330,12 +212,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
         _choice?.Save(value.Id);
         OnPropertyChanged(nameof(SelectedProfileTitle));
-        OnPropertyChanged(nameof(IsZapret));
-        OnPropertyChanged(nameof(IsGoodbyeDpi));
-        OnPropertyChanged(nameof(CustomArgumentsError));
-        OnPropertyChanged(nameof(HasCustomArgumentsError));
-        UpdateServiceFlag();
-        InstallServiceCommand.NotifyCanExecuteChanged();
+
     }
 
     /// <summary>Shown next to the FoxDPI button so it is clear which setting it will use.</summary>
@@ -419,15 +296,6 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         return _flow.StartSingleCommand.ExecuteAsync(FoxDpiAutoStartFix.FixIdValue);
     }
 
-    /// <summary>"Hizmeti kaldır" follows the program that is chosen.</summary>
-    private void UpdateServiceFlag()
-    {
-        if (_lastStatus is { } status)
-        {
-            IsServiceInstalled = IsZapret ? status.ZapretServiceInstalled : status.ServiceInstalled;
-        }
-    }
-
     private (GoodbyeDpiStatus? Status, string? Error) ReadStatus()
     {
         try
@@ -444,22 +312,18 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     {
         if (result.Status is not { } status)
         {
-            StatusText = $"Durum okunamadı: {result.Error}";
+            StatusText = $"{ErrorCodes.Tag(ErrorCodes.StatusUnreadable)}Durum okunamadı: {result.Error}";
             return;
         }
 
         IsActive = status.IsActive;
         IsOwnSession = _foxDpi.IsRunning;
-        _lastStatus = status;
-        UpdateServiceFlag();
+        IsServiceInstalled = status.ServiceInstalled;
 
         var profile = GoodbyeDpiProfiles.Find(status.State?.ProfileId);
         StatusText = status switch
         {
-            _ when IsOwnSession && _foxDpi.Profile is { Engine: DpiEngines.ZapretId } running => $"Zapret çalışıyor. Ayar: {running.Title}",
             { OtherRunning: true } => "Başka bir GoodbyeDPI ya da Zapret çalışıyor. FoxDPI onunla aynı anda çalışamaz.",
-            { ZapretServiceRunning: true } => "Zapret hizmet olarak çalışıyor.",
-            { ZapretServiceInstalled: true } when IsZapret => "Zapret hizmeti kurulu ama durmuş.",
             { ServiceRunning: true } => $"Hizmet olarak çalışıyor. Ayar: {profile?.Title ?? "bilinmiyor"}",
             { ManualRunning: true } => $"Çalışıyor. Ayar: {profile?.Title ?? "bilinmiyor"}",
             { ServiceInstalled: true } => $"Hizmet kurulu ama durmuş. Ayar: {profile?.Title ?? "bilinmiyor"}",
@@ -474,7 +338,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     {
         if (!_elevation.RestartElevated(argument))
         {
-            Notify("Yönetici izni", "Yönetici izni verilmedi. Hiçbir şey değişmedi.");
+            Notify("Yönetici izni", $"{ErrorCodes.Tag(ErrorCodes.AdminDenied)}Yönetici izni verilmedi. Hiçbir şey değişmedi.");
         }
     }
 
@@ -493,6 +357,10 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         TrialPercent = 0;
         TrialProgressText = "Başlıyor…";
         var clock = System.Diagnostics.Stopwatch.StartNew();
+        _trialClock = clock;
+        _stepElapsed = TimeSpan.Zero;
+        using var ticker = new CancellationTokenSource();
+        _ = TickTrialProgressAsync(ticker.Token);
         foreach (var row in Rows)
         {
             row.StatusText = "Sırada";
@@ -502,7 +370,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
         try
         {
-            var report = await (IsZapret ? _zapretTrial! : _trial).RunAsync(targets, new InlineProgress<TrialStep>(step => Show(step, clock.Elapsed)), ct);
+            var report = await _trial.RunAsync(targets, new InlineProgress<TrialStep>(step => Show(step, clock.Elapsed)), ct);
             ResultText = report.Message;
 
             if (report.Best is not null)
@@ -515,28 +383,22 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         {
             ResultText = "Deneme durduruldu.";
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            ResultText = $"{ErrorCodes.Tag(ErrorCodes.TrialFileError)}Deneme bir dosya hatasıyla durdu: {ex.Message} Bilgisayarı yeniden başlatıp tekrar dene ya da DPI Sıfırlama'yı kullan.";
+        }
         finally
         {
+            ticker.Cancel();
+            _trialClock = null;
             IsTesting = false;
             await RefreshStatusAsync();
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanInstallService))]
+    [RelayCommand(CanExecute = nameof(CanAct))]
     private Task InstallServiceAsync()
     {
-        if (IsZapret)
-        {
-            if (CustomArgumentsError.Length > 0)
-            {
-                Notify("Ayar geçersiz", CustomArgumentsError);
-                return Task.CompletedTask;
-            }
-
-            _zapretInstall!.Configure(EffectiveProfile);
-            return _flow.StartSingleCommand.ExecuteAsync(_zapretInstall.Id);
-        }
-
         _install.Configure(SelectedProfile.Id);
         return _flow.StartSingleCommand.ExecuteAsync(GoodbyeDpiInstallFix.FixIdValue);
     }
@@ -580,18 +442,20 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
     public async Task StartFoxDpiAsync()
     {
-        if (CustomArgumentsError.Length > 0)
+        FoxDpiStarting?.Invoke();
+        FoxDpiStartResult result;
+        try
         {
-            Notify("Ayar geçersiz", CustomArgumentsError);
-            return;
+            result = await _foxDpi.StartAsync(SelectedProfile, CancellationToken.None);
         }
-
-        var profile = EffectiveProfile;
-        var result = await _foxDpi.StartAsync(profile, CancellationToken.None);
+        finally
+        {
+            FoxDpiStartEnded?.Invoke();
+        }
 
         if (result.Started)
         {
-            FoxDpiStarted?.Invoke(profile);
+            FoxDpiStarted?.Invoke(SelectedProfile);
             Notify(Strings.Get(Strings.FoxDpiExplainTitle), Strings.Get(Strings.FoxDpiExplain));
         }
         else
@@ -608,15 +472,10 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         {
             await _foxDpi.StopAsync();
             await _teardown.StopAsync(CancellationToken.None);
-
-            if (_zapretTeardown is not null)
-            {
-                await _zapretTeardown.StopAsync(CancellationToken.None);
-            }
         }
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or IOException)
         {
-            Notify("FoxDPI durdurulamadı", ex.Message);
+            Notify("FoxDPI durdurulamadı", ErrorCodes.Tag(ErrorCodes.DpiStopFailed) + ex.Message);
         }
 
         await RefreshStatusAsync();
@@ -625,10 +484,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     /// <summary>Takes the installed service away again, with the usual preview and confirmation.</summary>
     [RelayCommand(CanExecute = nameof(CanRemoveService))]
     private Task RemoveServiceAsync() =>
-        _flow.StartSingleCommand.ExecuteAsync(IsZapret ? ZapretRemoveFix.FixIdValue : GoodbyeDpiRemoveFix.FixIdValue);
-
-    /// <summary>The service of whichever program is chosen; Zapret needs its own install fix.</summary>
-    private bool CanInstallService() => CanAct && (IsGoodbyeDpi || _zapretInstall is not null);
+        _flow.StartSingleCommand.ExecuteAsync(GoodbyeDpiRemoveFix.FixIdValue);
 
     private bool CanRemoveService() => IsServiceInstalled && CanAct;
     /// <summary>
@@ -638,14 +494,65 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(IsNotTesting))]
     private Task ResetAsync() => _flow.StartManyAsync(ResetFixIds);
 
+    private System.Diagnostics.Stopwatch? _trialClock;
+    private TimeSpan _stepElapsed;
+
     private void Show(TrialStep step, TimeSpan elapsed)
     {
         Rows.FirstOrDefault(r => r.Profile.Id == step.ProfileId)?.Apply(step);
 
+        // A step that only says "trying" is not progress yet; the time since the last finished one keeps counting.
+        if (step.Status is not TrialStatus.Testing and not TrialStatus.Waiting)
+        {
+            _stepElapsed = elapsed;
+        }
+
+        UpdateTrialProgress(elapsed);
+    }
+
+    /// <summary>
+    /// Between two finished settings nothing arrives for several seconds, so the bar would stand still and the time left
+    /// would not move: it looks frozen. The setting being tried counts as partly done, judged by how long the earlier ones took.
+    /// </summary>
+    private void UpdateTrialProgress(TimeSpan elapsed)
+    {
+        var total = Rows.Count;
         var tried = Rows.Count(r => r.StatusText != "Sırada" && r.StatusText != "Deneniyor…");
-        var fraction = (double)tried / Rows.Count;
+        if (total == 0)
+        {
+            return;
+        }
+
+        var inFlight = 0.0;
+        if (tried < total)
+        {
+            var average = tried > 0 ? _stepElapsed.TotalSeconds / tried : 8;
+            inFlight = Math.Min(0.9, Math.Max(0, (elapsed - _stepElapsed).TotalSeconds) / Math.Max(average, 1));
+        }
+
+        var fraction = Math.Min((tried + inFlight) / total, 0.99);
         TrialPercent = fraction * 100;
-        TrialProgressText = $"{tried} / {Rows.Count} ayar denendi · " + ProgressEstimate.Format(fraction, elapsed);
+        TrialProgressText = $"{tried} / {total} ayar denendi · " + ProgressEstimate.Format(fraction, elapsed);
+    }
+
+    private async Task TickTrialProgressAsync(CancellationToken ct)
+    {
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(300, ct);
+
+                if (_trialClock is { } clock)
+                {
+                    UpdateTrialProgress(clock.Elapsed);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // The trial ended.
+        }
     }
 
     private sealed class InlineProgress<T>(Action<T> handler) : IProgress<T>

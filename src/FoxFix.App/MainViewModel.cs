@@ -180,6 +180,34 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenFeedback() => TryOpenLink(FeedbackUrl);
 
+    /// <summary>Where the source code lives.</summary>
+    public const string RepoUrl = "https://github.com/foxezol/FoxFix";
+
+    [RelayCommand]
+    private void OpenRepo() => TryOpenLink(RepoUrl);
+
+    /// <summary>"Paylaş", then "Bağlantı kopyalandı" for a moment after the project address was put on the clipboard.</summary>
+    [ObservableProperty]
+    private string _shareRepoText = "Paylaş";
+
+    [RelayCommand]
+    private async Task ShareRepoAsync()
+    {
+        try
+        {
+            _clipboard.SetText(RepoUrl);
+            ShareRepoText = "Bağlantı kopyalandı";
+        }
+        catch (Exception ex)
+        {
+            Notice.Show("Bağlantı kopyalanamadı", ErrorCodes.Tag(ErrorCodes.ClipboardFailed) + ex.Message);
+            return;
+        }
+
+        await Task.Delay(2200);
+        ShareRepoText = "Paylaş";
+    }
+
     private void TryOpenLink(string url)
     {
         try
@@ -188,7 +216,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            Notice.Show("Bağlantı açılamadı", ex.Message);
+            Notice.Show("Bağlantı açılamadı", ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
         }
     }
     /// <summary>Off by default: the report hides user name, computer name and MAC addresses.</summary>
@@ -284,13 +312,23 @@ public sealed partial class MainViewModel : ObservableObject
         IsBusy = true;
         Rows.Clear();
         StatusText = "";
+        DiagnosisPercent = 0;
+        DiagnosisProgressText = "Başlıyor…";
+        var clock = System.Diagnostics.Stopwatch.StartNew();
         SetVerdict(VerdictState.Checking, Strings.Get(Strings.VerdictChecking), Strings.Get(Strings.VerdictCheckingDetail));
 
         try
         {
             // Not Progress<T>: it posts asynchronously, so rows could arrive after the run (or after a new run
             // cleared the list). The engine reports from the UI thread's own continuation, so inline is safe.
-            var progress = new InlineProgress<CheckReport>(r => Rows.Add(ToRow(r)));
+            var progress = new InlineProgress<CheckReport>(r =>
+            {
+                Rows.Add(ToRow(r));
+                var total = Math.Max(_engine.Count, Rows.Count);
+                var fraction = (double)Rows.Count / total;
+                DiagnosisPercent = fraction * 100;
+                DiagnosisProgressText = $"{Rows.Count} / {total} kontrol · " + ProgressEstimate.Format(fraction, clock.Elapsed);
+            });
             var report = await _engine.RunAsync(progress, CancellationToken.None);
             _lastDiagnosis = report;
 
@@ -316,6 +354,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         finally
         {
+            DiagnosisPercent = 100;
             IsBusy = false;
         }
     }
@@ -326,6 +365,13 @@ public sealed partial class MainViewModel : ObservableObject
         VerdictTitle = title;
         VerdictDetail = detail;
     }
+
+    /// <summary>0 to 100: how many of the checks have answered.</summary>
+    [ObservableProperty]
+    private double _diagnosisPercent;
+
+    [ObservableProperty]
+    private string _diagnosisProgressText = "";
 
     private bool CanRun() => !IsBusy;
 

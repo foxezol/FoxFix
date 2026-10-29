@@ -24,7 +24,6 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
     private readonly Elevation _elevation = new();
     private readonly NoticeViewModel _notice = new();
     private DpiChoiceStore? _choice;
-    private bool _withZapret;
     private FoxDpiAutoStart? _autoStart;
     private FoxDpiAutoStartFix? _autoStartFix;
     private readonly Schtasks _schtasks = new();
@@ -213,12 +212,7 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
         flow = new FixFlowViewModel(
             [new Stub(DpiCleanupFix.FixId), new GoodbyeDpiRemoveFix(status, teardown, _folder), new Stub(DnsResetFix.FixIdValue), install, .. _autoStartFix is null ? Array.Empty<IFix>() : new IFix[] { _autoStartFix }],
             new UndoJournal(Path.Combine(_root, "undo.json")), _elevation, new NoReboot());
-        var zapretTrial = _withZapret
-            ? new GoodbyeDpiTrial(
-                _payload, _launcher, _probe, _services, Path.Combine(_root, "Zapret-trial"), () => null, _ => Task.CompletedTask,
-                (_, _) => Task.CompletedTask, new Dictionary<string, string>(_payload.Hashes), DpiEngines.Zapret)
-            : null;
-        return new GoodbyeDpiViewModel(trial, install, status, teardown, foxDpi, flow, _elevation, _choice, _notice, _autoStart, _autoStartFix, zapretTrial);
+        return new GoodbyeDpiViewModel(trial, install, status, teardown, foxDpi, flow, _elevation, _choice, _notice, _autoStart, _autoStartFix);
     }
 
     [Fact]
@@ -536,146 +530,18 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
         vm.ToggleAutoStartCommand.CanExecute(null).Should().BeFalse();
     }
 
-    [Fact]
-    public void Zapret_is_only_offered_when_the_app_gives_the_view_model_a_trial_for_it()
-    {
-        Create(out _).HasZapret.Should().BeFalse();
-
-        _withZapret = true;
-        Create(out _).HasZapret.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Choosing_Zapret_swaps_the_list_to_its_settings_and_back_and_the_choice_is_remembered()
-    {
-        _withZapret = true;
-        _choice = new DpiChoiceStore(Path.Combine(_root, "choice.txt"));
-        var vm = Create(out _);
-        vm.IsGoodbyeDpi.Should().BeTrue();
-        vm.InstallServiceCommand.CanExecute(null).Should().BeTrue();
-
-        vm.SelectEngineCommand.Execute("zapret");
-
-        vm.IsZapret.Should().BeTrue();
-        vm.Rows.Select(r => r.Profile.Id).Should().Equal(ZapretProfiles.All.Select(p => p.Id));
-        vm.Rows.Count(r => r.IsSelected).Should().Be(1);
-        vm.SelectedProfile.Engine.Should().Be("zapret");
-        vm.InstallServiceCommand.CanExecute(null).Should().BeFalse("a service runs GoodbyeDPI only");
-        _choice.Load().Should().Be(vm.SelectedProfile.Id);
-
-        vm.SelectEngineCommand.Execute("goodbyedpi");
-
-        vm.IsGoodbyeDpi.Should().BeTrue();
-        vm.Rows.Should().HaveCount(GoodbyeDpiProfiles.All.Count);
-        vm.InstallServiceCommand.CanExecute(null).Should().BeTrue();
-    }
-
-    [Fact]
-    public void A_saved_Zapret_choice_opens_with_the_Zapret_list()
-    {
-        _withZapret = true;
-        _choice = new DpiChoiceStore(Path.Combine(_root, "choice.txt"));
-        _choice.Save("zapret-kablonet");
-
-        var vm = Create(out _);
-
-        vm.IsZapret.Should().BeTrue();
-        vm.SelectedProfile.Id.Should().Be("zapret-kablonet");
-        vm.Rows.Single(r => r.IsSelected).Profile.Id.Should().Be("zapret-kablonet");
-    }
-
-    [Fact]
-    public void Without_Zapret_available_a_saved_Zapret_choice_falls_back_to_GoodbyeDPI()
-    {
-        _choice = new DpiChoiceStore(Path.Combine(_root, "choice.txt"));
-        _choice.Save("zapret-kablonet");
-
-        var vm = Create(out _);
-
-        vm.IsGoodbyeDpi.Should().BeTrue();
-        vm.SelectedProfile.Id.Should().Be("turkey-1");
-    }
-
     [Theory]
     [InlineData("GoodbyeDpi.", "goodbyedpi.exe")]
-    [InlineData("Zapret.", "winws.exe")]
     public void The_files_inside_the_app_match_their_pinned_hashes(string prefix, string exe)
     {
         var folder = Path.Combine(_root, "embedded-" + prefix.TrimEnd('.'));
         Directory.CreateDirectory(folder);
         new EmbeddedGoodbyeDpiPayload(prefix).WriteTo(folder);
 
-        var hashes = prefix == "Zapret." ? ZapretFiles.Sha256 : GoodbyeDpiFiles.Sha256;
+        var hashes = GoodbyeDpiFiles.Sha256;
 
         File.Exists(Path.Combine(folder, exe)).Should().BeTrue();
         GoodbyeDpiFiles.FindProblems(folder, hashes).Should().BeEmpty();
     }
 
-    [Fact]
-    public void An_edited_Zapret_setting_is_checked_remembered_and_forgotten_again()
-    {
-        _withZapret = true;
-        _choice = new DpiChoiceStore(Path.Combine(_root, "choice.txt"));
-        var vm = Create(out _);
-        vm.SelectEngineCommand.Execute("zapret");
-
-        vm.IsEditingSetting = true;
-
-        vm.CustomArguments.Should().Be(vm.SelectedProfile.Arguments, "editing starts from the chosen setting");
-        vm.HasCustomArgumentsError.Should().BeFalse();
-        _choice.LoadCustom().Should().Be(vm.SelectedProfile.Arguments);
-
-        vm.CustomArguments = "-5 yanlış";
-
-        vm.HasCustomArgumentsError.Should().BeTrue();
-        vm.CustomArgumentsError.Should().Contain("--wf-");
-
-        vm.CustomArguments = "--wf-tcp=443 --dpi-desync=fake";
-        vm.HasCustomArgumentsError.Should().BeFalse();
-        _choice.LoadCustom().Should().Be("--wf-tcp=443 --dpi-desync=fake");
-
-        vm.IsEditingSetting = false;
-
-        _choice.LoadCustom().Should().BeNull("turning editing off forgets the text");
-        vm.HasCustomArgumentsError.Should().BeFalse();
-    }
-
-    [Fact]
-    public void A_remembered_edited_setting_comes_back_with_the_Zapret_list()
-    {
-        _withZapret = true;
-        _choice = new DpiChoiceStore(Path.Combine(_root, "choice.txt"));
-        _choice.Save("zapret-turkcell");
-        _choice.SaveCustom("--wf-tcp=443 --dpi-desync=fake");
-
-        var vm = Create(out _);
-
-        vm.IsEditingSetting.Should().BeTrue();
-        vm.CustomArguments.Should().Be("--wf-tcp=443 --dpi-desync=fake");
-    }
-
-    [Fact]
-    public async Task The_service_button_follows_the_service_of_the_chosen_program()
-    {
-        _withZapret = true;
-        var vm = Create(out _);
-        _machine.Services.Add(new ServiceEntry(ZapretLayout.ServiceName, Path.Combine(_root, "Zapret", "winws.exe"), IsDriver: false, IsRunning: false));
-        await vm.RefreshStatusAsync();
-
-        vm.IsServiceInstalled.Should().BeFalse("GoodbyeDPI has no service");
-
-        vm.SelectEngineCommand.Execute("zapret");
-
-        vm.IsServiceInstalled.Should().BeTrue();
-    }
-
-    [Fact]
-    public void FoxDPI_exe_runs_an_edited_Zapret_setting_but_never_applies_it_to_GoodbyeDPI()
-    {
-        DirectStart.Resolve("zapret-kablonet", "--wf-tcp=443 --dpi-desync=fake").Profile!.Id.Should().Be(ZapretProfiles.CustomId);
-        DirectStart.Resolve("zapret-kablonet", null).Profile!.Id.Should().Be("zapret-kablonet");
-        DirectStart.Resolve("zapret-kablonet", "yanlış").Profile!.Id.Should().Be("zapret-kablonet");
-        DirectStart.Resolve("turkey-1", "--wf-tcp=443").Profile!.Id.Should().Be("turkey-1");
-        DirectStart.Resolve(null, "--wf-tcp=443").Profile.Should().BeNull();
-    }
 }

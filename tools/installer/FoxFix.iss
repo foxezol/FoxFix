@@ -41,7 +41,6 @@ Source: "FoxFix.portable"; DestDir: "{app}"; Tasks: portable
 Source: "..\..\README.md"; DestDir: "{app}"; Flags: ignoreversion isreadme
 Source: "..\..\src\FoxFix.App\Assets\GoodbyeDpi\LICENSE-goodbyedpi.txt"; DestDir: "{app}\Licenses"; Flags: ignoreversion
 Source: "..\..\src\FoxFix.App\Assets\GoodbyeDpi\LICENSE-windivert.txt"; DestDir: "{app}\Licenses"; Flags: ignoreversion
-Source: "..\..\src\FoxFix.App\Assets\Zapret\LICENSE-splitwire-turkey.txt"; DestDir: "{app}\Licenses"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\FoxFix"; Filename: "{app}\FoxFix.exe"

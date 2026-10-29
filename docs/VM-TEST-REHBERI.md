@@ -76,7 +76,7 @@ sc query type= driver state= all | findstr /i "divert monkey" > C:\test\surucu-o
 
 **Snapshot:** `01-temiz` üzerinden devam et.
 
-1. GoodbyeDPI-Turkey klasörünü (`goodbyedpi-0.2.3rc3-turkey`) VM'ye kopyala, örneğin `C:\gdpi\` altına.
+1. GoodbyeDPI Türkiye sürümü klasörünü (`goodbyedpi-0.2.3rc3-turkey`) VM'ye kopyala, örneğin `C:\gdpi\` altına.
 2. Klasörde `service_install` ile başlayan ve `dnsredir` içeren `.cmd` dosyasını **yönetici olarak** çalıştır (varsayılan profil: `--dns-addr 77.88.8.8 --dns-port 1253`).
 3. Doğrula:
 
@@ -416,16 +416,6 @@ Bu adım Windows'ta hiç denenmedi: görevi oluşturan `schtasks` çağrısı an
 - FoxDPI kapalıyken engelli bir site "güvenli bağlantı kesildi" ya da "zaman aşımı" demeli, FoxDPI açıkken "açıldı" demeli. Sayfanın altındaki not FoxDPI'nın durumunu doğru söylemeli.
 - İnternet kapalıyken kontrol sitesi de açılmamalı ve "Normal bir site bile açılmadı" yazmalı.
 - Test sırasında **Durdur** testi bırakmalı ("Test durduruldu."). Hiçbir ayar değişmemeli.
-### 8.10 Zapret yöntemi
-Bu yöntem hiç denenmedi ve winws.exe yönetici izni ister. **Elle test edilmeli, sanal makine anlık görüntüsünde.**
-1. **DNS ve DPI** → "Yöntem" satırında **Zapret**'i seç. Liste yedi sağlayıcı ayarına dönmeli, "Hizmet olarak kur" düğmesi kaybolmalı.
-2. **En uygun ayarı bul**: her ayar için winws başlayıp kapanmalı, sonunda ayar klasörü (`...\FoxFix\Zapret-trial`) silinmiş olmalı. `sc query WinDivert` sonrası sürücü kalmışsa DPI Sıfırlama kaldırır.
-3. Bir ayar seçip Genel bakıştan **FoxDPI'yı başlat**: FoxDPI penceresi açılmalı, pencere kapanınca `winws.exe` işlemi (Görev Yöneticisi) kalmamalı.
-4. GoodbyeDPI açıkken Zapret başlamamalı (ve tersi), açık bir mesaj çıkmalı.
-5. **DPI Sıfırlama** önizlemesinde "FoxFix'in kendi Zapret kopyası" satırı görünmeli, uygulayınca `...\FoxFix\Zapret` klasörü gitmeli.
-6. Zapret seçiliyken **FoxDPI.exe** ve "Windows açılınca başlat" kutusu aynı ayarla çalışmalı.
-7. **Seçili ayarı düzenle** kutusunu işaretle: metin kutusunda seçili ayarın parametreleri çıkmalı. `--wf-` içermeyen ya da `--` ile başlamayan metinde kırmızı uyarı çıkmalı ve FoxDPI başlamamalı. Geçerli bir metinle FoxDPI penceresinde "Özel ayar" yazmalı. FoxFix'i kapatıp açınca metin geri gelmeli, kutuyu kaldırınca silinmeli.
-8. **Hizmet olarak kur** (Zapret seçiliyken): önizlemede `FoxFixZapret` hizmeti çıkmalı. Kurulunca `sc query FoxFixZapret` çalışıyor demeli ve `winws.exe` işlemi görünmeli. Windows hizmet denetimine cevap vermeyen programları bir süre sonra "başlamadı" sayabilir, öyle olursa bu yöntem çalışmıyor demektir, hizmet yerine FoxDPI penceresini kullan ve bana söyle. **Hizmeti kaldır** hizmeti ve dosyaları silmeli.
 | Kontrol | Sonuç |
 |---|---|
 | Yönetici izni ile yeniden açma, aynı sayfaya dönüyor | ☐ |
@@ -439,7 +429,6 @@ Bu yöntem hiç denenmedi ve winws.exe yönetici izni ister. **Elle test edilmel
 | DPI Sıfırlama her şeyi siliyor, DNS otomatiğe dönüyor | ☐ |
 | Windows açılınca başlat: görev oluşuyor, girişte FoxDPI geliyor, kapatınca siliniyor | ☐ |
 | Erişim testi FoxDPI açık/kapalı farkını gösteriyor | ☐ |
-| Zapret: deneme, çalıştırma, kapatınca işlem kalmıyor, sıfırlama siliyor | ☐ |
 
 ## 9. Tarayıcı eklenti düğmeleri
 
@@ -532,3 +521,11 @@ Otomatik testlerin **kapsamadığı**, burada denenmesi gerekenler:
 - UAC ile yeniden başlatma (`runas`).
 - Tarayıcıları kayıt defterinden bulup açma (`App Paths`).
 - Türkçe Windows'ta komut çıktısı/kodlama sorunu olmadığı (FoxFix çıkış kodlarını kullanır, metin ayrıştırmaz, ama test sırasında Türkçe VM'de de bir tur dene).
+
+## 12. Sonradan eklenenler (elle bakılacaklar)
+- **FoxDPI başlatma ekranı:** Genel bakıştan "FoxDPI'yı başlat" dediğinde FoxDPI logolu bir ekran çıkmalı, çubuk dolmalı, FoxDPI penceresi açılınca kaybolmalı. Başlamazsa ekran kaybolup hata mesajı çıkmalı (ekranda takılı kalmamalı).
+- **Hız testi paylaşımı:** Ölçüm bitince "Sonucu paylaş" çıkmalı, tıklayınca "PNG kopyalandı" yazmalı. Bir sohbet ya da Paint'e yapıştırınca koyu bir kart gelmeli: dört değer ve altta `github.com/foxezol/FoxFix`.
+- **Bilgi yanındaki Paylaş:** Tıklayınca GitHub adresi panoya gitmeli, düğme iki saniye "Bağlantı kopyalandı" yazmalı.
+- **Erişim testi:** microsoft.com ve google.com "kontrol" olarak en üstte gelmeli. İkisi de açılmazsa "Normal sitelerin hiçbiri açılmadı" yazmalı, biri açılırsa yazmamalı.
+- **Hata kodları:** Bilgi → "Hata kodları" tablonun GitHub sayfasını açmalı. Mesajlardaki `[FX-xxxx]` kodlarının tabloda karşılığı olmalı (`docs/HATA-KODLARI.md`).
+- **Kurulum silme:** Setup ile kurup kaldırdıktan sonra `C:\ProgramData\FoxFix` ve `%LocalAppData%\FoxFix` klasörleri kalabilir. Kalanlar zararsızdır, DPI Sıfırlama sürücüyü kaldırır.

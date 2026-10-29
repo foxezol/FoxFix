@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FoxFix.Core;
@@ -14,17 +14,19 @@ public sealed partial class SpeedTestViewModel : ObservableObject
     private static readonly CultureInfo Turkish = CultureInfo.GetCultureInfo("tr-TR");
 
     private readonly ISpeedTest _test;
+    private readonly ISpeedCardClipboard? _clipboard;
 
     private CancellationTokenSource? _cts;
 
-    public SpeedTestViewModel(ISpeedTest test)
+    public SpeedTestViewModel(ISpeedTest test, ISpeedCardClipboard? clipboard = null)
     {
         _test = test;
+        _clipboard = clipboard;
     }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanStart), nameof(CanCancel))]
-    [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(CancelCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(CancelCommand), nameof(ShareCommand))]
     private bool _isRunning;
 
     [ObservableProperty]
@@ -43,7 +45,32 @@ public sealed partial class SpeedTestViewModel : ObservableObject
     private string _jitterText = NoValue;
 
     [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ShareCommand))]
     private bool _hasResult;
+
+    /// <summary>"PNG kopyalandı" after the share button was used; empty before.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasShareStatus))]
+    private string _shareStatus = "";
+
+    public bool HasShareStatus => ShareStatus.Length > 0;
+
+    private bool CanShare() => HasResult && !IsRunning && _clipboard is not null;
+
+    /// <summary>Copies a picture of the result (with the project's address at the bottom) so it can be pasted into a chat.</summary>
+    [RelayCommand(CanExecute = nameof(CanShare))]
+    private void Share()
+    {
+        try
+        {
+            _clipboard!.Copy(new SpeedCard(DownloadText, UploadText, LatencyText, JitterText, DateTime.Now));
+            ShareStatus = "PNG kopyalandı";
+        }
+        catch (Exception ex) when (ex is System.Runtime.InteropServices.ExternalException or InvalidOperationException or System.IO.IOException)
+        {
+            ShareStatus = $"{ErrorCodes.Tag(ErrorCodes.ClipboardFailed)}Kopyalanamadı: {ex.Message}";
+        }
+    }
 
     public bool CanStart => !IsRunning;
 
@@ -57,6 +84,7 @@ public sealed partial class SpeedTestViewModel : ObservableObject
     {
         IsRunning = true;
         HasResult = false;
+        ShareStatus = "";
         DownloadText = UploadText = LatencyText = JitterText = NoValue;
         Status = Strings.Get(Strings.SpeedLatencyPhase);
 

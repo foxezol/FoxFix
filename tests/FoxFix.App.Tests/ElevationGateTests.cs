@@ -17,7 +17,7 @@ public class ElevationGateTests
     {
         var message = ElevationGate.BlockingMessage(isElevated: false);
 
-        message.Should().Be("Bu uygulama yönetici yetkileri gerektiriyor. Lütfen sağ tıklayıp 'Yönetici Olarak Çalıştır' seçeneğini kullanın. (Hata Kodu: 5)");
+        message.Should().Be("[FX-1001] Bu uygulama yönetici yetkileri gerektiriyor. Lütfen sağ tıklayıp 'Yönetici Olarak Çalıştır' seçeneğini kullanın. (Hata Kodu: 5)");
         ElevationGate.ExitCode.Should().Be(5);
     }
 }

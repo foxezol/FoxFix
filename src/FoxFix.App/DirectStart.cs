@@ -13,16 +13,8 @@ public static class DirectStart
 
     public const int ExitCodeNeedsFoxFix = 4;
 
-    /// <param name="savedCustom">The Zapret setting edited by hand; used only when the saved choice is a Zapret one and the text is usable.</param>
-    public static (GoodbyeDpiProfile? Profile, string? Error) Resolve(string? savedChoice, string? savedCustom = null)
-    {
-        if (GoodbyeDpiProfiles.Find(savedChoice) is not { } profile)
-        {
-            return (null, Strings.Get(Strings.FoxDpiNeedsFoxFix));
-        }
-
-        return profile.Engine == DpiEngines.ZapretId && ZapretProfiles.Validate(savedCustom) is null
-            ? (ZapretProfiles.Custom(savedCustom!), null)
-            : (profile, null);
-    }
+    public static (GoodbyeDpiProfile? Profile, string? Error) Resolve(string? savedChoice) =>
+        GoodbyeDpiProfiles.Find(savedChoice) is { } profile
+            ? (profile, null)
+            : (null, Strings.Get(Strings.FoxDpiNeedsFoxFix));
 }

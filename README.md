@@ -1,55 +1,62 @@
 ﻿# FoxFix
 
-Windows'ta internet, DNS ve DPI sorunlarına bakan, bulduğu sorunu önce göstererek düzelten bir araç. Arayüz Türkçe. Veri toplamaz, hiçbir yere bir şey göndermez.
+FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum:** FoxDPI (DPI aşma kısmı) test edildi ve sorunsuz çalışıyor. Diğer özellikler tam olarak test edilmedi, deneysel say. Önemli bir şeyi değiştirmeden önce önizlemeyi oku, Geri Al'ı unutma.
+> **Durum:** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer sistem optimizasyonu ve onarım özellikleri şu an için deneysel kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir.
 
-## Neye dayanıyor
+## Açık Kaynak
 
-FoxFix'in DPI kısmı kendi DPI aracı değildir. Çalışan iş [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI) ile onun Türkiye sürümü [GoodbyeDPI-Turkey](https://github.com/cagritaskn/GoodbyeDPI-Turkey) (0.2.3rc3) tarafından yapılır. İkinci yöntem olarak [Zapret](https://github.com/bol-van/zapret) (`winws`) var; dosyaları ve sağlayıcıya göre hazır ayarları [SplitWire-Turkey](https://github.com/cagritaskn/SplitWire-Turkey) 1.5.7'den alındı. FoxFix bunları uygulamanın içinde taşır ve üstüne bir arayüz koyar: senin internetinde hangi ayarın çalıştığını dener, seçilen ayarı çalıştırır, her şeyi geri alabilir. Asıl emek o projelerin sahiplerinindir.
+FoxFix'in bütün kaynak kodu bu depoda, [MIT lisansıyla](LICENSE) yayımlanmıştır. Yönetici izniyle çalışan bir program olduğu için körü körüne güvenmeniz gerekmez:
 
-> Zapret yöntemi yeni eklendi ve henüz gerçek bir bilgisayarda denenmedi. GoodbyeDPI yöntemi test edildi.
+- Kodu inceleyebilirsiniz. Sistemde değişiklik yapan her işlem `src/FoxFix.Core` altında, önizleme, onay ve Geri Al kaydıyla birlikte yer alır.
+- Kendi bilgisayarınızda derleyip kendi `exe` dosyanızı üretebilirsiniz (aşağıdaki "Geliştiriciler İçin Derleme" bölümüne bakın).
+- Uygulamanın içinde taşıdığı GoodbyeDPI ve WinDivert dosyaları SHA-256 özetleriyle sabitlenmiştir. Özetler `src/FoxFix.Core/GoodbyeDpi/Files.cs` dosyasındadır, dosyalar `src/FoxFix.App/Assets/GoodbyeDpi` klasöründedir; özetleri kendiniz hesaplayıp karşılaştırabilirsiniz. Özet tutmayan dosya çalıştırılmaz.
+- Ağa çıkan işlemler şunlarla sınırlıdır: bağlantı kontrolü (açılışta ve "Yeniden kontrol et" ile ping, DNS ve HTTPS denemesi), erişim testi ve ayar denemesi (yazdığınız siteler), hız testi (siz başlatınca, Cloudflare). Telemetri ya da istatistik gönderen bir kod yoktur.
 
-FoxFix, Claude Code ile "vibe coding" yöntemiyle yazıldı. Amaç, bu araçları kullanmayı kolaylaştırmak ve seçenekleri çeşitlendirmek.
+## Altyapı ve Teşekkür
+
+FoxFix, çekirdek bir DPI atlatma aracı değildir. Arka planda [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI) ve onun [Türkiye sürümü](https://github.com/cagritaskn/GoodbyeDPI-Turkey) (0.2.3rc3) projesini temel alır. FoxFix bu aracı entegre bir arayüzle sunar: ağınızda hangi ayarın çalıştığını dener, seçilen ayarı çalıştırır ve yapılan her değişikliği geri alınabilir tutar. Asıl teknik başarı bu açık kaynaklı projelerin geliştiricilerine aittir.
+
+Proje, karmaşık ağ araçlarının son kullanıcı için basitleştirilmesi amacıyla Claude Code ve "vibe coding" yaklaşımıyla foxezol tarafından geliştirilmiştir.
 
 Made by foxezol, Claude Code
 
-## Ne yapar
+## Temel Özellikler
 
-- **Bağlantı kontrolü:** adaptör, IP, ping, DNS ve HTTPS'i sırayla dener, neyin bozuk olduğunu söyler.
-- **DNS ve DPI:** hazır ayarları senin internetinde dener, çalışanı bulur. Yöntem olarak GoodbyeDPI ya da Zapret seçilir. İki yöntemi de hizmet olarak kurabilir ya da FoxDPI penceresiyle kurmadan çalıştırabilir. Zapret'in seçili ayarı elle düzenlenebilir. Windows açılınca kendiliğinden de başlatabilir.
-- **Erişim testi:** yazdığın sitelerin açılıp açılmadığını gösterir. FoxDPI açıkken ve kapalıyken çalıştırıp farkı görebilirsin.
-- **Bilgisayarı hızlandır:** başlangıç uygulamalarını ve temizlenebilir dosyaları listeler, seçtiklerini kaldırır.
-- **DPI Sıfırlama:** eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını ve elle girilmiş DNS'i silip Windows'un kendi ayarına döner.
-- **Rapor:** sorun anlatırken paylaşabileceğin bir metin üretir. Varsayılan olarak kullanıcı adı, bilgisayar adı, MAC ve IP adresleri gizlenir. Bilinen genel DNS adresleri (1.1.1.1, 8.8.8.8 gibi) ve 127.0.0.1 teşhis için kalır. İstersen "Kişisel bilgilerimi de göster" ile açabilirsin.
+- **Bağlantı Kontrolü:** Ağ adaptörü, IP yapılandırması, ping, DNS ve HTTPS protokollerini sırasıyla test ederek ağdaki sorunları tespit eder.
+- **DNS ve DPI:** Hazır GoodbyeDPI ayarlarını ağınızda dener (her ayar için google.com ping değeri de gösterilir) ve çalışanı bulur. Sistem hizmeti (Service) olarak veya bağımsız bir pencere üzerinden çalıştırılabilir. Windows açılınca otomatik başlatılabilir.
+- **Erişim Testi:** Belirttiğiniz web sitelerinin erişilebilirliğini güvenli bağlantı üzerinden test eder. FoxDPI açıkken ve kapalıyken çalıştırıp karşılaştırma yapabilirsiniz.
+- **Hız Testi:** İndirme, yükleme, ping ve titreşimi ölçer. Sonucu görsel olarak panoya kopyalayıp paylaşabilirsiniz.
+- **Anlaşılır Hatalar:** Bir şey ters giderse mesajın başında `[FX-xxxx]` biçiminde bir kod bulunur. Her kodun anlamı ve çözümü [docs/HATA-KODLARI.md](docs/HATA-KODLARI.md) tablosundadır.
+- **Sistem Hızlandırma:** Başlangıç uygulamalarını yönetmenizi ve gereksiz geçici dosyaları temizlemenizi sağlar.
+- **DPI Sıfırlama:** Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını ve manuel DNS girişlerini temizleyerek ağ ayarlarını Windows varsayılanlarına döndürür.
+- **Güvenli Raporlama:** Sorun tespiti için paylaşılabilir bir rapor oluşturur. Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri gibi hassas veriler varsayılan olarak maskelenir. Teşhis için yalnızca `1.1.1.1` gibi bilinen genel DNS adresleri ve `127.0.0.1` görünür bırakılır. İstendiğinde maskeleme devre dışı bırakılabilir.
 
-Sistemde bir şey değişecekse önce ne değişeceği gösterilir, sen onaylamadan uygulanmaz. Yapılanlar kaydedilir ve Geri Al ile geri alınabilir.
+**Önemli Not:** Sistemde yapılacak tüm değişiklikler öncesinde ekranda listelenir ve onayınız olmadan hiçbir işlem uygulanmaz. Yapılan değişiklikler kaydedilir ve "Geri Al" özelliği ile geri döndürülebilir.
 
-## İndirme ve kurulum
+## İndirme ve Kurulum
 
-[Releases](../../releases) sayfasında iki paket var:
+[Releases](../../releases) sayfasında iki dağıtım seçeneği bulunmaktadır:
 
-| Paket | Ne zaman |
+| Paket | Açıklama |
 |---|---|
-| **FoxFixSetup.exe** | Normal kurulum. Kurulum klasörünü sen seçersin (varsayılan `Program Files\FoxFix`). Kurulumda "Verileri kurulum klasöründe tut" kutusunu işaretlersen veriler de oraya yazılır. |
-| **FoxFix-…-tasinabilir.zip** | Kurulum yok. Bir klasöre çıkar, çalıştır. Her şey (günlük, geri alma kaydı, GoodbyeDPI kopyası) çıkardığın klasördeki `Veri` klasörüne yazılır. Klasörü silince iz kalmaz. |
+| **Standart Kurulum** (`FoxFixSetup.exe`) | Klasik kurulum sihirbazıdır (varsayılan hedef: `Program Files\FoxFix`, klasörü siz seçersiniz). Kurulum sırasında "Verileri kurulum klasöründe tut" seçeneği işaretlenirse veriler kurulum klasöründe saklanır. İşaretlenmezse veriler `%LocalAppData%\FoxFix` ve `%ProgramData%\FoxFix` dizinlerine kaydedilir. |
+| **Taşınabilir Sürüm** (`FoxFix-…-tasinabilir.zip`) | Kurulum gerektirmez. Arşivi bir klasöre çıkartıp doğrudan çalıştırabilirsiniz. İçindeki `FoxFix.portable` dosyası, tüm verilerin (günlükler, geri alma kayıtları, DPI dosyaları) programın bulunduğu dizindeki `Veri` klasöründe tutulmasını sağlar. Klasörü sildiğinizde sistemde iz kalmaz. |
 
-Kurulumsuz kullanımda (ZIP) `FoxFix.portable` dosyası `FoxFix.exe`'nin yanında durmalı, bu dosya "verileri buraya yaz" demektir. Setup'ta kutuyu işaretlemezsen veriler `%LocalAppData%\FoxFix` ve `%ProgramData%\FoxFix` altına gider.
-
-Windows SmartScreen imzasız uygulamalarda uyarı verebilir. "Ek bilgi", sonra "Yine de çalıştır" de. İstersen kaynak koddan kendin derleyebilirsin.
+**Uyarı:** Uygulama dijital olarak imzalanmadığı için Windows SmartScreen uyarısı verebilir. Devam etmek için "Ek bilgi" ardından "Yine de çalıştır" seçeneğini kullanabilirsiniz. Güvenmiyorsanız projeyi kaynak kodundan kendiniz derleyebilirsiniz.
 
 ## Kullanım
 
-1. `FoxFix.exe` ile `FoxDPI.exe` aynı klasörde dursun.
-2. İlk seferde `FoxFix.exe`'yi aç. FoxDPI.exe, FoxFix bir kez açılmadan çalışmaz.
-3. Sonrası için FoxDPI.exe yeter. FoxDPI penceresi açık olduğu sürece DPI açıktır, pencereyi kapatınca kapanır.
-4. İstersen DNS ve DPI sayfasındaki "FoxDPI'yı Windows açılınca başlat" kutusunu işaretle. Hizmet kurulmaz, zamanlanmış bir görev eklenir.
+1. `FoxFix.exe` ve `FoxDPI.exe` dosyalarının aynı dizinde bulunduğundan emin olun.
+2. İlk kullanımda mutlaka `FoxFix.exe` dosyasını çalıştırın. FoxDPI, ana uygulama bir kez açılmadan çalışmaz.
+3. Sonrasında kısıtlamaları aşmak için yalnızca `FoxDPI.exe` dosyasını çalıştırmanız yeterlidir. FoxDPI penceresi açık kaldığı sürece DPI atlatma etkindir, pencere kapatıldığında sona erer.
+4. Otomatik başlatma için "FoxDPI'yı Windows açılınca başlat" seçeneğini kullanabilirsiniz. Bu işlem bir sistem hizmeti kurmaz, standart bir zamanlanmış görev (`schtasks`) ekler.
 
-İkisi de yönetici izni ister. Windows 10 ve 11 (64 bit) için. Çalıştırmak için ayrıca .NET kurmak gerekmez.
+**Gereksinimler:** Uygulamalar yönetici hakları gerektirir. Yalnızca Windows 10 ve 11 (64 bit) desteklenir. Herhangi bir .NET çalışma zamanı kurulumu gerekmez.
 
-## Derleme
+## Geliştiriciler İçin Derleme
 
-.NET 10 SDK gerekir.
+Projeyi derlemek için .NET 10 SDK gerekir.
 
 ```
 dotnet build FoxFix.sln
@@ -57,23 +64,27 @@ dotnet test FoxFix.sln
 powershell -File tools\paketle.ps1
 ```
 
-Son komut `dist` klasörüne ZIP paketini koyar. Bilgisayarda [Inno Setup 6](https://jrsoftware.org/isinfo.php) kuruluysa `FoxFixSetup.exe` de çıkar.
+Son komut, `dist` klasöründe ZIP paketini oluşturur. Sistemde [Inno Setup 6](https://jrsoftware.org/isinfo.php) kuruluysa `FoxFixSetup.exe` kurulum dosyası da derlenir.
 
-## Elle denenmesi gerekenler
+## Manuel Test Gereksinimleri
 
-Birim testleri sistem komutlarını taklit eder. Şunlar gerçek bir Windows'ta elle denenmeden güvenilmemeli:
+Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirliği için gerçek veya sanal bir Windows ortamında elle test edilmesi gerekir:
 
-- Hizmet kurma ve kaldırma, DPI Sıfırlama (sanal makine anlık görüntüsünde dene).
-- Zapret yöntemi: ayarları deneme, FoxDPI penceresiyle ve hizmet olarak çalıştırma, ayarı elle düzenleme, DPI Sıfırlama ile kaldırma. Zapret hizmeti `sc create` ile kuruluyor; winws.exe bir Windows hizmeti gibi davranmayabilir.
-- Windows açılınca başlat kutusu: `schtasks` ile oluşturulan görevin gerçekten girişte çalıştığı.
-- Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri kutusu, kaldırma.
+- Hizmet (Service) kurma/kaldırma ve DPI Sıfırlama (sanal makine anlık görüntüsü ile test edilmesi önerilir).
+- Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
+- Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.
 
-Adımlar için `VM-TEST-REHBERI.md` dosyasına bak.
+Adım adım test yönergeleri için [docs/VM-TEST-REHBERI.md](docs/VM-TEST-REHBERI.md) dosyasına bakabilirsiniz.
 
-## Lisanslar
+## Lisans ve Telif Hakları
 
-FoxDPI, GoodbyeDPI-Turkey'in 0.2.3rc3 sürümünü, Zapret'i (`winws`, `cygwin1.dll`) ve ikisinin kullandığı WinDivert sürücüsünü uygulamanın içinde taşır. Hepsi kendi lisanslarıyla dağıtılır: `src/FoxFix.App/Assets/GoodbyeDpi/LICENSE-goodbyedpi.txt`, `LICENSE-windivert.txt` ve SplitWire-Turkey'in MIT lisansı `src/FoxFix.App/Assets/Zapret/LICENSE-splitwire-turkey.txt` (paketlerde `Licenses` klasöründe). Zapret'in kendi lisansı için [projesine](https://github.com/bol-van/zapret) bak.
+FoxFix MIT lisanslıdır. FoxDPI, GoodbyeDPI'ın Türkiye sürümünü (0.2.3rc3) ve onun kullandığı WinDivert sürücüsünü uygulamanın içinde taşır. Her bileşen kendi lisansıyla dağıtılır:
 
-## Geri bildirim
+- `LICENSE-goodbyedpi.txt`
+- `LICENSE-windivert.txt`
+
+Bu dosyalar kaynak kodda `src/FoxFix.App/Assets/GoodbyeDpi` dizininde, derlenmiş paketlerde `Licenses` klasöründe yer alır.
+
+## Geri Bildirim ve Destek
 
 [Discord](https://discord.com/users/381533632852131841)

@@ -1,3 +1,4 @@
+﻿using System.Windows.Media.Imaging;
 using FluentAssertions;
 using FoxFix.App;
 using FoxFix.Core.SpeedTest;
@@ -172,7 +173,7 @@ public class SpeedTestViewModelTests
 
         await vm.StartCommand.ExecuteAsync(null);
 
-        vm.Status.Should().Be("Hız ölçülemedi: sunucuya ulaşılamadı");
+        vm.Status.Should().Be("[FX-6001] Hız ölçülemedi: sunucuya ulaşılamadı");
         vm.HasResult.Should().BeFalse();
         vm.IsRunning.Should().BeFalse();
     }
@@ -189,5 +190,100 @@ public class SpeedTestViewModelTests
 
         vm.DownloadText.Should().Be("–");
         vm.HasResult.Should().BeFalse();
+    }
+
+    private sealed class FakeCardClipboard : ISpeedCardClipboard
+    {
+        public List<SpeedCard> Copied { get; } = [];
+
+        public Exception? Failure { get; set; }
+
+        public void Copy(SpeedCard card)
+        {
+            if (Failure is not null)
+            {
+                throw Failure;
+            }
+
+            Copied.Add(card);
+        }
+    }
+
+    [Fact]
+    public async Task Sharing_is_possible_only_after_a_result_and_copies_the_numbers_with_a_short_confirmation()
+    {
+        SynchronizationContext.SetSynchronizationContext(null);
+        var clipboard = new FakeCardClipboard();
+        var vm = new SpeedTestViewModel(new FakeSpeedTest(), clipboard);
+        vm.ShareCommand.CanExecute(null).Should().BeFalse("there is nothing to share before a test");
+
+        await vm.StartCommand.ExecuteAsync(null);
+
+        vm.ShareCommand.CanExecute(null).Should().BeTrue();
+        vm.ShareCommand.Execute(null);
+
+        vm.ShareStatus.Should().Be("PNG kopyalandı");
+        vm.HasShareStatus.Should().BeTrue();
+        var card = clipboard.Copied.Should().ContainSingle().Subject;
+        card.Download.Should().Contain("87,3");
+        card.Latency.Should().Contain("24,5");
+
+        await vm.StartCommand.ExecuteAsync(null);
+        vm.ShareStatus.Should().BeEmpty("a new test starts without the old confirmation");
+    }
+
+    [Fact]
+    public async Task A_busy_clipboard_is_reported_instead_of_crashing()
+    {
+        SynchronizationContext.SetSynchronizationContext(null);
+        var vm = new SpeedTestViewModel(new FakeSpeedTest(), new FakeCardClipboard { Failure = new System.Runtime.InteropServices.COMException("pano meşgul") });
+        await vm.StartCommand.ExecuteAsync(null);
+
+        vm.ShareCommand.Execute(null);
+
+        vm.ShareStatus.Should().StartWith("[FX-1004] Kopyalanamadı").And.Contain("pano meşgul");
+    }
+
+    [Fact]
+    public void Without_a_clipboard_service_the_share_button_stays_off()
+    {
+        new SpeedTestViewModel(new FakeSpeedTest()).ShareCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public void The_card_is_drawn_opaque_at_double_resolution_and_names_the_project()
+    {
+        BitmapSource? image = null;
+        Exception? failure = null;
+        var thread = new Thread(() =>
+        {
+            try
+            {
+                image = WpfSpeedCardClipboard.Render(new SpeedCard("24,5 Mb/sn", "3,2 Mb/sn", "87,3 ms", "21,9 ms", new DateTime(2026, 10, 29, 20, 15, 0)));
+            }
+            catch (Exception ex)
+            {
+                failure = ex;
+            }
+        });
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        thread.Join();
+
+        failure.Should().BeNull();
+
+        image.Should().NotBeNull();
+        image!.PixelWidth.Should().Be(1440);
+        image.PixelHeight.Should().BeInRange(500, 1000);
+        image.Format.Should().Be(System.Windows.Media.PixelFormats.Bgr32);
+        WpfSpeedCardClipboard.RepoText.Should().Be("github.com/foxezol/FoxFix");
+
+        if (Environment.GetEnvironmentVariable("FOXFIX_CARD_PNG") is { Length: > 0 } path)
+        {
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using var file = File.Create(path);
+            encoder.Save(file);
+        }
     }
 }

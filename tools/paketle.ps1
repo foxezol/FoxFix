@@ -28,7 +28,7 @@ Copy-Item "$stage\FoxFix.exe", "$stage\FoxDPI.exe" "$zipDir\FoxFix"
 Copy-Item "$PSScriptRoot\installer\FoxFix.portable" "$zipDir\FoxFix"
 Copy-Item "$root\README.md" "$zipDir\FoxFix"
 New-Item -ItemType Directory -Force "$zipDir\FoxFix\Licenses" | Out-Null
-Copy-Item "$root\src\FoxFix.App\Assets\GoodbyeDpi\LICENSE-*.txt", "$root\src\FoxFix.App\Assets\Zapret\LICENSE-*.txt" "$zipDir\FoxFix\Licenses"
+Copy-Item "$root\src\FoxFix.App\Assets\GoodbyeDpi\LICENSE-*.txt" "$zipDir\FoxFix\Licenses"
 $zip = Join-Path $root "dist\FoxFix-$Surum-tasinabilir.zip"
 Remove-Item $zip -ErrorAction SilentlyContinue
 Compress-Archive -Path "$zipDir\FoxFix" -DestinationPath $zip

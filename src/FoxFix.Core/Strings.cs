@@ -223,19 +223,6 @@ public static class Strings
     public const string FlowUndoUnknownFix = nameof(FlowUndoUnknownFix);
     public const string FlowNeedsAdmin = nameof(FlowNeedsAdmin);
 
-    public const string ZapretProfileTurkTelekom = nameof(ZapretProfileTurkTelekom);
-    public const string ZapretProfileTurkTelekomAlt = nameof(ZapretProfileTurkTelekomAlt);
-    public const string ZapretProfileSuperonline = nameof(ZapretProfileSuperonline);
-    public const string ZapretProfileSuperonlineAlt = nameof(ZapretProfileSuperonlineAlt);
-    public const string ZapretProfileKablonet = nameof(ZapretProfileKablonet);
-    public const string ZapretProfileTurkcell = nameof(ZapretProfileTurkcell);
-    public const string ZapretProfileVodafone = nameof(ZapretProfileVodafone);
-    public const string ZapretRemoveTitle = nameof(ZapretRemoveTitle);
-    public const string ZapretRemovePreview = nameof(ZapretRemovePreview);
-    public const string ZapretRemoveNothing = nameof(ZapretRemoveNothing);
-    public const string ZapretRemoveDone = nameof(ZapretRemoveDone);
-    public const string ZapretProfileCustom = nameof(ZapretProfileCustom);
-    public const string ZapretArgumentsInvalid = nameof(ZapretArgumentsInvalid);
     public const string DpiProfile1 = nameof(DpiProfile1);
     public const string DpiProfile2 = nameof(DpiProfile2);
     public const string DpiProfile3 = nameof(DpiProfile3);

@@ -7,7 +7,7 @@ public sealed record DpiRuntime(
     DpiEngine Engine, IGoodbyeDpiPayload Payload, IGoodbyeDpiLauncher Launcher, string Folder, IReadOnlyDictionary<string, string>? Hashes = null);
 
 /// <summary>
-/// "FoxDPI Başlat": runs GoodbyeDPI (or Zapret, depending on the chosen setting) hidden from FoxFix's own folder and keeps hold of it. It lives exactly as long as
+/// "FoxDPI Başlat": runs GoodbyeDPI hidden from FoxFix's own folder and keeps hold of it. It lives exactly as long as
 /// this object says: stopping it, or FoxFix ending, ends GoodbyeDPI, so nothing is installed and nothing is left running.
 /// </summary>
 public sealed class FoxDpiSession

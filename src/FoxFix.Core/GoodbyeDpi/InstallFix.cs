@@ -5,7 +5,7 @@ using FoxFix.Core.Safety;
 namespace FoxFix.Core.GoodbyeDpi;
 
 /// <summary>
-/// Installs FoxFix's own, hash-checked copy of GoodbyeDPI (or Zapret) with the chosen setting as a Windows service that starts
+/// Installs FoxFix's own, hash-checked copy of GoodbyeDPI with the chosen setting as a Windows service that starts
 /// with the computer. Undo removes everything again.
 /// </summary>
 public sealed class GoodbyeDpiInstallFix : IFix
@@ -72,11 +72,6 @@ public sealed class GoodbyeDpiInstallFix : IFix
             return Task.FromResult(new FixPreview([Strings.Get(Strings.GdpiBlockedForeign)], HasChanges: false));
         }
 
-        if (BlockedByRunningGoodbyeDpi(status))
-        {
-            return Task.FromResult(new FixPreview([Strings.Get(Strings.GdpiBlockedManaged)], HasChanges: false));
-        }
-
         var lines = new List<string>
         {
             Strings.Format(Strings.GdpiPreviewProfile, _profile.Title),
@@ -89,7 +84,7 @@ public sealed class GoodbyeDpiInstallFix : IFix
             lines.Add(Strings.Get(Strings.GdpiPreviewDns));
         }
 
-        if (_engine.Id == DpiEngines.GoodbyeDpiId && status.IsInstalled)
+        if (status.IsInstalled)
         {
             lines.Add(Strings.Get(Strings.GdpiPreviewReplace));
         }
@@ -105,15 +100,9 @@ public sealed class GoodbyeDpiInstallFix : IFix
             return new FixResult(false, Strings.Get(Strings.GdpiPickFirst));
         }
 
-        var current = _status.Read();
-        if (current.OtherRunning)
+        if (_status.Read().OtherRunning)
         {
             return new FixResult(false, Strings.Get(Strings.GdpiBlockedForeign));
-        }
-
-        if (BlockedByRunningGoodbyeDpi(current))
-        {
-            return new FixResult(false, Strings.Get(Strings.GdpiBlockedManaged));
         }
 
         // An earlier FoxFix install is replaced, not stacked.
@@ -151,9 +140,6 @@ public sealed class GoodbyeDpiInstallFix : IFix
         // Only FoxFix's own folder is ever touched, whatever the record says.
         await _teardown.RemoveAsync(deleteFolder: true, ct);
     }
-
-    /// <summary>Zapret and GoodbyeDPI both take over the network packets, so a Zapret service is not installed while GoodbyeDPI runs.</summary>
-    private bool BlockedByRunningGoodbyeDpi(GoodbyeDpiStatus status) => _engine.Id == DpiEngines.ZapretId && status.IsActive;
 
     private async Task<bool> StartServiceAsync(GoodbyeDpiProfile profile, CancellationToken ct)
     {

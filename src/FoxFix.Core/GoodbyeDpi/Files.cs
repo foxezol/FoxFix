@@ -89,7 +89,17 @@ public static class GoodbyeDpiFiles
     public static IReadOnlyList<string> Prepare(IGoodbyeDpiPayload payload, string folder, IReadOnlyDictionary<string, string>? expected = null)
     {
         Directory.CreateDirectory(folder);
-        payload.WriteTo(folder);
+
+        try
+        {
+            payload.WriteTo(folder);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // A file that cannot be written (a driver still loaded from here, antivirus) is only a problem if it is not
+            // already the right one; the check below decides that.
+        }
+
         return FindProblems(folder, expected);
     }
 }

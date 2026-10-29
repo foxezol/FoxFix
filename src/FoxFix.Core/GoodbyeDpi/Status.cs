@@ -8,12 +8,10 @@ public sealed record GoodbyeDpiStatus(
     bool ManualRunning,
     bool OtherRunning,
     GoodbyeDpiState? State,
-    bool OwnDriverRegistered = false,
-    bool ZapretServiceInstalled = false,
-    bool ZapretServiceRunning = false)
+    bool OwnDriverRegistered = false)
 {
-    /// <summary>FoxFix's own GoodbyeDPI (as a service or a window) or Zapret service is doing its job right now.</summary>
-    public bool IsActive => ServiceRunning || ManualRunning || ZapretServiceRunning;
+    /// <summary>FoxFix's own GoodbyeDPI (as a service or a window) is doing its job right now.</summary>
+    public bool IsActive => ServiceRunning || ManualRunning;
 
     public bool IsInstalled => ServiceInstalled || ManualRunning;
 }
@@ -39,8 +37,6 @@ public sealed class GoodbyeDpiStatusReader
         var entries = _services.GetServicesAndDrivers();
         var service = entries
             .FirstOrDefault(s => !s.IsDriver && s.Name.Equals(GoodbyeDpiLayout.ServiceName, StringComparison.OrdinalIgnoreCase));
-        var zapretService = entries
-            .FirstOrDefault(s => !s.IsDriver && s.Name.Equals(ZapretLayout.ServiceName, StringComparison.OrdinalIgnoreCase));
         var ownDriver = entries.Any(s => s.IsDriver && GoodbyeDpiLayout.IsManaged(s.PathName, GoodbyeDpiLayout.OwnRoot(_folder)));
 
         // The detector skips everything inside FoxFix's folder, so a service or program found running here belongs to someone else.
@@ -56,8 +52,6 @@ public sealed class GoodbyeDpiStatusReader
             ManualRunning: _launcher.IsRunningFromFolder(_folder),
             OtherRunning: other,
             State: GoodbyeDpiState.Read(_folder),
-            OwnDriverRegistered: ownDriver,
-            ZapretServiceInstalled: zapretService is not null,
-            ZapretServiceRunning: zapretService?.IsRunning == true);
+            OwnDriverRegistered: ownDriver);
     }
 }

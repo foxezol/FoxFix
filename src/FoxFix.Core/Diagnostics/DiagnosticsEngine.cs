@@ -15,6 +15,9 @@ public sealed class DiagnosticsEngine
 {
     private readonly IReadOnlyList<ICheck> _checks;
 
+    /// <summary>How many checks there are; a screen can show "3 / 6" while they run (a failed layer skips the rest).</summary>
+    public int Count => _checks.Count;
+
     public DiagnosticsEngine(IEnumerable<ICheck> checks)
     {
         _checks = checks.ToList();

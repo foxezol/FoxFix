@@ -4,11 +4,13 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace FoxFix.App;
 
-/// <summary>The "Bilgi" pop-up: the version and where the GoodbyeDPI project lives.</summary>
+/// <summary>The "Bilgi" pop-up: the version and where the projects FoxDPI is built on live.</summary>
 public sealed partial class InfoViewModel : ObservableObject
 {
     public const string GoodbyeDpiUrl = "https://github.com/ValdikSS/GoodbyeDPI";
     public const string TurkeyForkUrl = "https://github.com/cagritaskn/GoodbyeDPI-Turkey";
+
+    public const string ErrorCodesUrl = "https://github.com/foxezol/FoxFix/blob/main/docs/HATA-KODLARI.md";
 
     private readonly Action<string> _openLink;
 
@@ -36,4 +38,7 @@ public sealed partial class InfoViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenTurkeyFork() => _openLink(TurkeyForkUrl);
+
+    [RelayCommand]
+    private void OpenErrorCodes() => _openLink(ErrorCodesUrl);
 }

@@ -1,6 +1,6 @@
 ﻿namespace FoxFix.Core.GoodbyeDpi;
 
-/// <summary>One ready-made way of starting GoodbyeDPI (or Zapret, see <see cref="Engine"/>). The arguments come from the Turkey build's own batch files.</summary>
+/// <summary>One ready-made way of starting GoodbyeDPI . The arguments come from the Turkey build's own batch files.</summary>
 public sealed record GoodbyeDpiProfile(string Id, string TitleKey, string Arguments, bool RedirectsDns, string Engine = DpiEngines.GoodbyeDpiId)
 {
     public string Title => Strings.Get(TitleKey);
@@ -22,6 +22,5 @@ public static class GoodbyeDpiProfiles
         new("turkey-7", Strings.DpiProfile7, "--set-ttl 3", RedirectsDns: false),
     ];
 
-    /// <summary>Looks in GoodbyeDPI's settings and then in Zapret's: the ids are unique across both.</summary>
-    public static GoodbyeDpiProfile? Find(string? id) => All.Concat(ZapretProfiles.All).FirstOrDefault(p => p.Id == id);
+    public static GoodbyeDpiProfile? Find(string? id) => All.FirstOrDefault(p => p.Id == id);
 }

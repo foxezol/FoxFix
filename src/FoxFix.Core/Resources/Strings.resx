@@ -10,23 +10,23 @@
   <data name="AdapterTitle" xml:space="preserve"><value>Ağ bağlantısı</value></data>
   <data name="AdapterNoneFound" xml:space="preserve"><value>Bu bilgisayarda kablolu ya da kablosuz ağ kartı bulunamadı.</value></data>
   <data name="AdapterNoneUp" xml:space="preserve"><value>Hiçbir ağ bağlantısı açık değil. Wi-Fi kapalı ya da kablo çıkmış olabilir.</value></data>
-  <data name="AdapterOk" xml:space="preserve"><value>Ağ bağlantısı açık: {0}</value></data>
+  <data name="AdapterOk" xml:space="preserve"><value>Aktif bağlantı tespit edildi: {0}</value></data>
 
   <data name="IpConfigTitle" xml:space="preserve"><value>Modemden adres alma</value></data>
   <data name="IpConfigSkipped" xml:space="preserve"><value>Açık bir ağ bağlantısı olmadığı için atlandı.</value></data>
   <data name="IpConfigApipa" xml:space="preserve"><value>Modem bu bilgisayara adres vermedi (169.254.x.x). Modemi ya da Wi-Fi bağlantısını kontrol et.</value></data>
   <data name="IpConfigNoAddress" xml:space="preserve"><value>Açık bağlantıda geçerli bir IP adresi yok.</value></data>
   <data name="IpConfigNoGateway" xml:space="preserve"><value>IP adresi var ama modemin adresi (ağ geçidi) bulunamadı.</value></data>
-  <data name="IpConfigOk" xml:space="preserve"><value>Adres: {0}, modem: {1}</value></data>
+  <data name="IpConfigOk" xml:space="preserve"><value>Yerel IP ve modem adresi başarıyla alındı. (Adres: {0}, modem: {1})</value></data>
 
   <data name="PingTitle" xml:space="preserve"><value>Modem ve internet hattı</value></data>
-  <data name="PingOk" xml:space="preserve"><value>İnternete ulaşılıyor.</value></data>
+  <data name="PingOk" xml:space="preserve"><value>İnternet erişimi başarılı.</value></data>
   <data name="PingGatewaySilent" xml:space="preserve"><value>Modem ping'e yanıt vermiyor. Çoğu modemde böyledir, sorun sayılmaz.</value></data>
   <data name="PingGatewayOnly" xml:space="preserve"><value>Modeme ulaşılıyor ama internete çıkılamıyor.</value></data>
   <data name="PingNone" xml:space="preserve"><value>Ne modeme ne internete ulaşılabiliyor.</value></data>
 
   <data name="DnsTitle" xml:space="preserve"><value>Site adlarını bulma (DNS)</value></data>
-  <data name="DnsOk" xml:space="preserve"><value>Site adları adreslere çevriliyor.</value></data>
+  <data name="DnsOk" xml:space="preserve"><value>DNS çözümlemesi sorunsuz çalışıyor.</value></data>
   <data name="DnsLocalConfig" xml:space="preserve"><value>DNS sunucusu doğrudan sorulunca yanıt veriyor ama Windows siteleri bulamıyor. Bilgisayarın DNS ayarı bozuk.</value></data>
   <data name="DnsUdpIntercepted" xml:space="preserve"><value>DNS soruları (UDP) araya giren bir şey tarafından engelleniyor, TCP ile çalışıyor. Bunu genelde bir DPI aracı, filtre sürücüsü ya da güvenlik yazılımı yapar.</value></data>
   <data name="DnsUnreachable" xml:space="preserve"><value>DNS sunucularına hiçbir yoldan ulaşılamıyor. Güvenlik duvarını ve internet hattını kontrol et.</value></data>
@@ -36,7 +36,7 @@
   <data name="No" xml:space="preserve"><value>çalışmıyor</value></data>
 
   <data name="HttpsTitle" xml:space="preserve"><value>Güvenli bağlantı (HTTPS)</value></data>
-  <data name="HttpsOk" xml:space="preserve"><value>Güvenli bağlantılar kuruluyor.</value></data>
+  <data name="HttpsOk" xml:space="preserve"><value>HTTPS (Güvenli Bağlantı) protokolü aktif.</value></data>
   <data name="HttpsSiteBlocked" xml:space="preserve"><value>İnternet hattı çalışıyor ama siteler güvenli bağlantı kuramıyor. DPI aracı, güvenlik duvarı ya da erişim engeli yüzünden olabilir.</value></data>
   <data name="HttpsCertificate" xml:space="preserve"><value>Güvenlik sertifikaları doğrulanamıyor. Bilgisayarın tarih ve saati yanlışsa ya da antivirüs bağlantıya karışıyorsa böyle olur.</value></data>
   <data name="HttpsBroken" xml:space="preserve"><value>Hiçbir güvenli (HTTPS) bağlantı kurulamıyor. Güvenlik duvarı, proxy ya da DPI aracı engelliyor olabilir.</value></data>
@@ -50,12 +50,12 @@
 
   <data name="RebootComment" xml:space="preserve"><value>FoxFix temizliği bitirmek için bilgisayarı yeniden başlatıyor.</value></data>
   <data name="RebootScheduled" xml:space="preserve"><value>Bilgisayar {0} saniye sonra yeniden başlayacak. Vazgeçmek için "Yeniden başlatmayı iptal et"e bas.</value></data>
-  <data name="RebootScheduleFailed" xml:space="preserve"><value>Yeniden başlatma ayarlanamadı. Bilgisayarı kendin yeniden başlat.</value></data>
+  <data name="RebootScheduleFailed" xml:space="preserve"><value>[FX-4008] Yeniden başlatma ayarlanamadı. Bilgisayarı kendin yeniden başlat.</value></data>
   <data name="RebootCancelled" xml:space="preserve"><value>Yeniden başlatma iptal edildi. Temizlik, bilgisayarı yeniden başlattığında tamamlanır.</value></data>
-  <data name="RebootCancelFailed" xml:space="preserve"><value>Yeniden başlatma iptal edilemedi. Başlamış olabilir.</value></data>
+  <data name="RebootCancelFailed" xml:space="preserve"><value>[FX-4008] Yeniden başlatma iptal edilemedi. Başlamış olabilir.</value></data>
 
   <data name="ResidueTitle" xml:space="preserve"><value>Eski araçlardan kalanlar</value></data>
-  <data name="ResidueNone" xml:space="preserve"><value>Bilinen bir DPI aracı ya da kalıntısı yok.</value></data>
+  <data name="ResidueNone" xml:space="preserve"><value>Sistem eski DPI kalıntılarından temiz.</value></data>
   <data name="ResidueFound" xml:space="preserve"><value>{0} şey bulundu. Eski bir internet aracından kalan parçalar arka planda çalışıyor olabilir.</value></data>
   <data name="ResidueDnsPoisoned" xml:space="preserve"><value>DNS bu bilgisayarı gösteriyor ama yanıt verecek bir DNS programı çalışmıyor. Bu yüzden site adları çözülemiyor.</value></data>
 
@@ -89,12 +89,12 @@
   <data name="ResultDone" xml:space="preserve"><value>{0} öğe temizlendi.</value></data>
   <data name="ResultPartial" xml:space="preserve"><value>{0} öğe temizlendi, {1} öğede sorun çıktı.</value></data>
   <data name="ResultReboot" xml:space="preserve"><value> Bitirmek için bilgisayarı yeniden başlat.</value></data>
-  <data name="FailStop" xml:space="preserve"><value>{0} durdurulamadı, o yüzden silinmedi.</value></data>
+  <data name="FailStop" xml:space="preserve"><value>[FX-4005] {0} durdurulamadı, o yüzden silinmedi.</value></data>
   <data name="FailDelete" xml:space="preserve"><value>{0} silinemedi.</value></data>
   <data name="FailKill" xml:space="preserve"><value>{0} işlemi kapatılamadı.</value></data>
   <data name="UndoDescription" xml:space="preserve"><value>{0} hizmeti geri getirilebilir</value></data>
-  <data name="UndoCreateFailed" xml:space="preserve"><value>{0} hizmeti geri kurulamadı.</value></data>
-  <data name="UndoStartFailed" xml:space="preserve"><value>{0} hizmeti geri kuruldu ama başlatılamadı.</value></data>
+  <data name="UndoCreateFailed" xml:space="preserve"><value>[FX-4005] {0} hizmeti geri kurulamadı.</value></data>
+  <data name="UndoStartFailed" xml:space="preserve"><value>[FX-4005] {0} hizmeti geri kuruldu ama başlatılamadı.</value></data>
   <data name="UndoRecordBroken" xml:space="preserve"><value>Geri alma kaydı bozuk, şu alan yok: {0}</value></data>
 
   <data name="DnsRepairTitle" xml:space="preserve"><value>DNS ayarını onar</value></data>
@@ -106,11 +106,11 @@
   <data name="DnsRepairResultNothing" xml:space="preserve"><value>DNS ayarında düzeltilecek bir şey yoktu.</value></data>
   <data name="DnsRepairResultDone" xml:space="preserve"><value>{0} bağlantının DNS'i otomatiğe alındı.</value></data>
   <data name="DnsRepairResultPartial" xml:space="preserve"><value>{0} bağlantının DNS'i otomatiğe alındı, {1} sorun çıktı.</value></data>
-  <data name="DnsRepairNoBackup" xml:space="preserve"><value>{0} için eski DNS ayarı okunamadı, o yüzden değiştirilmedi.</value></data>
-  <data name="DnsRepairSetFailed" xml:space="preserve"><value>{0} için DNS ayarı değiştirilemedi.</value></data>
-  <data name="DnsRepairFlushFailed" xml:space="preserve"><value>DNS önbelleği temizlenemedi.</value></data>
+  <data name="DnsRepairNoBackup" xml:space="preserve"><value>[FX-4004] {0} için eski DNS ayarı okunamadı, o yüzden değiştirilmedi.</value></data>
+  <data name="DnsRepairSetFailed" xml:space="preserve"><value>[FX-4004] {0} için DNS ayarı değiştirilemedi.</value></data>
+  <data name="DnsRepairFlushFailed" xml:space="preserve"><value>[FX-4004] DNS önbelleği temizlenemedi.</value></data>
   <data name="DnsRepairUndoDescription" xml:space="preserve"><value>{0} bağlantısının eski DNS ayarı geri getirilebilir</value></data>
-  <data name="DnsRepairUndoFailed" xml:space="preserve"><value>{0} bağlantısının eski DNS ayarı geri yüklenemedi.</value></data>
+  <data name="DnsRepairUndoFailed" xml:space="preserve"><value>[FX-4004] {0} bağlantısının eski DNS ayarı geri yüklenemedi.</value></data>
 
 
   <data name="ReportTitle" xml:space="preserve"><value>FoxFix Teşhis Raporu</value></data>
@@ -150,10 +150,10 @@
   <data name="ReportFindingActive" xml:space="preserve"><value>çalışıyor</value></data>
   <data name="ReportFindingInactive" xml:space="preserve"><value>durmuş</value></data>
   <data name="ReportCopied" xml:space="preserve"><value>Rapor kopyalandı.</value></data>
-  <data name="ReportCopyFailed" xml:space="preserve"><value>Rapor kopyalanamadı: {0}</value></data>
+  <data name="ReportCopyFailed" xml:space="preserve"><value>[FX-1004] Rapor kopyalanamadı: {0}</value></data>
   <data name="ReportSaved" xml:space="preserve"><value>Rapor kaydedildi: {0}</value></data>
-  <data name="ReportSaveFailed" xml:space="preserve"><value>Rapor kaydedilemedi: {0}</value></data>
-  <data name="ReportBuildFailed" xml:space="preserve"><value>Rapor hazırlanamadı: {0}</value></data>
+  <data name="ReportSaveFailed" xml:space="preserve"><value>[FX-5002] Rapor kaydedilemedi: {0}</value></data>
+  <data name="ReportBuildFailed" xml:space="preserve"><value>[FX-5001] Rapor hazırlanamadı: {0}</value></data>
 
   <data name="StartupTitle" xml:space="preserve"><value>Açılışta başlayan programlar</value></data>
   <data name="StartupNoChanges" xml:space="preserve"><value>Değişiklik seçilmedi.</value></data>
@@ -162,7 +162,7 @@
   <data name="StartupPreviewNote" xml:space="preserve"><value>Hiçbir program silinmez. Buradan tekrar açabilir ya da Geri Al ile döndürebilirsin.</value></data>
   <data name="StartupResultDone" xml:space="preserve"><value>{0} programın açılış ayarı değişti.</value></data>
   <data name="StartupResultPartial" xml:space="preserve"><value>{0} programın açılış ayarı değişti, {1} sorun çıktı.</value></data>
-  <data name="StartupFailed" xml:space="preserve"><value>{0} için açılış ayarı değiştirilemedi: {1}</value></data>
+  <data name="StartupFailed" xml:space="preserve"><value>[FX-4006] {0} için açılış ayarı değiştirilemedi: {1}</value></data>
   <data name="StartupUndoDescription" xml:space="preserve"><value>{0} programının açılış ayarı geri getirilebilir</value></data>
   <data name="StartupNothingToDo" xml:space="preserve"><value>Değiştirilecek bir şey yoktu.</value></data>
 
@@ -173,17 +173,17 @@
   <data name="CleanupPreviewIrreversible" xml:space="preserve"><value>Silinen dosyalar geri getirilemez ve çöp kutusuna gitmez. Kullanımdaki dosyalar atlanır.</value></data>
   <data name="CleanupResultDone" xml:space="preserve"><value>{0} boşaltıldı.</value></data>
   <data name="CleanupResultSkipped" xml:space="preserve"><value> {0} dosya kullanımda olduğu için atlandı.</value></data>
-  <data name="CleanupFailed" xml:space="preserve"><value>{0} temizlenemedi: {1}</value></data>
+  <data name="CleanupFailed" xml:space="preserve"><value>[FX-4007] {0} temizlenemedi: {1}</value></data>
   <data name="CleanupUndoUnsupported" xml:space="preserve"><value>Disk temizliği geri alınamaz.</value></data>
 
   <data name="TargetUserTemp" xml:space="preserve"><value>Kullanıcı geçici dosyaları</value></data>
-  <data name="TargetUserTempInfo" xml:space="preserve"><value>Programların bıraktığı geçici dosyalar.</value></data>
+  <data name="TargetUserTempInfo" xml:space="preserve"><value>Uygulamalar tarafından oluşturulan geçici dosyalar.</value></data>
   <data name="TargetWindowsTemp" xml:space="preserve"><value>Windows geçici dosyaları</value></data>
-  <data name="TargetWindowsTempInfo" xml:space="preserve"><value>Windows'un ve kurulumların bıraktığı geçici dosyalar. Yönetici izni gerekir.</value></data>
+  <data name="TargetWindowsTempInfo" xml:space="preserve"><value>Windows ve kurulum dosyalarına ait kalıntılar (Yönetici izni gerektirir).</value></data>
   <data name="TargetUpdateCache" xml:space="preserve"><value>Windows Update önbelleği</value></data>
-  <data name="TargetUpdateCacheInfo" xml:space="preserve"><value>İndirilmiş güncelleme kopyaları. Gerekirse Windows yeniden indirir. Yönetici izni gerekir.</value></data>
+  <data name="TargetUpdateCacheInfo" xml:space="preserve"><value>İndirilmiş Windows güncelleme önbelleği (Yönetici izni gerektirir).</value></data>
   <data name="TargetBrowserCache" xml:space="preserve"><value>Tarayıcı önbellekleri (Chrome, Edge)</value></data>
-  <data name="TargetBrowserCacheInfo" xml:space="preserve"><value>Siteler ilk açılışta biraz yavaş yüklenir. Parolalar ve çerezler silinmez.</value></data>
+  <data name="TargetBrowserCacheInfo" xml:space="preserve"><value>Tarayıcı önbelleği (Şifreleriniz ve çerezleriniz korunur ancak sitelerin ilk açılışı biraz uzayabilir).</value></data>
   <data name="TargetRecycleBin" xml:space="preserve"><value>Çöp kutusu</value></data>
   <data name="TargetRecycleBinInfo" xml:space="preserve"><value>Çöp kutusundaki dosyalar kalıcı olarak silinir.</value></data>
 
@@ -194,7 +194,7 @@
   <data name="SpeedLive" xml:space="preserve"><value>{0}: şu an {1} Mb/sn</value></data>
   <data name="SpeedDone" xml:space="preserve"><value>Ölçüm bitti. Değerler yaklaşıktır, ağın o anki durumuna göre değişir.</value></data>
   <data name="SpeedCancelled" xml:space="preserve"><value>Ölçüm durduruldu.</value></data>
-  <data name="SpeedFailed" xml:space="preserve"><value>Hız ölçülemedi: {0}</value></data>
+  <data name="SpeedFailed" xml:space="preserve"><value>[FX-6001] Hız ölçülemedi: {0}</value></data>
   <data name="SpeedMbps" xml:space="preserve"><value>{0} Mb/sn</value></data>
   <data name="SpeedMs" xml:space="preserve"><value>{0} ms</value></data>
 
@@ -205,8 +205,8 @@
 
   <data name="VerdictChecking" xml:space="preserve"><value>Bağlantın kontrol ediliyor…</value></data>
   <data name="VerdictCheckingDetail" xml:space="preserve"><value>Yalnızca bakılıyor, hiçbir şey değişmiyor.</value></data>
-  <data name="VerdictOk" xml:space="preserve"><value>Her şey yolunda</value></data>
-  <data name="VerdictOkDetail" xml:space="preserve"><value>İnternet bağlantın düzgün çalışıyor. Düzeltilecek bir şey yok.</value></data>
+  <data name="VerdictOk" xml:space="preserve"><value>Sistem Durumu Normal</value></data>
+  <data name="VerdictOkDetail" xml:space="preserve"><value>İnternet bağlantınız sorunsuz çalışıyor. Herhangi bir onarım gerekmiyor.</value></data>
   <data name="VerdictAttention" xml:space="preserve"><value>Bağlantın çalışıyor, ama {0} şeye bakmak gerek</value></data>
   <data name="VerdictAttentionDetail" xml:space="preserve"><value>Altta ne olduğu yazıyor. "Beni Düzelt" önce neyi değiştireceğini gösterir.</value></data>
   <data name="VerdictProblem" xml:space="preserve"><value>Bir sorun var</value></data>
@@ -217,27 +217,14 @@
   <data name="FlowApplyElevatedLabel" xml:space="preserve"><value>Yönetici olarak uygula</value></data>
   <data name="FlowRestarting" xml:space="preserve"><value>Yönetici olarak yeniden açılıyor. Açılınca "Beni Düzelt"e tekrar bas.</value></data>
   <data name="FlowElevationDenied" xml:space="preserve"><value>Yönetici izni verilmedi. Hiçbir şey değişmedi.</value></data>
-  <data name="FlowPreviewFailed" xml:space="preserve"><value>Önizleme hazırlanamadı: {0}</value></data>
-  <data name="FlowApplyFailed" xml:space="preserve"><value>Uygulanırken hata çıktı: {0}</value></data>
+  <data name="FlowPreviewFailed" xml:space="preserve"><value>[FX-4001] Önizleme hazırlanamadı: {0}</value></data>
+  <data name="FlowApplyFailed" xml:space="preserve"><value>[FX-4002] Uygulanırken hata çıktı: {0}</value></data>
   <data name="FlowUndone" xml:space="preserve"><value>Geri alındı: {0}</value></data>
-  <data name="FlowUndoFailed" xml:space="preserve"><value>Geri alınamadı: {0}</value></data>
+  <data name="FlowUndoFailed" xml:space="preserve"><value>[FX-4003] Geri alınamadı: {0}</value></data>
   <data name="FlowUndoUnknownFix" xml:space="preserve"><value>Bu kayıt için geri alma işlemi bulunamadı.</value></data>
   <data name="FlowNeedsAdmin" xml:space="preserve"><value>Bu değişiklikler için yönetici izni gerekiyor.</value></data>
 
-  <data name="EngineError" xml:space="preserve"><value>Bu kontrol çalışırken hata çıktı: {0}</value></data>
-  <data name="ZapretProfileTurkTelekom" xml:space="preserve"><value>Türk Telekom</value></data>
-  <data name="ZapretProfileTurkTelekomAlt" xml:space="preserve"><value>Türk Telekom, alternatif</value></data>
-  <data name="ZapretProfileSuperonline" xml:space="preserve"><value>Superonline</value></data>
-  <data name="ZapretProfileSuperonlineAlt" xml:space="preserve"><value>Superonline, alternatif</value></data>
-  <data name="ZapretProfileKablonet" xml:space="preserve"><value>Kablonet</value></data>
-  <data name="ZapretProfileTurkcell" xml:space="preserve"><value>Turkcell Hotspot</value></data>
-  <data name="ZapretProfileVodafone" xml:space="preserve"><value>Vodafone Hotspot</value></data>
-  <data name="ZapretRemoveTitle" xml:space="preserve"><value>Zapret&apos;ı kaldır</value></data>
-  <data name="ZapretRemovePreview" xml:space="preserve"><value>FoxFix&apos;in kendi Zapret kopyası durdurulur ve dosyaları silinir.</value></data>
-  <data name="ZapretRemoveNothing" xml:space="preserve"><value>FoxFix&apos;in kendi Zapret kopyası yok, değişecek bir şey yok.</value></data>
-  <data name="ZapretRemoveDone" xml:space="preserve"><value>FoxFix&apos;in Zapret kopyası kaldırıldı.</value></data>
-  <data name="ZapretProfileCustom" xml:space="preserve"><value>Özel ayar</value></data>
-  <data name="ZapretArgumentsInvalid" xml:space="preserve"><value>Ayar tek satır olmalı, -- ile başlamalı ve en az bir --wf-tcp ya da --wf-udp içermeli.</value></data>
+  <data name="EngineError" xml:space="preserve"><value>[FX-6002] Bu kontrol çalışırken hata çıktı: {0}</value></data>
   <data name="DpiProfile1" xml:space="preserve"><value>Standart (-5, TTL 5, DNS yönlendirme)</value></data>
   <data name="DpiProfile2" xml:space="preserve"><value>Yalnızca -5, DNS yönlendirme yok</value></data>
   <data name="DpiProfile3" xml:space="preserve"><value>TTL 3 ve DNS yönlendirme</value></data>
@@ -247,23 +234,23 @@
   <data name="DpiProfile7" xml:space="preserve"><value>Yalnızca TTL 3, DNS yönlendirme yok</value></data>
   <data name="GdpiInstallTitle" xml:space="preserve"><value>FoxDPI kurulumu</value></data>
   <data name="GdpiPickFirst" xml:space="preserve"><value>Önce bir ayar seç.</value></data>
-  <data name="GdpiBlockedForeign" xml:space="preserve"><value>Başka bir GoodbyeDPI ya da Zapret çalışıyor. İkisi aynı anda çalışamaz. Önce DPI Sıfırlama&apos;yı kullan ya da onu kendin kapat.</value></data>
-  <data name="GdpiBlockedManaged" xml:space="preserve"><value>FoxDPI şu an çalışıyor. Denemeden önce FoxDPI penceresini kapat ya da hizmeti durdur.</value></data>
+  <data name="GdpiBlockedForeign" xml:space="preserve"><value>[FX-2005] Başka bir GoodbyeDPI ya da Zapret çalışıyor. İkisi aynı anda çalışamaz. Önce DPI Sıfırlama&apos;yı kullan ya da onu kendin kapat.</value></data>
+  <data name="GdpiBlockedManaged" xml:space="preserve"><value>[FX-2006] FoxDPI şu an çalışıyor. Denemeden önce FoxDPI penceresini kapat ya da hizmeti durdur.</value></data>
   <data name="GdpiPreviewProfile" xml:space="preserve"><value>Ayar: {0}</value></data>
   <data name="GdpiPreviewFiles" xml:space="preserve"><value>FoxDPI dosyaları {0} klasörüne kopyalanır. Dosyaların bozulmadığı SHA-256 özetiyle doğrulanır.</value></data>
   <data name="GdpiPreviewService" xml:space="preserve"><value>Windows hizmeti kurulur ve başlatılır. Bilgisayar açılınca kendiliğinden başlar.</value></data>
   <data name="GdpiPreviewDns" xml:space="preserve"><value>Bu ayar DNS isteklerini Yandex DNS&apos;e (77.88.8.8, port 1253) yönlendirir. Windows&apos;taki DNS ayarına dokunmaz.</value></data>
   <data name="GdpiPreviewReplace" xml:space="preserve"><value>FoxFix ile daha önce kurulan FoxDPI önce kaldırılır.</value></data>
   <data name="GdpiPreviewDriver" xml:space="preserve"><value>FoxDPI ağ paketlerini okumak için WinDivert sürücüsünü yükler. Antivirüs uyarı verebilir.</value></data>
-  <data name="GdpiFilesBroken" xml:space="preserve"><value>Dosyalar doğrulanamadı ({0}). Kurulum durduruldu, hiçbir şey değişmedi.</value></data>
-  <data name="GdpiServiceFailed" xml:space="preserve"><value>Hizmet kurulamadı ya da başlamadı. Yapılan her şey geri alındı.</value></data>
+  <data name="GdpiFilesBroken" xml:space="preserve"><value>[FX-2001] Dosyalar doğrulanamadı ({0}). Kurulum durduruldu, hiçbir şey değişmedi.</value></data>
+  <data name="GdpiServiceFailed" xml:space="preserve"><value>[FX-2007] Hizmet kurulamadı ya da başlamadı. Yapılan her şey geri alındı.</value></data>
   <data name="GdpiServiceDisplayName" xml:space="preserve"><value>FoxDPI</value></data>
   <data name="GdpiResultService" xml:space="preserve"><value>FoxDPI hizmet olarak kuruldu ve çalışıyor. Ayar: {0}</value></data>
   <data name="GdpiUndoDescription" xml:space="preserve"><value>FoxDPI kurulumu ({0})</value></data>
   <data name="TrialNotNeeded" xml:space="preserve"><value>Hedef sitelerin hepsi şu an zaten açılıyor. FoxDPI&apos;ya gerek yok.</value></data>
   <data name="TrialFound" xml:space="preserve"><value>En uygun ayar: {0}. {2} sitenin {1} tanesi açıldı.</value></data>
   <data name="TrialNothingHelped" xml:space="preserve"><value>Denenen ayarların hiçbiri siteleri açmadı. Başka bir yöntem gerekebilir.</value></data>
-  <data name="TrialCouldNotStart" xml:space="preserve"><value>FoxDPI başlayamadı. Antivirüs ya da Güvenli Önyükleme engelliyor olabilir. Kaspersky kuruluysa onu kaldırman gerekir.</value></data>
+  <data name="TrialCouldNotStart" xml:space="preserve"><value>[FX-2009] FoxDPI başlayamadı. Antivirüs ya da Güvenli Önyükleme engelliyor olabilir. Kaspersky kuruluysa onu kaldırman gerekir.</value></data>
   <data name="DnsOkManagedRedirect" xml:space="preserve"><value>DNS çalışıyor. DNS isteklerini FoxDPI yönlendiriyor.</value></data>
   <data name="DnsResetTitle" xml:space="preserve"><value>DNS&apos;i Windows varsayılanına al</value></data>
   <data name="DnsResetNothing" xml:space="preserve"><value>Elle girilmiş DNS yok, DNS zaten Windows&apos;un varsayılanında.</value></data>
@@ -274,26 +261,26 @@
   <data name="GdpiRemoveDone" xml:space="preserve"><value>FoxDPI kaldırıldı.</value></data>
   <data name="GdpiRemovePartial" xml:space="preserve"><value>FoxDPI kaldırıldı. Birkaç dosya yeniden başlatmaya kadar kalabilir.</value></data>
   <data name="GdpiRemoveUndoUnsupported" xml:space="preserve"><value>Bu işlem geri alınamaz. FoxDPI bölümünden yeniden kurabilirsin.</value></data>
-  <data name="FoxDpiAlreadyRunning" xml:space="preserve"><value>FoxDPI zaten çalışıyor.</value></data>
-  <data name="FoxDpiStartFailed" xml:space="preserve"><value>FoxDPI başlatılamadı: {0}</value></data>
+  <data name="FoxDpiAlreadyRunning" xml:space="preserve"><value>[FX-2006] FoxDPI zaten çalışıyor.</value></data>
+  <data name="FoxDpiStartFailed" xml:space="preserve"><value>[FX-2002] FoxDPI başlatılamadı: {0}</value></data>
   <data name="FoxDpiStarted" xml:space="preserve"><value>FoxDPI aktif.</value></data>
-  <data name="FoxDpiNotRunning" xml:space="preserve"><value>FoxDPI başlamadı. Antivirüs engelliyor olabilir.</value></data>
+  <data name="FoxDpiNotRunning" xml:space="preserve"><value>[FX-2003] FoxDPI başlamadı. Antivirüs engelliyor olabilir.</value></data>
   <data name="ReportDnsStatic" xml:space="preserve"><value>DNS: {0} (elle girilmiş)</value></data>
   <data name="ReportDnsAutomatic" xml:space="preserve"><value>DNS: {0} (modemden)</value></data>
   <data name="CleanupProgress" xml:space="preserve"><value>{0} / {1} silindi</value></data>
-  <data name="FoxDpiNeedsFoxFix" xml:space="preserve"><value>FoxDPI&apos;yı ilk kez kullanmadan önce FoxFix&apos;i bir kez açman gerekiyor. FoxFix&apos;i aç, ayarını seç, sonra FoxDPI.exe ile istediğin zaman başlatabilirsin.</value></data>
+  <data name="FoxDpiNeedsFoxFix" xml:space="preserve"><value>[FX-2012] FoxDPI&apos;yı ilk kez kullanmadan önce FoxFix&apos;i bir kez açman gerekiyor. FoxFix&apos;i aç, ayarını seç, sonra FoxDPI.exe ile istediğin zaman başlatabilirsin.</value></data>
   <data name="FoxDpiExplainTitle" xml:space="preserve"><value>FoxDPI açıldı</value></data>
   <data name="FoxDpiExplain" xml:space="preserve"><value>FoxDPI ayrı bir pencerede çalışıyor. Pencereyi küçültürsen bildirim alanına gider, kapatırsan DPI de kapanır. Bundan sonra FoxFix&apos;i açmadan da FoxDPI.exe ile başlatabilirsin. Ayarları FoxFix&apos;ten yaparsın.</value></data>
   <data name="AutoStartTitle" xml:space="preserve"><value>FoxDPI&apos;yı Windows açılınca başlat</value></data>
   <data name="AutoStartAlreadyOn" xml:space="preserve"><value>Windows açılınca başlatma zaten açık.</value></data>
   <data name="AutoStartAlreadyOff" xml:space="preserve"><value>Windows açılınca başlatma zaten kapalı.</value></data>
-  <data name="AutoStartNoPath" xml:space="preserve"><value>FoxFix&apos;in yeri bulunamadı, o yüzden görev kurulamadı.</value></data>
+  <data name="AutoStartNoPath" xml:space="preserve"><value>[FX-3002] FoxFix&apos;in yeri bulunamadı, o yüzden görev kurulamadı.</value></data>
   <data name="AutoStartPreviewOn" xml:space="preserve"><value>Windows&apos;a girince FoxDPI kendiliğinden başlayacak. Bunun için &quot;{0}&quot; adlı bir zamanlanmış görev eklenir. Yönetici izniyle çalışır, her girişte UAC sormaz.</value></data>
   <data name="AutoStartPreviewPath" xml:space="preserve"><value>FoxFix&apos;in şu anki yeri kullanılır: {0}. Klasörü taşırsan bu ayarı yeniden yapman gerekir.</value></data>
   <data name="AutoStartPreviewOff" xml:space="preserve"><value>Windows açılınca FoxDPI başlamayacak. &quot;{0}&quot; zamanlanmış görevi silinir.</value></data>
   <data name="AutoStartResultOn" xml:space="preserve"><value>Windows açılınca FoxDPI başlayacak.</value></data>
   <data name="AutoStartResultOff" xml:space="preserve"><value>FoxDPI artık Windows açılınca başlamayacak.</value></data>
-  <data name="AutoStartFailed" xml:space="preserve"><value>Zamanlanmış görev ayarlanamadı: {0}</value></data>
+  <data name="AutoStartFailed" xml:space="preserve"><value>[FX-3001] Zamanlanmış görev ayarlanamadı: {0}</value></data>
   <data name="AutoStartUndoOn" xml:space="preserve"><value>FoxDPI&apos;nın Windows açılınca başlaması geri alınabilir</value></data>
   <data name="AutoStartUndoOff" xml:space="preserve"><value>FoxDPI&apos;nın Windows açılınca başlamaması geri alınabilir</value></data>
 </root>

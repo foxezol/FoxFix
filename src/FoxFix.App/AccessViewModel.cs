@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FoxFix.Core.GoodbyeDpi;
@@ -40,6 +40,9 @@ public sealed partial class AccessRow : ObservableObject
 /// <summary>"Erişim testi": tries the user's sites and says which open. It only looks and changes nothing.</summary>
 public sealed partial class AccessViewModel : ObservableObject
 {
+    /// <summary>Ordinary sites that open on any working connection; they show whether the internet itself is fine.</summary>
+    private static readonly Uri[] Controls = [TrialTargets.Control, new("https://www.google.com/")];
+
     private readonly AccessTester _tester;
     private readonly GoodbyeDpiViewModel? _dpi;
 
@@ -76,8 +79,8 @@ public sealed partial class AccessViewModel : ObservableObject
     /// <summary>Tells whether FoxDPI is on, so the result is not read the wrong way round.</summary>
     public string DpiNote => _dpi?.IsActive switch
     {
-        true => "FoxDPI açık. Açılmayan site varsa FoxDPI'ya rağmen açılmıyor demektir.",
-        false => "FoxDPI kapalı. Sonucu FoxDPI açıkken bir de bu şekilde karşılaştırabilirsin.",
+        true => "Şu anda FoxDPI aktif. Açılmayan bir site varsa FoxDPI'ya rağmen erişilemiyor demektir.",
+        false => "Şu anda FoxDPI devre dışı. Kesin bir karşılaştırma için FoxDPI aktifken testi tekrarlayabilirsiniz.",
         null => "",
     };
 
@@ -91,15 +94,15 @@ public sealed partial class AccessViewModel : ObservableObject
             return;
         }
 
-        var all = new List<Uri> { TrialTargets.Control };
-        all.AddRange(sites);
+        var all = new List<Uri>(Controls);
+        all.AddRange(sites.Where(s => Controls.All(c => c.Host != s.Host)));
 
         IsRunning = true;
         SummaryText = "";
         Rows.Clear();
         foreach (var site in all)
         {
-            Rows.Add(new AccessRow(site.Host, site == TrialTargets.Control));
+            Rows.Add(new AccessRow(site.Host, Controls.Contains(site)));
         }
 
         OnPropertyChanged(nameof(HasRows));
@@ -112,6 +115,11 @@ public sealed partial class AccessViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
+            foreach (var row in Rows.Where(r => r.StatusText == "Deneniyor…"))
+            {
+                row.StatusText = "durduruldu";
+            }
+
             SummaryText = "Test durduruldu.";
         }
         finally
@@ -125,12 +133,19 @@ public sealed partial class AccessViewModel : ObservableObject
 
     private void Summarize(IReadOnlyList<AccessResult> results)
     {
-        var control = results[0];
-        var sites = results.Skip(1).ToList();
+        var controls = results.Take(Controls.Length).ToList();
+        var sites = results.Skip(Controls.Length).ToList();
 
-        if (!control.Opened)
+        // One ordinary site may be down on its own; only when none opens is it the connection.
+        if (controls.All(c => !c.Opened))
         {
-            SummaryText = "Normal bir site bile açılmadı. Sorun sitelerde değil, internet bağlantında olabilir. Bağlantı kontrolünü dene.";
+            SummaryText = "Normal sitelerin hiçbiri açılmadı. Sorun sitelerde değil, internet bağlantında olabilir. Bağlantı kontrolünü dene.";
+            return;
+        }
+
+        if (sites.Count == 0)
+        {
+            SummaryText = "Normal siteler açılıyor.";
             return;
         }
 

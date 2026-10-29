@@ -24,7 +24,8 @@ public enum TrialConclusion
     Blocked,
 }
 
-public sealed record TrialStep(string ProfileId, TrialStatus Status, int Reached, int Total);
+/// <param name="PingMs">The average ping to google.com while this setting was on; null when it was not measured or did not answer.</param>
+public sealed record TrialStep(string ProfileId, TrialStatus Status, int Reached, int Total, double? PingMs = null);
 
 public sealed record ProfileResult(GoodbyeDpiProfile Profile, TrialStatus Status, int Reached, int Total, bool ControlOk, TimeSpan Elapsed);
 
@@ -72,6 +73,8 @@ public sealed class GoodbyeDpiTrial
 {
     private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(6);
 
+    public const string PingHost = "google.com";
+
     private readonly IGoodbyeDpiPayload _payload;
     private readonly IGoodbyeDpiLauncher _launcher;
     private readonly IHttpsProbe _probe;
@@ -82,6 +85,7 @@ public sealed class GoodbyeDpiTrial
     private readonly string _folder;
     private readonly IReadOnlyDictionary<string, string>? _expectedHashes;
     private readonly DpiEngine _engine;
+    private readonly ILatencyProbe? _latency;
 
     public static readonly TimeSpan StartupWait = TimeSpan.FromSeconds(3);
     public static readonly TimeSpan SettleWait = TimeSpan.FromSeconds(1);
@@ -97,8 +101,10 @@ public sealed class GoodbyeDpiTrial
         Func<CancellationToken, Task> flushDns,
         Func<TimeSpan, CancellationToken, Task>? delay = null,
         IReadOnlyDictionary<string, string>? expectedHashes = null,
-        DpiEngine? engine = null)
+        DpiEngine? engine = null,
+        ILatencyProbe? latency = null)
     {
+        _latency = latency;
         _engine = engine ?? DpiEngines.GoodbyeDpi;
         _expectedHashes = expectedHashes;
         _payload = payload;
@@ -199,7 +205,15 @@ public sealed class GoodbyeDpiTrial
             clock.Stop();
 
             var status = reached == targets.Count ? TrialStatus.AllOpened : reached > 0 ? TrialStatus.SomeOpened : TrialStatus.NothingOpened;
-            return Done(profile, status, reached, targets.Count, controlOk, clock.Elapsed, progress);
+
+            // How fast the connection is with this setting on: only worth a number when something opened.
+            double? ping = null;
+            if (_latency is not null && reached > 0)
+            {
+                ping = await _latency.AverageMillisecondsAsync(PingHost, 4, TimeSpan.FromSeconds(2), ct);
+            }
+
+            return Done(profile, status, reached, targets.Count, controlOk, clock.Elapsed, progress, ping);
         }
         catch (Exception ex) when (ex is InvalidOperationException or Win32Exception or IOException)
         {
@@ -225,9 +239,9 @@ public sealed class GoodbyeDpiTrial
     }
 
     private static ProfileResult Done(
-        GoodbyeDpiProfile profile, TrialStatus status, int reached, int total, bool controlOk, TimeSpan elapsed, IProgress<TrialStep>? progress)
+        GoodbyeDpiProfile profile, TrialStatus status, int reached, int total, bool controlOk, TimeSpan elapsed, IProgress<TrialStep>? progress, double? ping = null)
     {
-        progress?.Report(new TrialStep(profile.Id, status, reached, total));
+        progress?.Report(new TrialStep(profile.Id, status, reached, total, ping));
         return new ProfileResult(profile, status, reached, total, controlOk, elapsed);
     }
 

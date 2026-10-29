@@ -15,13 +15,8 @@ public sealed record DpiEngine(
 public static class DpiEngines
 {
     public const string GoodbyeDpiId = "goodbyedpi";
-    public const string ZapretId = "zapret";
 
     public static DpiEngine GoodbyeDpi { get; } = new(
         GoodbyeDpiId, GoodbyeDpiLayout.ExeName, "goodbyedpi", GoodbyeDpiProfiles.All, GoodbyeDpiFiles.Sha256, (_, profile) => profile.Arguments);
 
-    public static DpiEngine Zapret { get; } = new(
-        ZapretId, ZapretLayout.ExeName, "winws", ZapretProfiles.All, ZapretFiles.Sha256, ZapretLayout.BuildArguments);
-
-    public static DpiEngine Of(GoodbyeDpiProfile profile) => profile.Engine == ZapretId ? Zapret : GoodbyeDpi;
 }

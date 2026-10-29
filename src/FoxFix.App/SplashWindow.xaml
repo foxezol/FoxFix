@@ -8,11 +8,13 @@
     <Border BorderBrush="{DynamicResource Divider}" BorderThickness="1">
         <Grid>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Image Source="Assets/FoxLogo.png" Height="118" RenderOptions.BitmapScalingMode="HighQuality"
+                <Image x:Name="Logo" Source="Assets/FoxLogo.png" Height="118" RenderOptions.BitmapScalingMode="HighQuality"
                        HorizontalAlignment="Center" />
-                <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="Bold"
+                <TextBlock x:Name="TitleText" Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="Bold"
                            HorizontalAlignment="Center" Margin="0,18,0,0" />
-                <ProgressBar IsIndeterminate="True" Width="120" Height="3" Margin="0,22,0,0" />
+                <TextBlock x:Name="SubtitleText" Visibility="Collapsed" Foreground="{DynamicResource Muted}" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                <ProgressBar x:Name="Bar" Minimum="0" Maximum="1" Value="0" Width="160" Height="3" Margin="0,22,0,0"
+                             Foreground="{DynamicResource Accent}" Background="{DynamicResource Divider}" BorderThickness="0" />
             </StackPanel>
         </Grid>
     </Border>
