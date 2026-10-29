@@ -1,0 +1,886 @@
+﻿<Window x:Class="FoxFix.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FoxFix.App"
+        Title="FoxFix" Height="780" Width="1000" MinWidth="780" MinHeight="540"
+        Icon="Assets/FoxFix.ico"
+        Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
+        FontFamily="{StaticResource UiFont}" FontSize="14"
+        TextOptions.TextFormattingMode="Display">
+    <Window.Resources>
+        <DataTemplate x:Key="StartupRow">
+            <CheckBox IsChecked="{Binding IsEnabled}" Margin="0,6,0,0" AutomationProperties.Name="{Binding Name}">
+                <StackPanel Orientation="Horizontal">
+                    <!-- The program's own icon; its first letter on a plain tile when it has none -->
+                    <Grid Width="28" Height="28" Margin="4,0,12,0" VerticalAlignment="Center">
+                        <Border CornerRadius="6" Background="{DynamicResource ButtonSecondary}"
+                                Visibility="{Binding HasIcon, Converter={StaticResource InverseBoolToVis}}">
+                            <TextBlock Text="{Binding Initial}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource Muted}" />
+                        </Border>
+                        <Image Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}" />
+                    </Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock>
+                            <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text="  yönetici izni gerekir" Foreground="{DynamicResource Muted}" FontSize="12"
+                                 x:Name="AdminTag" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding Command}" Style="{StaticResource BodyMuted}" FontSize="12"
+                                   TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="560" />
+                    </StackPanel>
+                </StackPanel>
+            </CheckBox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NeedsAdmin}" Value="False">
+                    <Setter TargetName="AdminTag" Property="Text" Value="" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="220" />
+        <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- ============ SIDEBAR: the product's name and the six places, always in view ============ -->
+    <Border Background="{DynamicResource Card}">
+        <DockPanel Margin="14,22,14,18">
+            <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0">
+                <Button Command="{Binding Info.OpenCommand}" Style="{StaticResource NavItem}" HorizontalAlignment="Left"
+                        ToolTip="Sürüm, yapımcı ve kullanılan açık kaynak proje" AutomationProperties.Name="Bilgi">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Width="15" Height="15" Stretch="Uniform"
+                              Data="M8,1.5 A6.5,6.5 0 1 0 8,14.5 A6.5,6.5 0 1 0 8,1.5 M8,7 L8,11.2 M8,4.6 L8,4.7"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
+                              StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                        <TextBlock Text="Bilgi" Margin="9,0,0,0" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="8,0,0,26">
+                    <Image Source="Assets/FoxLogo.png" Height="40" RenderOptions.BitmapScalingMode="HighQuality"
+                           AutomationProperties.Name="FoxFix logosu" />
+                    <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
+                               Margin="10,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Button Content="Genel bakış" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Home}"
+                        AutomationProperties.Name="Genel bakış">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHome}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Bağlantı kontrolü" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}"
+                        AutomationProperties.Name="Bağlantı kontrolü">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsConnection}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Bilgisayarı hızlandır" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Speedup}"
+                        AutomationProperties.Name="Bilgisayarı hızlandır">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSpeedup}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="DNS ve DPI" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}"
+                        AutomationProperties.Name="DNS ve DPI">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDnsDpi}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Erişim testi" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Access}"
+                        AutomationProperties.Name="Erişim testi">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsAccess}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Rapor ve geçmiş" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Report}"
+                        AutomationProperties.Name="Rapor ve geçmiş">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsReport}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+        </DockPanel>
+    </Border>
+
+    <ScrollViewer x:Name="Scroller" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="PageHost" MaxWidth="740" Margin="36,28,36,40">
+            <StackPanel.RenderTransform>
+                <TranslateTransform />
+            </StackPanel.RenderTransform>
+
+            <TextBlock Text="{Binding PageTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold"
+                       AutomationProperties.LiveSetting="Polite"
+                       Visibility="{Binding ShowBack, Converter={StaticResource BoolToVis}}" />
+
+            <!-- Short messages; changes, restarts and results open as pop-ups in the middle of the window (below) -->
+            <TextBlock Text="{Binding StatusText}" Style="{StaticResource BodyMuted}" Margin="0,14,0,0"
+                       Visibility="{Binding HasStatusText, Converter={StaticResource BoolToVis}}" />
+
+            <!-- ============ HOME ============ -->
+            <StackPanel Visibility="{Binding IsHome, Converter={StaticResource BoolToVis}}">
+
+                <!-- The one statement the screen is about -->
+                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                    <Border Style="{StaticResource VerdictBar}" Width="12" Height="12" CornerRadius="6"
+                            VerticalAlignment="Center" Margin="0,3,12,0" />
+                    <TextBlock Text="{Binding VerdictTitle}" FontFamily="{StaticResource DisplayFont}"
+                               FontSize="26" FontWeight="SemiBold" TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+                <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource BodyMuted}" Margin="24,6,0,0" />
+                <ProgressBar IsIndeterminate="True" Height="3" Margin="24,16,0,0" Foreground="{DynamicResource Accent}"
+                             Background="{DynamicResource Divider}" BorderThickness="0"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+                <StackPanel Orientation="Horizontal" Margin="24,20,0,0">
+                    <Button Content="Beni Düzelt" Command="{Binding RepairPicker.OpenCommand}"
+                            Style="{StaticResource HeroButton}" AutomationProperties.Name="Beni Düzelt" />
+                    <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Yeniden kontrol et" />
+                </StackPanel>
+
+                <!-- The line from this computer to the internet: the layers really are a sequence -->
+                <TextBlock Text="Bağlantı hattı" Style="{StaticResource BodyMuted}" Margin="0,44,0,12"
+                           Visibility="{Binding HasRows, Converter={StaticResource BoolToVis}}" />
+                <ItemsControl ItemsSource="{Binding Rows}" Visibility="{Binding HasRows, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,0,10,0">
+                                <Grid.RenderTransform>
+                                    <TranslateTransform />
+                                </Grid.RenderTransform>
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.32" />
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
+                                                                 From="8" To="0" Duration="0:0:0.32">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
+                                <Rectangle Height="2" Fill="{DynamicResource Divider}" VerticalAlignment="Top" Margin="0,13,0,0" />
+                                <StackPanel>
+                                    <Border Style="{StaticResource StatusDot}" Width="28" Height="28" CornerRadius="14"
+                                            HorizontalAlignment="Left" Background="{DynamicResource Background}" BorderThickness="2"
+                                            AutomationProperties.Name="{Binding StatusLabel}">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Canvas Width="16" Height="16">
+                                                <Path Style="{StaticResource StatusPath}" Data="{Binding Icon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Border>
+                                    <TextBlock Text="{Binding Title}" FontWeight="SemiBold" Margin="0,10,0,0" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding StatusLabel}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,2,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- The numbers, as type -->
+                <Grid Margin="0,44,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Speed.DownloadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="İndirme" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="{Binding Speed.UploadText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="Yükleme" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="{Binding Speed.LatencyText}" FontFamily="{StaticResource DisplayFont}" FontSize="30" FontWeight="SemiBold" />
+                        <TextBlock Text="Ping" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0">
+                    <Run Text="Titreşim:" />
+                    <Run Text="{Binding Speed.JitterText, Mode=OneWay}" />
+                </TextBlock>
+                <ProgressBar IsIndeterminate="True" Height="4" Margin="0,16,0,0" Foreground="{DynamicResource Accent}"
+                             Background="{DynamicResource Divider}" BorderThickness="0"
+                             Visibility="{Binding Speed.IsRunning, Converter={StaticResource BoolToVis}}" />
+                <TextBlock Text="{Binding Speed.Status}" Style="{StaticResource BodyMuted}" Margin="0,8,0,0"
+                           AutomationProperties.LiveSetting="Polite" />
+                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                    <Button Content="Hız testini başlat" Command="{Binding Speed.StartCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini başlat" />
+                    <Button Content="Durdur" Command="{Binding Speed.CancelCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini durdur" />
+                </StackPanel>
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,2,0,0"
+                           Text="Cloudflare'in hız testi sunucusuna bağlanır. Hızına göre yüzlerce MB veri kullanabilir. Sunucu yalnızca IP adresini görür." />
+
+                <!-- FoxDPI: one calm card, one action. It is closed by closing its own window, so there is no stop here -->
+                <Border Background="{DynamicResource Card}" CornerRadius="14" Padding="22,18" Margin="0,40,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Image Source="Assets/FoxDpiLogo.png" Height="42" Margin="0,0,16,0" RenderOptions.BitmapScalingMode="HighQuality"
+                                   AutomationProperties.Name="FoxDPI logosu" />
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="FoxDPI" FontFamily="{StaticResource DisplayFont}" FontSize="20" FontWeight="SemiBold" />
+                                <TextBlock Margin="0,2,0,0" AutomationProperties.LiveSetting="Polite">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource BodyMuted}">
+                                            <Setter Property="Text" Value="Kapalı" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Dpi.IsActive}" Value="True">
+                                                    <Setter Property="Text" Value="Açık" />
+                                                    <Setter Property="Foreground" Value="{DynamicResource StatusOk}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="{Binding Dpi.FoxDpiButtonText}" Command="{Binding Dpi.ToggleFoxDpiCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="FoxDPI'yı başlat ya da penceresini göster" />
+                            <Button Content="DPI Ayarları" Command="{Binding OpenPageCommand}"
+                                    CommandParameter="{x:Static local:AppPage.DnsDpi}" Style="{StaticResource SecondaryButton}"
+                                    Margin="0" AutomationProperties.Name="DPI ayarları" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- ============ CONNECTION ============ -->
+            <StackPanel Visibility="{Binding IsConnection, Converter={StaticResource BoolToVis}}">
+                <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+                    <Button Content="Beni Düzelt" Command="{Binding RepairPicker.OpenCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Beni Düzelt" />
+                    <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Yeniden kontrol et" />
+                </StackPanel>
+                <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Foreground="{DynamicResource Accent}"
+                             Background="{DynamicResource Divider}" BorderThickness="0"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}" />
+                <TextBlock Text="{Binding VerdictTitle}" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
+                           TextWrapping="Wrap" Margin="0,20,0,0" />
+                <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+
+                <!-- The diagnosis, as a rail: the layers really are a sequence -->
+                <StackPanel Margin="0,28,0,0" Visibility="{Binding HasRows, Converter={StaticResource BoolToVis}}">
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="44" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Rectangle Width="2" Fill="{DynamicResource Divider}" HorizontalAlignment="Center" />
+                                    <Border Style="{StaticResource StatusDot}" Width="28" Height="28" CornerRadius="14"
+                                            VerticalAlignment="Top" HorizontalAlignment="Center"
+                                            Background="{DynamicResource Background}" BorderThickness="2"
+                                            AutomationProperties.Name="{Binding StatusLabel}">
+                                        <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Canvas Width="16" Height="16">
+                                                <Path Style="{StaticResource StatusPath}" Data="{Binding Icon}" />
+                                            </Canvas>
+                                        </Viewbox>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="0,2,0,22">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="15" />
+                                        <TextBlock Text="{Binding Summary}" TextWrapping="Wrap" Margin="0,3,0,0" LineHeight="21" />
+                                        <TextBlock Text="{Binding Detail}" Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                                                   FontSize="12.5"
+                                                   Visibility="{Binding HasDetail, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ============ SPEEDUP ============ -->
+            <StackPanel Visibility="{Binding IsSpeedup, Converter={StaticResource BoolToVis}}">
+
+                <!-- Startup programs -->
+                <StackPanel Margin="0,24,0,0">
+                    <TextBlock Text="Açılışta başlayan programlar" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="Bilgisayar açılınca kendiliğinden başlayan programlar. İşaretini kaldırdığın program açılışta başlamaz, silinmez. Ne olduğunu bilmediğin bir programa dokunma." />
+
+                    <TextBlock Text="{Binding Startup.LoadError}" Foreground="{DynamicResource StatusBad}" Margin="0,10,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding Startup.HasLoadError, Converter={StaticResource BoolToVis}}" />
+                    <TextBlock Text="Listelenecek bir program yok." Style="{StaticResource BodyMuted}" Margin="0,12,0,0"
+                               Visibility="{Binding Startup.IsEmpty, Converter={StaticResource BoolToVis}}" />
+
+                    <Expander Header="{Binding Startup.EnabledHeader}" Style="{StaticResource FoldSection}">
+                        <ItemsControl ItemsSource="{Binding Startup.EnabledItems}" ItemTemplate="{StaticResource StartupRow}" />
+                    </Expander>
+                    <Expander Header="{Binding Startup.DisabledHeader}" Style="{StaticResource FoldSection}">
+                        <ItemsControl ItemsSource="{Binding Startup.DisabledItems}" ItemTemplate="{StaticResource StartupRow}" />
+                    </Expander>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="Değişiklikleri uygula" Command="{Binding Startup.ApplyCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Açılış değişikliklerini uygula" />
+                        <Button Content="Listeyi yenile" Command="{Binding Startup.RefreshCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Listeyi yenile" />
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Disk cleanup -->
+                <StackPanel Style="{StaticResource Section}">
+                    <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,24" />
+                    <TextBlock Text="Disk temizliği" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="Önce her birinin ne kadar yer tuttuğunu görürsün, sen seçersin. Silinenler geri getirilemez ve çöp kutusuna gitmez." />
+
+                    <ItemsControl ItemsSource="{Binding Cleanup.Items}" Margin="0,8,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,8,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox IsChecked="{Binding IsSelected}" AutomationProperties.Name="{Binding Title}" Margin="0">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                                            <TextBlock Text="{Binding Description}" Style="{StaticResource BodyMuted}" FontSize="12" />
+                                        </StackPanel>
+                                    </CheckBox>
+                                    <TextBlock Grid.Column="1" Text="{Binding SizeText}" FontFamily="{StaticResource DisplayFont}"
+                                               FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,0,0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Margin="0,14,0,0" Style="{StaticResource BodyMuted}">
+                        <Run Text="Seçilenlerin toplamı:" />
+                        <Run Text="{Binding Cleanup.SelectedTotalText, Mode=OneWay}" />
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Content="Seçilenleri temizle" Command="{Binding Cleanup.CleanCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Seçilenleri temizle" />
+                        <Button Content="Boyutları yeniden hesapla" Command="{Binding Cleanup.ScanCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Boyutları yeniden hesapla" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- ============ DNS AND DPI ============ -->
+            <StackPanel Visibility="{Binding IsDnsDpi, Converter={StaticResource BoolToVis}}">
+
+                <!-- GoodbyeDPI: find the setting that works on this connection, then install it -->
+                <StackPanel Margin="0,20,0,0">
+                    <TextBlock Text="FoxDPI" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="FoxDPI, engelli sitelerin açılmasını sağlar. Açık kaynaklı GoodbyeDPI (Türkiye sürümü 0.2.3rc3) ve Zapret üzerine kuruludur, ikisinin de dosyalarını taşır. Önce senin internetinde hangi ayarın çalıştığını dener, sonra kurar ya da başlatır." />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,4,0,0" Text="GoodbyeDPI, Zapret ve WinDivert kendi lisanslarıyla dağıtılır. Lisans dosyaları FoxDPI klasöründe durur." />
+                    <TextBlock Text="{Binding Dpi.StatusText}" Margin="0,12,0,0" FontWeight="SemiBold" TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite" />
+
+                    <StackPanel Visibility="{Binding Dpi.NeedsElevation, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Style="{StaticResource BodyMuted}" Margin="0,12,0,0"
+                                   Text="Denemek ve kurmak için yönetici izni gerekir. Uygulama yönetici olarak yeniden açılır ve bu sayfaya döner." />
+                        <Button Content="Yönetici olarak yeniden aç" Command="{Binding Dpi.ElevateCommand}"
+                                Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
+                                AutomationProperties.Name="Yönetici olarak yeniden aç" />
+                    </StackPanel>
+
+                    <TextBlock Text="Denenecek siteler" Style="{StaticResource BodyMuted}" Margin="0,20,0,6" />
+                    <TextBox Text="{Binding Dpi.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler"
+                             IsEnabled="{Binding Dpi.CanAct}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0"
+                               Text="Birden fazla siteyi virgülle ayır. Her ayar için bu siteler açılmayı dener, kontrol için bir de normal bir site denenir. Deneme birkaç dakika sürer, bu sırada internet kısa süre kesilebilir." />
+
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="En uygun ayarı bul" Command="{Binding Dpi.RunTrialCommand}"
+                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="En uygun ayarı bul" />
+                        <Button Content="Durdur" Command="{Binding Dpi.RunTrialCancelCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Denemeyi durdur" />
+                    </StackPanel>
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Dpi.TrialPercent}" Height="4" Margin="0,14,0,0"
+                                 Foreground="{DynamicResource Accent}" Background="{DynamicResource Divider}" BorderThickness="0"
+                                 Visibility="{Binding Dpi.IsTesting, Converter={StaticResource BoolToVis}}"
+                                 AutomationProperties.Name="Deneme ilerlemesi" />
+                    <TextBlock Text="{Binding Dpi.TrialProgressText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0"
+                               Visibility="{Binding Dpi.IsTesting, Converter={StaticResource BoolToVis}}" />
+
+                    <TextBlock Text="{Binding Dpi.ResultText}" Margin="0,12,0,0" TextWrapping="Wrap" LineHeight="21"
+                               AutomationProperties.LiveSetting="Polite"
+                               Visibility="{Binding Dpi.HasResult, Converter={StaticResource BoolToVis}}" />
+
+                    <!-- Which program the settings below belong to -->
+                    <StackPanel Visibility="{Binding Dpi.HasZapret, Converter={StaticResource BoolToVis}}" Margin="0,18,0,0">
+                        <TextBlock Text="Yöntem" Style="{StaticResource BodyMuted}" Margin="0,0,0,6" />
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton GroupName="engine" Content="GoodbyeDPI" Margin="0,0,22,0"
+                                         IsChecked="{Binding Dpi.IsGoodbyeDpi, Mode=OneWay}"
+                                         Command="{Binding Dpi.SelectEngineCommand}" CommandParameter="goodbyedpi"
+                                         AutomationProperties.Name="GoodbyeDPI" />
+                            <RadioButton GroupName="engine" Content="Zapret"
+                                         IsChecked="{Binding Dpi.IsZapret, Mode=OneWay}"
+                                         Command="{Binding Dpi.SelectEngineCommand}" CommandParameter="zapret"
+                                         AutomationProperties.Name="Zapret" />
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Dpi.IsZapret, Converter={StaticResource BoolToVis}}"
+                                   Text="Zapret, GoodbyeDPI'dan farklı bir yöntemle çalışır. GoodbyeDPI işe yaramadıysa onu dene. Ayarlar internet sağlayıcına göre ayrılmıştır." />
+                    </StackPanel>
+                    <!-- The settings, one per line: pick the one to install -->
+                    <ItemsControl ItemsSource="{Binding Dpi.Rows}" Margin="0,14,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <RadioButton GroupName="gdpi" IsChecked="{Binding IsSelected}" Margin="0,6" AutomationProperties.Name="{Binding Title}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" />
+                                            <TextBlock Text="  önerilen" Foreground="{DynamicResource AccentText}" FontWeight="SemiBold"
+                                                       Visibility="{Binding IsBest, Converter={StaticResource BoolToVis}}" />
+                                        </StackPanel>
+                                    </RadioButton>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="8" Height="8" Margin="0,0,8,0">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Fill" Value="{DynamicResource StatusNeutral}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Kind}" Value="Ok"><Setter Property="Fill" Value="{DynamicResource StatusOk}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Kind}" Value="Warn"><Setter Property="Fill" Value="{DynamicResource StatusWarn}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Kind}" Value="Bad"><Setter Property="Fill" Value="{DynamicResource StatusBad}" /></DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource BodyMuted}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <!-- Zapret: run the chosen setting with text the user changed -->
+                    <StackPanel Visibility="{Binding Dpi.IsZapret, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
+                        <CheckBox Content="Seçili ayarı düzenle" IsChecked="{Binding Dpi.IsEditingSetting}" HorizontalAlignment="Left"
+                                  AutomationProperties.Name="Seçili ayarı düzenle" />
+                        <StackPanel Visibility="{Binding Dpi.IsEditingSetting, Converter={StaticResource BoolToVis}}">
+                            <TextBox Text="{Binding Dpi.CustomArguments, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0"
+                                     TextWrapping="Wrap" AcceptsReturn="False" AutomationProperties.Name="Zapret ayarı" />
+                            <TextBlock Text="{Binding Dpi.CustomArgumentsError}" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource StatusBad}"
+                                       Visibility="{Binding Dpi.HasCustomArgumentsError, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Text="Burası Zapret'in (winws) kendi parametreleridir. Yanlış bir ayar internetini bozabilir, bozulursa FoxDPI'yı kapat ya da DPI Sıfırlama'yı kullan. Düzenlediğin ayar FoxDPI penceresinde, FoxDPI.exe'de ve hizmette bu metinle çalışır." />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,14,0,0"
+                               Text="Hizmet kurarsan FoxDPI, bilgisayar her açıldığında kendiliğinden başlar. Hizmet istemiyorsan Genel bakış sayfasındaki &quot;FoxDPI Başlat&quot; düğmesini kullan, ya da aşağıdaki kutuyla Windows açılınca başlat. Pencere kapanınca DPI de kapanır." />
+                    <WrapPanel Margin="0,12,0,0">
+                        <Button Content="Hizmet olarak kur" Command="{Binding Dpi.InstallServiceCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmet olarak kur" />
+                        <Button Content="Hizmeti kaldır" Command="{Binding Dpi.RemoveServiceCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmeti kaldır"
+                                Visibility="{Binding Dpi.IsServiceInstalled, Converter={StaticResource BoolToVis}}" />
+                        <Button Content="Durdur" Command="{Binding Dpi.StopCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="FoxDPI durdur" />
+                    </WrapPanel>
+                    <CheckBox Content="FoxDPI'yı Windows açılınca başlat" IsChecked="{Binding Dpi.IsAutoStart, Mode=OneWay}"
+                              Command="{Binding Dpi.ToggleAutoStartCommand}" Margin="0,16,0,0" HorizontalAlignment="Left"
+                              AutomationProperties.Name="FoxDPI'yı Windows açılınca başlat" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="28,4,0,0" TextWrapping="Wrap"
+                               Text="Hizmet kurmadan çalışır. Her girişte kendiliğinden başlar, UAC sormaz. Kapatmak için aynı kutuyu kaldır." />
+                </StackPanel>
+                <Border Height="1" Background="{DynamicResource Divider}" Margin="0,36,0,0" />
+
+<StackPanel Margin="0,30,0,0">
+                    <TextBlock Text="DPI Sıfırlama" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını, FoxDPI'yı ve elle girilmiş DNS ayarını kaldırıp Windows'un kendi ayarlarına döner. Senin kendi GoodbyeDPI'ın da silinir. Önce neyin değişeceğini gösterir, onaylamadan hiçbir şey yapmaz. DNS ayarı ve silinen hizmetler Geri Al ile geri gelir." />
+                    <Button Content="DPI Sıfırlama" Command="{Binding Dpi.ResetCommand}"
+                            Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Margin="0,16,0,0"
+                            AutomationProperties.Name="DPI Sıfırlama" />
+                </StackPanel>
+            </StackPanel>
+            <!-- ============ ACCESS TEST ============ -->
+            <StackPanel Visibility="{Binding IsAccess, Converter={StaticResource BoolToVis}}">
+                <StackPanel Margin="0,20,0,0">
+                    <TextBlock Style="{StaticResource BodyMuted}" TextWrapping="Wrap"
+                               Text="Yazdığın siteler tarayıcı gibi güvenli bağlantıyla denenir ve hangisinin açıldığı gösterilir. Hiçbir şeyi değiştirmez." />
+                    <TextBlock Text="Siteler" Style="{StaticResource BodyMuted}" Margin="0,20,0,6" />
+                    <TextBox Text="{Binding Access.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,6,0,0"
+                               Text="Birden fazla siteyi virgülle ayır. Karşılaştırma için normal bir site her zaman eklenir." />
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="Testi başlat" Command="{Binding Access.RunCommand}"
+                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Testi başlat" />
+                        <Button Content="Durdur" Command="{Binding Access.RunCancelCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Testi durdur" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Access.SummaryText}" Margin="0,16,0,0" FontWeight="SemiBold" TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite" />
+                    <ItemsControl ItemsSource="{Binding Access.Rows}" Margin="0,10,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Host}" />
+                                        <TextBlock Text="  kontrol" Style="{StaticResource BodyMuted}" FontSize="12" VerticalAlignment="Center"
+                                                   Visibility="{Binding IsControl, Converter={StaticResource BoolToVis}}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Ellipse Width="8" Height="8" Margin="0,0,8,0">
+                                            <Ellipse.Style>
+                                                <Style TargetType="Ellipse">
+                                                    <Setter Property="Fill" Value="{DynamicResource StatusNeutral}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Kind}" Value="Ok"><Setter Property="Fill" Value="{DynamicResource StatusOk}" /></DataTrigger>
+                                                        <DataTrigger Binding="{Binding Kind}" Value="Bad"><Setter Property="Fill" Value="{DynamicResource StatusBad}" /></DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Ellipse.Style>
+                                        </Ellipse>
+                                        <TextBlock Text="{Binding StatusText}" Style="{StaticResource BodyMuted}" />
+                                        <TextBlock Text="{Binding ElapsedText, StringFormat=' · {0}'}" Style="{StaticResource BodyMuted}" />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{Binding Access.DpiNote}" Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,16,0,0" TextWrapping="Wrap" />
+                </StackPanel>
+            </StackPanel>
+            <!-- ============ REPORT AND HISTORY ============ -->
+            <StackPanel Visibility="{Binding IsReport, Converter={StaticResource BoolToVis}}">
+
+                <StackPanel Margin="0,24,0,0">
+                    <TextBlock Text="Yapılan değişiklikler" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="Her birini istediğin zaman geri alabilirsin." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    <TextBlock Text="FoxFix henüz bir değişiklik yapmadı." Margin="0,12,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyMuted}">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Fix.HasUndoItems}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{Binding Fix.UndoItems}" Margin="0,12,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" LineHeight="21" />
+                                    <Button Grid.Column="1" Content="Geri Al" Margin="16,0,0,0"
+                                            Style="{StaticResource SecondaryButton}"
+                                            Command="{Binding DataContext.Fix.UndoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Section}">
+                    <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,24" />
+                    <TextBlock Text="Rapor" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="Bir arkadaşına ya da destek forumuna gönderebileceğin düz metin rapor. Kullanıcı adın, bilgisayar adın ve MAC adreslerin gizlenir." />
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Button Content="Raporu kopyala" Command="{Binding CopyReportCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kopyala" />
+                        <Button Content="Raporu kaydet…" Command="{Binding SaveReportCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kaydet" />
+                    </StackPanel>
+                    <CheckBox Content="Kişisel bilgilerimi de göster (kullanıcı adı, bilgisayar adı, MAC ve IP). Göndermeden önce raporu oku."
+                              IsChecked="{Binding ShowPersonalData}"
+                              AutomationProperties.Name="Kişisel bilgilerimi de göster" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+
+    <!-- ============ CHANGES: preview, apply, result, restart (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Fix.IsPanelVisible, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="#99000000" />
+        <Border Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="1" CornerRadius="16"
+                Padding="26" MaxWidth="580" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="620">
+                <StackPanel>
+                    <TextBlock Text="Şu değişiklikler yapılacak" Style="{StaticResource SectionTitle}" FontSize="22"
+                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Fix.ProgressPercent}"
+                                 IsIndeterminate="{Binding Fix.IsIndeterminate}" Margin="0,8,0,0"
+                                 Visibility="{Binding Fix.IsBusy, Converter={StaticResource BoolToVis}}"
+                                 AutomationProperties.Name="İşlem ilerlemesi" />
+                    <TextBlock Text="{Binding Fix.ProgressText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,4"
+                               AutomationProperties.LiveSetting="Off"
+                               Visibility="{Binding Fix.HasProgressText, Converter={StaticResource BoolToVis}}" />
+
+                    <ItemsControl ItemsSource="{Binding Fix.PreviewLines}" Margin="0,10,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Text}" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}"
+                                               Margin="0,12,0,2" TextWrapping="Wrap"
+                                               Visibility="{Binding IsHeader, Converter={StaticResource BoolToVis}}" />
+                                    <TextBlock Text="{Binding Text, StringFormat='•  {0}'}" TextWrapping="Wrap" Margin="0,3"
+                                               LineHeight="21"
+                                               Visibility="{Binding IsBullet, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <TextBlock Text="{Binding Fix.AdminNote, StringFormat='ℹ  {0}'}" Foreground="{DynamicResource AccentText}"
+                               Margin="0,12,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+
+                    <TextBlock Text="{Binding Fix.Message}" TextWrapping="Wrap" Margin="0,12,0,0" LineHeight="21"
+                               Visibility="{Binding Fix.ShowPanelMessage, Converter={StaticResource BoolToVis}}" />
+
+                    <!-- A finished change that needs a restart -->
+                    <StackPanel Margin="0,18,0,0" Visibility="{Binding Fix.ShowRebootBanner, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Yeniden başlatma gerekiyor" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                        <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
+                                   Text="Sürücünün bellekten inmesi için bilgisayarı yeniden başlat. İstersen buradan başlatabilirsin." />
+                        <Button Content="Şimdi yeniden başlat" Command="{Binding Fix.RestartNowCommand}"
+                                Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
+                                AutomationProperties.Name="Şimdi yeniden başlat" />
+                    </StackPanel>
+
+                    <StackPanel Margin="0,18,0,0" Visibility="{Binding Fix.RebootScheduled, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Yeniden başlatma planlandı" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                        <Button Content="Yeniden başlatmayı iptal et" Command="{Binding Fix.CancelRestartCommand}"
+                                Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
+                                AutomationProperties.Name="Yeniden başlatmayı iptal et" />
+                    </StackPanel>
+
+                    <Border Height="1" Background="{DynamicResource Divider}" Margin="0,18,0,6"
+                            Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+
+                    <CheckBox Content="Yukarıdaki değişiklikleri okudum, onaylıyorum."
+                              IsChecked="{Binding Fix.IsConfirmed}"
+                              AutomationProperties.Name="Değişiklikleri onaylıyorum"
+                              Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+
+                    <CheckBox Content="Temizlik bitince bilgisayarı kendiliğinden yeniden başlat. 20 saniye geri sayar, iptal edebilirsin."
+                              IsChecked="{Binding Fix.AutoRestart}"
+                              AutomationProperties.Name="Kendiliğinden yeniden başlat"
+                              Visibility="{Binding Fix.ShowAutoRestartOption, Converter={StaticResource BoolToVis}}">
+                        <CheckBox.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap" />
+                            </Style>
+                        </CheckBox.Resources>
+                    </CheckBox>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Content="{Binding Fix.ApplyLabel}" Command="{Binding Fix.ApplyCommand}"
+                                Style="{StaticResource PrimaryButton}"
+                                Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+                        <Button Content="Kapat" Command="{Binding Fix.CancelCommand}"
+                                Style="{StaticResource SecondaryButton}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+
+    <!-- ============ MESSAGE (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Notice.IsOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="#99000000" MouseDown="OnNoticeBackdropMouseDown" />
+        <Border Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="1" CornerRadius="16"
+                Padding="26" MaxWidth="460" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <TextBlock Text="{Binding Notice.Title}" Style="{StaticResource SectionTitle}" FontSize="20"
+                           AutomationProperties.LiveSetting="Assertive" />
+                <TextBlock Text="{Binding Notice.Message}" TextWrapping="Wrap" LineHeight="22" Margin="0,10,0,0" />
+                <Button Content="Tamam" Command="{Binding Notice.CloseCommand}" Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Left" Margin="0,20,0,0" AutomationProperties.Name="Tamam" />
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ============ INFO (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Info.IsOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="#99000000" MouseDown="OnInfoBackdropMouseDown" />
+        <Border Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="1" CornerRadius="16"
+                Padding="26" MaxWidth="460" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="Assets/FoxLogo.png" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Info.VersionText}" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock TextWrapping="Wrap" LineHeight="22" Margin="0,18,0,0"
+                           Text="FoxDPI, açık kaynaklı GoodbyeDPI projesini kullanır. Dosyaları FoxFix'in içinde gelir ve her kullanımdan önce doğrulanır. Lisansları FoxDPI klasöründe durur." />
+                <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                    <Button Content="GoodbyeDPI (GitHub)" Command="{Binding Info.OpenGoodbyeDpiCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="GoodbyeDPI GitHub sayfası" />
+                    <Button Content="Türkiye sürümü" Command="{Binding Info.OpenTurkeyForkCommand}"
+                            Style="{StaticResource SecondaryButton}" Margin="0" AutomationProperties.Name="GoodbyeDPI Türkiye sürümü GitHub sayfası" />
+                </StackPanel>
+                <Border Height="1" Background="{DynamicResource Divider}" Margin="0,22,0,0" />
+                <Grid Margin="0,14,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="made by foxezol w Claude Code" VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Command="{Binding OpenFeedbackCommand}" Style="{StaticResource IconButton}"
+                            ToolTip="Geri bildirim: Discord profilime ulaş" AutomationProperties.Name="Geri bildirim gönder">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="15" Height="15" Stretch="Uniform" Data="M2,3 L14,3 L14,10.5 L8,10.5 L5,13.5 L5,10.5 L2,10.5 Z"
+                                  Stroke="{DynamicResource Muted}" StrokeThickness="1.5" StrokeLineJoin="Round" />
+                            <TextBlock Text="Geri bildirim" Style="{StaticResource BodyMuted}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </Grid>                <Button Content="Kapat" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Left" Margin="0,22,0,0" AutomationProperties.Name="Kapat" />
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ============ "BENİ DÜZELT" PICKER (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding RepairPicker.IsOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="#99000000" MouseDown="OnPickerBackdropMouseDown" />
+        <Border Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="1" CornerRadius="16"
+                Padding="24" MaxWidth="560" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
+                <StackPanel>
+                    <TextBlock Text="Neleri düzeltelim?" Style="{StaticResource SectionTitle}" FontSize="22" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
+                               Text="İstediklerini işaretle. Önizlemede ne değişeceğini görürsün, sen onaylamadan hiçbir şey yapılmaz." />
+
+                    <TextBlock Text="İnternet" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,20,0,0" />
+                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDpi}" AutomationProperties.Name="Eski DPI araçlarını temizle">
+                        <StackPanel>
+                            <TextBlock Text="Eski DPI araçlarını temizle" />
+                            <TextBlock Style="{StaticResource BodyMuted}" FontSize="12"
+                                       Text="GoodbyeDPI, WinDivert ve Zapret kalıntıları. Kendi kullandığın GoodbyeDPI da silinir, önizlemede görürsün." />
+                        </StackPanel>
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDns}" AutomationProperties.Name="DNS ayarını onar">
+                        <StackPanel>
+                            <TextBlock Text="DNS ayarını onar" />
+                            <TextBlock Style="{StaticResource BodyMuted}" FontSize="12"
+                                       Text="Çalışmayan DNS'i otomatiğe (modemden) alır. Eski ayar kaydedilir." />
+                        </StackPanel>
+                    </CheckBox>
+
+                    <TextBlock Text="Bilgisayar" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,22,0,0" />
+                    <CheckBox IsChecked="{Binding RepairPicker.IncludeStartup}" IsEnabled="{Binding RepairPicker.StartupAvailable}"
+                              AutomationProperties.Name="Açılış programı değişiklikleri">
+                        <TextBlock Text="{Binding RepairPicker.StartupText}" TextWrapping="Wrap" />
+                    </CheckBox>
+                    <TextBlock Text="{Binding RepairPicker.CleanupText}" Margin="0,14,0,0" TextWrapping="Wrap" />
+                    <ItemsControl ItemsSource="{Binding RepairPicker.Cleanup.Items}" Margin="0,0,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Title}" Margin="0"
+                                              AutomationProperties.Name="{Binding Title}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding SizeText}" Style="{StaticResource BodyMuted}" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+                        <Button Content="Önizlemeyi göster" Command="{Binding RepairPicker.ContinueCommand}"
+                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Önizlemeyi göster" />
+                        <Button Content="Vazgeç" Command="{Binding RepairPicker.CloseCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Vazgeç" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+    </Grid>
+</Window>

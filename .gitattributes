@@ -1,0 +1,3 @@
+# The bundled files are checked against SHA-256 hashes: line endings must never change.
+src/FoxFix.App/Assets/** -text
+*.sh text eol=lf

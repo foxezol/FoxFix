@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\FoxFix.Core\FoxFix.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\FoxFix.ico" />
+    <Resource Include="Assets\FoxLogo.png" />
+    <Resource Include="Assets\FoxDpi.ico" />
+    <Resource Include="Assets\FoxDpiLogo.png" />
+  </ItemGroup>
+
+  <!-- GoodbyeDPI 0.2.3rc3 (Turkey build), carried inside the exe and checked against pinned SHA-256 hashes before use. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\GoodbyeDpi\*" LogicalName="GoodbyeDpi.%(Filename)%(Extension)" />
+    <!-- Zapret (winws) from SplitWire-Turkey 1.5.7, same rule: checked against pinned hashes before use. -->
+    <EmbeddedResource Include="Assets\Zapret\*" LogicalName="Zapret.%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <!-- Windows Forms is used for one thing only: the notification-area icon of the FoxDPI window. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>FoxFix</AssemblyName>
+    <ApplicationIcon>Assets\FoxFix.ico</ApplicationIcon>
+    <!-- Release: starts with administrator rights (UAC shield on the icon). Debug stays normal so tests and tools can start it. -->
+    <ApplicationManifest Condition="'$(Configuration)' == 'Release'">app.manifest</ApplicationManifest>
+    <Product>FoxFix</Product>
+    <Description>Windows ağ ve internet sorunlarını bulan ve düzelten araç</Description>
+    <Version>0.8.0</Version>
+  </PropertyGroup>
+
+  <!-- Single-file publish: no trimming and no AOT, WMI (service lookup) needs the full runtime. -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+</Project>
