@@ -53,6 +53,7 @@ Made by foxezol, Claude Code
 4. Otomatik başlatma için "FoxDPI'yı Windows açılınca başlat" seçeneğini kullanabilirsiniz. Bu işlem bir sistem hizmeti kurmaz, standart bir zamanlanmış görev (`schtasks`) ekler.
 
 **Oyunlar ve hile önleme sistemleri:** FoxDPI, ağ paketlerini işlemek için WinDivert sürücüsünü kullanır. Bazı oyunların hile önleme sistemleri (EasyAntiCheat, Vanguard, FACEIT gibi) bu sürücüyü engelleyebilir veya oyunun açılmasını reddedebilir. Oyunu başlatmadan önce FoxDPI penceresini kapatmanız önerilir. Pencere kapatıldığında FoxFix, kendi yüklediği sürücüyü bellekten otomatik olarak kaldırır ve bilgisayarı yeniden başlatmanız gerekmez. Oyun sırasında FoxDPI'ın açık kalması hile önleme sistemi tarafından engellenebilir; bu durum oyuna bağlıdır ve garanti edilemez. Şüphe duyduğunuz durumlarda ilgili oyunun destek sayfasını kontrol ediniz.
+
 **Gereksinimler:** Uygulamalar yönetici hakları gerektirir. Yalnızca Windows 10 ve 11 (64 bit) desteklenir. Herhangi bir .NET çalışma zamanı kurulumu gerekmez.
 
 ## Geliştiriciler İçin Derleme
