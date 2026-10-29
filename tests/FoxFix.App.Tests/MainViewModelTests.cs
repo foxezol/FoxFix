@@ -283,32 +283,32 @@ public sealed class MainViewModelTests : IDisposable
     }
 
     [Fact]
-    public async Task Share_copies_the_project_address_and_says_so_for_a_moment()
+    public void Share_copies_the_project_address_and_tells_the_window_to_show_its_note()
     {
-        SynchronizationContext.SetSynchronizationContext(null);
         var vm = CreateWithChecks();
-        vm.ShareRepoText.Should().Be("Paylaş");
+        var notes = 0;
+        vm.RepoLinkCopied += () => notes++;
 
-        var running = vm.ShareRepoCommand.ExecuteAsync(null);
+        vm.ShareRepoCommand.Execute(null);
 
         _clipboard.Copied.Should().ContainSingle().Which.Should().Be(MainViewModel.RepoUrl).And.Be("https://github.com/foxezol/FoxFix");
-        vm.ShareRepoText.Should().Be("Kopyalandı");
-        await running;
-        vm.ShareRepoText.Should().Be("Paylaş");
+        notes.Should().Be(1);
+        vm.Notice.IsOpen.Should().BeFalse("the note is small and goes away by itself, no pop-up");
     }
 
     [Fact]
-    public async Task A_clipboard_that_fails_during_share_opens_a_coded_message_and_the_button_stays_as_it_was()
+    public void A_clipboard_that_fails_during_share_opens_a_coded_message_and_no_note()
     {
-        SynchronizationContext.SetSynchronizationContext(null);
         _clipboard.Throws = true;
         var vm = CreateWithChecks();
+        var notes = 0;
+        vm.RepoLinkCopied += () => notes++;
 
-        await vm.ShareRepoCommand.ExecuteAsync(null);
+        vm.ShareRepoCommand.Execute(null);
 
         vm.Notice.IsOpen.Should().BeTrue();
         vm.Notice.Message.Should().StartWith("[FX-1004]");
-        vm.ShareRepoText.Should().Be("Paylaş");
+        notes.Should().Be(0);
     }
     private sealed class FakeClipboard : IClipboardService
     {

@@ -21,6 +21,7 @@ public partial class MainWindow : Window
             if (e.NewValue is MainViewModel vm)
             {
                 WireNavigation(vm);
+                vm.RepoLinkCopied += ShowShareToast;
             }
         };
 
@@ -72,30 +73,38 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// The mouse leaves one element a moment before it enters the next, so the decision waits until both events are through;
-    /// otherwise the menu would blink when the pointer travels from the three lines onto the menu.
-    /// </summary>
-    private void OnSidebarMouseChanged(object sender, MouseEventArgs e) =>
-        Dispatcher.BeginInvoke(ApplySidebar, System.Windows.Threading.DispatcherPriority.Background);
-
-    /// <summary>
-    /// Folded: the menu is gone and only the three lines stay; the page takes the room. Pointing at the three lines slides the
-    /// menu in over the page (the page does not move) and leaving slides it out. Pressing the lines again unfolds it for good.
+    /// Folded: the menu is gone and only the three lines stay; the page takes the room. Pressing the three lines again brings
+    /// it back. It opens and closes only by that press, never because the pointer passes by.
     /// </summary>
     private void ApplySidebar()
     {
-        var shown = !_sidebarFolded || Sidebar.IsMouseOver || SidebarToggle.IsMouseOver;
+        var width = SidebarHost.Width;
 
-        SidebarShift.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, Slide(shown ? 0 : -SidebarHost.Width));
+        SidebarShift.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty, Slide(_sidebarFolded ? -width : 0));
         Scroller.BeginAnimation(
             FrameworkElement.MarginProperty,
-            new System.Windows.Media.Animation.ThicknessAnimation(new Thickness(_sidebarFolded ? 56 : SidebarHost.Width, 0, 0, 0), Duration())
+            new System.Windows.Media.Animation.ThicknessAnimation(new Thickness(_sidebarFolded ? 56 : width, 0, 0, 0), Duration())
             {
                 EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut },
             });
-        SidebarHost.IsHitTestVisible = shown;
+        SidebarHost.IsHitTestVisible = !_sidebarFolded;
     }
 
+    /// <summary>A small "Kopyalandı" shows above the share button, floats upward and fades out.</summary>
+    private void ShowShareToast()
+    {
+        var up = new System.Windows.Media.Animation.DoubleAnimation(0, -28, TimeSpan.FromMilliseconds(1300))
+        {
+            EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut },
+        };
+        ShareToastShift.BeginAnimation(System.Windows.Media.TranslateTransform.YProperty, up);
+
+        var fade = new System.Windows.Media.Animation.DoubleAnimationUsingKeyFrames();
+        fade.KeyFrames.Add(new System.Windows.Media.Animation.LinearDoubleKeyFrame(1, TimeSpan.FromMilliseconds(120)));
+        fade.KeyFrames.Add(new System.Windows.Media.Animation.LinearDoubleKeyFrame(1, TimeSpan.FromMilliseconds(750)));
+        fade.KeyFrames.Add(new System.Windows.Media.Animation.LinearDoubleKeyFrame(0, TimeSpan.FromMilliseconds(1300)));
+        ShareToast.BeginAnimation(OpacityProperty, fade);
+    }
     private static TimeSpan Duration() => SystemParameters.ClientAreaAnimation ? TimeSpan.FromMilliseconds(170) : TimeSpan.Zero;
 
     private static System.Windows.Media.Animation.DoubleAnimation Slide(double to) =>

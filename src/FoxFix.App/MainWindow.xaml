@@ -584,7 +584,7 @@
         <TranslateTransform x:Name="SidebarShift" />
     </Grid.RenderTransform>
     <Border x:Name="Sidebar" Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="0,0,1,0"
-            MouseEnter="OnSidebarMouseChanged" MouseLeave="OnSidebarMouseChanged">
+            >
       <Grid>
         <DockPanel x:Name="SidebarContent" Margin="14,60,14,18">
             <StackPanel DockPanel.Dock="Bottom" Margin="8,0,0,0" Orientation="Horizontal">
@@ -605,7 +605,7 @@
                               Data="M4,9 L4,13.5 L12,13.5 L12,9 M8,10 L8,2.5 M5.2,5.2 L8,2.4 L10.8,5.2"
                               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.5"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" />
-                        <TextBlock Text="{Binding ShareRepoText}" Margin="9,0,0,0" />
+                        <TextBlock Text="Paylaş" Margin="9,0,0,0" />
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -681,12 +681,24 @@
         </DockPanel>
       </Grid>
     </Border>
+    <!-- "Kopyalandı": appears above the share button, floats up and is gone -->
+    <Border x:Name="ShareToast" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="108,0,0,62" Padding="11,6"
+            CornerRadius="8" Background="{DynamicResource ButtonSecondary}" BorderBrush="{DynamicResource Divider}" BorderThickness="1"
+            Opacity="0" IsHitTestVisible="False">
+        <Border.RenderTransform>
+            <TranslateTransform x:Name="ShareToastShift" />
+        </Border.RenderTransform>
+        <StackPanel Orientation="Horizontal">
+            <Path Width="12" Height="12" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
+                  StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" VerticalAlignment="Center" />
+            <TextBlock Text="Kopyalandı" FontSize="13" Margin="7,0,0,0" />
+        </StackPanel>
+    </Border>
     </Grid>
 
     <!-- Three lines: fold the whole menu away (only these stay); point at them to see the menu again; press once more to keep it open -->
     <Button x:Name="SidebarToggle" Click="OnSidebarToggle" Style="{StaticResource IconButton}" Width="32" Height="32"
             Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,14,0,0"
-            MouseEnter="OnSidebarMouseChanged" MouseLeave="OnSidebarMouseChanged"
             ToolTip="Menüyü daralt" AutomationProperties.Name="Menüyü daralt ya da aç">
         <Path Width="16" Height="16" Stretch="Uniform" Data="M2,4 L14,4 M2,8 L14,8 M2,12 L14,12"
               Stroke="{DynamicResource Muted}" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />

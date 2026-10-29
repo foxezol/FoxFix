@@ -270,7 +270,7 @@
   <data name="CleanupProgress" xml:space="preserve"><value>{0} / {1} silindi</value></data>
   <data name="FoxDpiNeedsFoxFix" xml:space="preserve"><value>[FX-2012] FoxDPI&apos;yı ilk kez kullanmadan önce FoxFix&apos;i bir kez açman gerekiyor. FoxFix&apos;i aç, ayarını seç, sonra FoxDPI.exe ile istediğin zaman başlatabilirsin.</value></data>
   <data name="FoxDpiExplainTitle" xml:space="preserve"><value>FoxDPI açıldı</value></data>
-  <data name="FoxDpiExplain" xml:space="preserve"><value>FoxDPI ayrı bir pencerede çalışıyor. Pencereyi küçültürsen bildirim alanına gider, kapatırsan DPI de kapanır. Bundan sonra FoxFix&apos;i açmadan da FoxDPI.exe ile başlatabilirsin. Ayarları FoxFix&apos;ten yaparsın.</value></data>
+  <data name="FoxDpiExplain" xml:space="preserve"><value>FoxDPI ayrı bir pencerede başlatıldı. Pencereyi simge durumuna küçülttüğünüzde sistem tepsisine gizlenir, kapattığınızda ise DPI hizmeti durdurulur. Sonraki kullanımlarda ana uygulamaya gerek kalmadan doğrudan FoxDPI.exe üzerinden başlatabilirsiniz. Yapılandırma ayarları FoxFix üzerinden yönetilmeye devam edecektir.</value></data>
   <data name="AutoStartTitle" xml:space="preserve"><value>FoxDPI&apos;yı Windows açılınca başlat</value></data>
   <data name="AutoStartAlreadyOn" xml:space="preserve"><value>Windows açılınca başlatma zaten açık.</value></data>
   <data name="AutoStartAlreadyOff" xml:space="preserve"><value>Windows açılınca başlatma zaten kapalı.</value></data>

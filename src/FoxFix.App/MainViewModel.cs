@@ -186,17 +186,15 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenRepo() => TryOpenLink(RepoUrl);
 
-    /// <summary>"Paylaş", then "Bağlantı kopyalandı" for a moment after the project address was put on the clipboard.</summary>
-    [ObservableProperty]
-    private string _shareRepoText = "Paylaş";
+    /// <summary>Raised after the project address is on the clipboard; the window shows a small "Kopyalandı" that floats up and fades.</summary>
+    public event Action? RepoLinkCopied;
 
     [RelayCommand]
-    private async Task ShareRepoAsync()
+    private void ShareRepo()
     {
         try
         {
             _clipboard.SetText(RepoUrl);
-            ShareRepoText = "Kopyalandı";
         }
         catch (Exception ex)
         {
@@ -204,10 +202,8 @@ public sealed partial class MainViewModel : ObservableObject
             return;
         }
 
-        await Task.Delay(2200);
-        ShareRepoText = "Paylaş";
+        RepoLinkCopied?.Invoke();
     }
-
     private void TryOpenLink(string url)
     {
         try
