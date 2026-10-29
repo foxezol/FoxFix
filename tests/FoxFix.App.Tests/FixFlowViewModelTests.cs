@@ -285,7 +285,7 @@ public sealed class FixFlowViewModelTests : IDisposable
         _reboot.Scheduled.Should().Equal(FixFlowViewModel.AutoRestartDelaySeconds);
         vm.RebootScheduled.Should().BeTrue();
         vm.ShowRebootBanner.Should().BeFalse();
-        vm.Message.Should().Contain("20 saniye sonra yeniden başlayacak");
+        vm.Message.Should().Contain("5 saniye sonra yeniden başlayacak");
         vm.AutoRestart.Should().BeFalse("the tick must be chosen again next time");
     }
 
@@ -309,12 +309,34 @@ public sealed class FixFlowViewModelTests : IDisposable
     }
 
     [Fact]
-    public async Task The_tick_does_nothing_when_no_restart_turned_out_to_be_needed()
+    public async Task A_ticked_restart_happens_even_when_the_run_itself_found_nothing_left_over()
     {
+        // The tick was only offered because the preview said a restart is needed: ticking it means "restart afterwards".
         var vm = await ApplyWithRebootAsync(autoRestart: true, rebootNeeded: false);
 
+        _reboot.Scheduled.Should().Equal(FixFlowViewModel.AutoRestartDelaySeconds);
+        FixFlowViewModel.AutoRestartDelaySeconds.Should().Be(5);
+        vm.RebootScheduled.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task Without_the_tick_no_restart_is_scheduled_even_if_one_is_needed()
+    {
+        var vm = await ApplyWithRebootAsync(autoRestart: false);
+
         _reboot.Scheduled.Should().BeEmpty();
-        vm.ShowRebootBanner.Should().BeFalse();
+        vm.ShowRebootBanner.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task A_finished_change_says_plainly_whether_it_worked()
+    {
+        var vm = await ApplyWithRebootAsync(autoRestart: false);
+
+        vm.HasResultTitle.Should().BeTrue();
+        vm.ResultSucceeded.Should().BeTrue();
+        vm.ResultTitle.Should().Be("İşlem başarılı");
+        vm.ShowBusyNote.Should().BeFalse();
     }
 
     [Fact]

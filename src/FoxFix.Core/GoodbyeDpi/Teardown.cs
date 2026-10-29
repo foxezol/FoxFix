@@ -33,6 +33,40 @@ public sealed class GoodbyeDpiTeardown
         await _launcher.StopAllInFolderAsync(_folder, ct);
     }
 
+    /// <summary>
+    /// Lets the WinDivert driver go once FoxDPI has ended, so it is not sitting in memory while a game runs (some anti-cheat
+    /// programs object to that driver). Only FoxFix's own driver is touched, and only when nothing of FoxFix is using it: not while
+    /// its program still runs and not when its service is installed. Returns true when a driver was unloaded.
+    /// </summary>
+    public async Task<bool> UnloadDriversAsync(CancellationToken ct)
+    {
+        if (_launcher.IsRunningFromFolder(_folder))
+        {
+            return false;
+        }
+
+        if (_serviceName is not null && await _services.ReadConfigAsync(_serviceName, ct) is not null)
+        {
+            return false;
+        }
+
+        var unloaded = false;
+        foreach (var driver in GoodbyeDpiLayout.DriverNames)
+        {
+            var config = await _services.ReadConfigAsync(driver, ct);
+            if (config is null || !GoodbyeDpiLayout.IsManaged(config.BinaryPath, GoodbyeDpiLayout.OwnRoot(_folder)))
+            {
+                continue;
+            }
+
+            await _services.StopAsync(driver, ct);
+            await _services.DeleteAsync(driver, ct);
+            unloaded = true;
+        }
+
+        return unloaded;
+    }
+
     /// <summary>Removes the service, the driver registration and, when asked, the folder. Returns false if files had to stay behind.</summary>
     public async Task<bool> RemoveAsync(bool deleteFolder, CancellationToken ct)
     {

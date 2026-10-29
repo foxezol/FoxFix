@@ -38,8 +38,8 @@ public sealed partial class FixFlowViewModel : ObservableObject
     /// <summary>The fixes the current preview/apply run works on (repair set, or one optional fix).</summary>
     private IReadOnlyList<IFix> _activeFixes = [];
 
-    public const int AutoRestartDelaySeconds = 20;
-    public const int RestartNowDelaySeconds = 10;
+    public const int AutoRestartDelaySeconds = 5;
+    public const int RestartNowDelaySeconds = 5;
 
     public FixFlowViewModel(IReadOnlyList<IFix> fixes, UndoJournal journal, IElevation elevation, IRebootService reboot)
     {
@@ -56,7 +56,7 @@ public sealed partial class FixFlowViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(
         nameof(IsPanelVisible), nameof(IsBusy), nameof(ShowConfirmation), nameof(CanApply),
-        nameof(ShowAutoRestartOption), nameof(ShowRebootBanner))]
+        nameof(ShowAutoRestartOption), nameof(ShowRebootBanner), nameof(ShowBusyNote))]
     [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(StartOptionalCommand), nameof(StartSingleCommand), nameof(ApplyCommand))]
     private FlowStage _stage = FlowStage.Idle;
 
@@ -134,6 +134,21 @@ public sealed partial class FixFlowViewModel : ObservableObject
 
     public string AdminNote => NeedsElevation ? Strings.Get(Strings.FlowNeedsAdmin) : "";
 
+    public bool HasAdminNote => AdminNote.Length > 0;
+
+    /// <summary>While the change is prepared or runs the panel says so, because some steps keep the app busy for a while and it must not look frozen.</summary>
+    public bool ShowBusyNote => Stage is FlowStage.Previewing or FlowStage.Applying;
+
+    /// <summary>"İşlem başarılı" or "İşlem tamamlanamadı" above the details once a change has finished.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasResultTitle))]
+    private string _resultTitle = "";
+
+    [ObservableProperty]
+    private bool _resultSucceeded;
+
+    public bool HasResultTitle => ResultTitle.Length > 0;
+
     [RelayCommand(CanExecute = nameof(CanStart))]
     private Task StartAsync() => RunPreviewAsync(_fixes.Where(f => f.IncludedInRepair).ToList());
 
@@ -172,6 +187,8 @@ public sealed partial class FixFlowViewModel : ObservableObject
         OnPropertyChanged(nameof(NeedsElevation));
         OnPropertyChanged(nameof(ApplyLabel));
         OnPropertyChanged(nameof(AdminNote));
+        OnPropertyChanged(nameof(HasAdminNote));
+        ResultTitle = "";
         HasProgress = false;
         ProgressText = "";
         ProgressPercent = 0;
@@ -186,10 +203,22 @@ public sealed partial class FixFlowViewModel : ObservableObject
         try
         {
             var previews = new List<(IFix Fix, FixPreview Preview)>();
-            foreach (var fix in fixes)
+            using (var phase = new PhaseProgress(this, fixes.Count, PreviewSecondsPerFix))
             {
-                previews.Add((fix, await fix.PreviewAsync(CancellationToken.None)));
+                for (var index = 0; index < fixes.Count; index++)
+                {
+                    var fix = fixes[index];
+                    phase.BeginStep(index);
+
+                    // Looking at the system can take a moment (the list of services); not on the window's thread, so the note stays alive.
+                    previews.Add((fix, await Task.Run(() => fix.PreviewAsync(CancellationToken.None))));
+                    phase.Finished(index);
+                }
             }
+
+            HasProgress = false;
+            ProgressText = "";
+            ProgressPercent = 0;
 
             // Only fixes that have something to do are listed (with a header when there are several);
             // when none does, every "nothing to do" note is shown instead.
@@ -219,7 +248,94 @@ public sealed partial class FixFlowViewModel : ObservableObject
         }
     }
 
+    /// <summary>What a fix usually takes, used only to fill the bar for fixes that cannot say how far they are.</summary>
+    private const double PreviewSecondsPerFix = 2.5;
+
+    private const double ApplySecondsPerFix = 6;
+
     private bool CanStart() => !IsBusy;
+
+    /// <summary>
+    /// The bar and the time left for one phase (looking, or changing). Real progress from a fix wins; without it the bar fills
+    /// by the usual time of a step, never past 90% of it, so it cannot claim to be done before it is.
+    /// </summary>
+    private sealed class PhaseProgress : IDisposable
+    {
+        private readonly FixFlowViewModel _vm;
+        private readonly int _count;
+        private readonly double _perStep;
+        private readonly System.Diagnostics.Stopwatch _phase = System.Diagnostics.Stopwatch.StartNew();
+        private readonly System.Diagnostics.Stopwatch _step = System.Diagnostics.Stopwatch.StartNew();
+        private readonly CancellationTokenSource _stop = new();
+        private int _index;
+        private bool _real;
+
+        public PhaseProgress(FixFlowViewModel vm, int count, double perStep)
+        {
+            _vm = vm;
+            _count = Math.Max(1, count);
+            _perStep = perStep;
+            _vm.HasProgress = true;
+            _vm.ProgressPercent = 0;
+            Update();
+            _ = TickAsync();
+        }
+
+        public void BeginStep(int index)
+        {
+            _index = index;
+            _real = false;
+            _step.Restart();
+            Update();
+        }
+
+        public void Real(int index, FixProgress progress)
+        {
+            _real = true;
+            var overall = (index + Math.Clamp(progress.Fraction, 0, 1)) / _count;
+            _vm.ProgressPercent = overall * 100;
+            var estimate = ProgressEstimate.Format(overall, _phase.Elapsed);
+            _vm.ProgressText = string.IsNullOrEmpty(progress.Text) ? estimate : progress.Text + " · " + estimate;
+        }
+
+        public void Finished(int index)
+        {
+            _vm.ProgressPercent = (index + 1) / (double)_count * 100;
+        }
+
+        private void Update()
+        {
+            var stepFraction = Math.Min(0.9, _step.Elapsed.TotalSeconds / _perStep);
+            var overall = (_index + stepFraction) / _count;
+            _vm.ProgressPercent = overall * 100;
+
+            var remaining = TimeSpan.FromSeconds(Math.Max(0, 1 - overall) * _count * _perStep);
+            _vm.ProgressText = _step.Elapsed.TotalSeconds > _perStep
+                ? $"%{(int)(overall * 100)} · birkaç saniye daha"
+                : $"%{(int)(overall * 100)} · yaklaşık {ProgressEstimate.Duration(remaining)} kaldı";
+        }
+
+        private async Task TickAsync()
+        {
+            try
+            {
+                while (!_stop.IsCancellationRequested)
+                {
+                    await Task.Delay(250, _stop.Token);
+                    if (!_real)
+                    {
+                        Update();
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // The phase ended.
+            }
+        }
+
+        public void Dispose() => _stop.Cancel();
+    }
 
     [RelayCommand]
     private void Cancel()
@@ -256,21 +372,10 @@ public sealed partial class FixFlowViewModel : ObservableObject
         AutoRestart = false;
         RebootScheduled = false;
 
-        // With several fixes the bar moves a step per finished fix; a fix that can tell more (disk cleanup) fills its own step.
-        var clock = System.Diagnostics.Stopwatch.StartNew();
+        // The bar moves a step per finished fix. A fix that can tell how far it is (disk cleanup) fills its own step; for the
+        // others the bar fills by the time such a step usually takes, so there is always an idea of how long it will be.
         var count = _activeFixes.Count;
-        ProgressPercent = 0;
-        HasProgress = count > 1;
-        ProgressText = count > 1 ? ProgressEstimate.Format(0, TimeSpan.Zero) : "";
-
-        void Show(int index, FixProgress progress)
-        {
-            var overall = (index + Math.Clamp(progress.Fraction, 0, 1)) / count;
-            HasProgress = true;
-            ProgressPercent = overall * 100;
-            var estimate = ProgressEstimate.Format(overall, clock.Elapsed);
-            ProgressText = string.IsNullOrEmpty(progress.Text) ? estimate : progress.Text + " · " + estimate;
-        }
+        using var phase = new PhaseProgress(this, count, ApplySecondsPerFix);
 
         try
         {
@@ -278,15 +383,15 @@ public sealed partial class FixFlowViewModel : ObservableObject
             {
                 var current = index;
                 var fix = _activeFixes[index];
-                var result = await fix.ApplyAsync(_journal, new UiProgress<FixProgress>(p => Show(current, p)), CancellationToken.None);
+                phase.BeginStep(current);
+                // Off the window's thread: a step that waits for Windows (stopping a service, a driver) must not freeze the window.
+                var progress = new UiProgress<FixProgress>(p => phase.Real(current, p));
+                var result = await Task.Run(() => fix.ApplyAsync(_journal, progress, CancellationToken.None));
                 summaries.Add(result.Summary);
                 rebootNeeded |= result.RequiresReboot;
                 allSucceeded &= result.Success;
 
-                if (count > 1)
-                {
-                    Show(current, new FixProgress(1));
-                }
+                phase.Finished(current);
             }
         }
         catch (Exception ex)
@@ -298,11 +403,14 @@ public sealed partial class FixFlowViewModel : ObservableObject
         ProgressText = "";
         Message = string.Join(Environment.NewLine, summaries);
         RebootNeeded = rebootNeeded;
+        ResultSucceeded = allSucceeded;
+        ResultTitle = Strings.Get(allSucceeded ? Strings.FlowResultOk : Strings.FlowResultFailed);
         Stage = FlowStage.Finished;
         await RefreshUndoAsync();
 
-        // Restarting by itself is only for a fully clean run; with any error the user decides.
-        if (rebootNeeded && allSucceeded && wantsAutoRestart)
+        // The tick box was only offered because the preview said a restart is needed, so ticking it means "restart afterwards".
+        // Only a fully clean run restarts by itself; with any error the user decides.
+        if (allSucceeded && wantsAutoRestart)
         {
             await ScheduleRestartAsync(AutoRestartDelaySeconds);
         }

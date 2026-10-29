@@ -39,7 +39,7 @@
     <ApplicationManifest Condition="'$(Configuration)' == 'Release'">app.manifest</ApplicationManifest>
     <Product>FoxFix</Product>
     <Description>Windows ağ ve internet sorunlarını bulan ve düzelten araç</Description>
-    <Version>0.9.5</Version>
+    <Version>0.9.14</Version>
   </PropertyGroup>
 
   <!-- Single-file publish: no trimming and no AOT, WMI (service lookup) needs the full runtime. -->

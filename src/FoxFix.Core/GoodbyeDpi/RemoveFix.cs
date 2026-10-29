@@ -25,10 +25,24 @@ public sealed class GoodbyeDpiRemoveFix : IFix
 
     public bool IncludedInRepair => false;
 
-    public Task<FixPreview> PreviewAsync(CancellationToken ct) =>
-        Task.FromResult(IsPresent()
-            ? new FixPreview([Strings.Get(Strings.GdpiRemovePreview)])
-            : new FixPreview([Strings.Get(Strings.GdpiRemoveNothing)], HasChanges: false));
+    public Task<FixPreview> PreviewAsync(CancellationToken ct)
+    {
+        if (!IsPresent())
+        {
+            return Task.FromResult(new FixPreview([Strings.Get(Strings.GdpiRemoveNothing)], HasChanges: false));
+        }
+
+        // The WinDivert driver stays loaded (and its file locked) until Windows restarts, so with it registered the restart
+        // is offered up front, before anything is changed.
+        var driverStays = _status.Read().OwnDriverRegistered;
+        var lines = new List<string> { Strings.Get(Strings.GdpiRemovePreview) };
+        if (driverStays)
+        {
+            lines.Add(Strings.Get(Strings.PreviewReboot));
+        }
+
+        return Task.FromResult(new FixPreview(lines, RequiresReboot: driverStays));
+    }
 
     public async Task<FixResult> ApplyAsync(UndoJournal journal, CancellationToken ct)
     {
@@ -43,7 +57,8 @@ public sealed class GoodbyeDpiRemoveFix : IFix
             }
         }
 
-        return new FixResult(true, Strings.Get(clean ? Strings.GdpiRemoveDone : Strings.GdpiRemovePartial));
+        // Files that could not be deleted are removed by Windows only after a restart.
+        return new FixResult(true, Strings.Get(clean ? Strings.GdpiRemoveDone : Strings.GdpiRemovePartial), RequiresReboot: !clean);
     }
 
     /// <summary>Removing is not something to undo: installing again is one click on the GoodbyeDPI page.</summary>

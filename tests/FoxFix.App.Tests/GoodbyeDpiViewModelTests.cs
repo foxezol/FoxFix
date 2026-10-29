@@ -439,6 +439,28 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
     }
 
     [Fact]
+    public async Task While_the_service_is_installed_the_setting_is_locked_and_removing_it_unlocks_again()
+    {
+        var vm = Create(out _);
+        vm.CanChangeSetting.Should().BeTrue();
+        vm.RunTrialCommand.CanExecute(null).Should().BeTrue();
+
+        var service = new ServiceEntry(GoodbyeDpiLayout.ServiceName, Path.Combine(_folder, "goodbyedpi.exe"), IsDriver: false, IsRunning: true);
+        _machine.Services.Add(service);
+        await vm.RefreshStatusAsync();
+
+        vm.IsServiceInstalled.Should().BeTrue();
+        vm.CanChangeSetting.Should().BeFalse("the installed service runs one fixed setting");
+        vm.RunTrialCommand.CanExecute(null).Should().BeFalse();
+
+        _machine.Services.Remove(service);
+        await vm.RefreshStatusAsync();
+
+        vm.CanChangeSetting.Should().BeTrue();
+        vm.RunTrialCommand.CanExecute(null).Should().BeTrue();
+    }
+
+    [Fact]
     public void A_notice_opens_with_its_text_and_closes_again()
     {
         var notice = new NoticeViewModel();

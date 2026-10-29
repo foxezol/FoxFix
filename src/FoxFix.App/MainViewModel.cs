@@ -180,6 +180,14 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenFeedback() => TryOpenLink(FeedbackUrl);
 
+    /// <summary>The red button in "Bilgi": closes the panel and shows the usual preview of what will be removed, then asks.</summary>
+    [RelayCommand]
+    private async Task UninstallAsync()
+    {
+        Info.CloseCommand.Execute(null);
+        await Fix.StartSingleCommand.ExecuteAsync(FoxFix.Core.GoodbyeDpi.UninstallFix.FixIdValue);
+    }
+
     /// <summary>Where the source code lives.</summary>
     public const string RepoUrl = "https://github.com/foxezol/FoxFix";
 

@@ -110,6 +110,13 @@
             <Setter Property="Padding" Value="16,9" />
         </Style>
 
+        <!-- For the one button that cannot be undone: the same shape, in the theme's red -->
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+            <Setter Property="Background" Value="#26FF6B6B" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusBad}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
         <!-- A surface is kept for things that need attention: the change preview and restart notices -->
         <Style x:Key="Sheet" TargetType="Border">
             <Setter Property="Background" Value="{DynamicResource Card}" />

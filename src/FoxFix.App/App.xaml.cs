@@ -110,13 +110,36 @@ public partial class App : Application
         var gdpiInstall = new GoodbyeDpiInstallFix(payload, launcher, serviceManager, gdpiStatus, gdpiFolder);
         var gdpiTeardown = new GoodbyeDpiTeardown(serviceManager, launcher, gdpiFolder);
         var gdpiRemove = new GoodbyeDpiRemoveFix(gdpiStatus, gdpiTeardown, gdpiFolder);
-        var foxDpi = new FoxDpiSession(payload, launcher, gdpiStatus, gdpiFolder);
+        var foxDpi = new FoxDpiSession(
+            payload, launcher, gdpiStatus, gdpiFolder, unloadDriver: ct => gdpiTeardown.UnloadDriversAsync(ct));
         var notice = new NoticeViewModel();
         var autoStart = new FoxDpiAutoStart(runner);
         var autoStartFix = new FoxDpiAutoStartFix(autoStart, () => Environment.ProcessPath, () => Environment.UserDomainName + "\\" + Environment.UserName);
+        var uninstall = new UninstallFix(
+            autoStart, gdpiTeardown, () => foxDpi.StopAsync(),
+            UninstallPlan.Create(Environment.ProcessPath, AppPaths.LocalRoot, AppPaths.SharedRoot),
+            startFinisher: command =>
+            {
+                try
+                {
+                    // Detached on purpose: it outlives FoxFix, waits for it to close and then deletes what a running program cannot.
+                    using var started = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe", $"/d /s /c \"{command}\"")
+                    {
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        WorkingDirectory = Environment.SystemDirectory,
+                    });
+                    return started is not null;
+                }
+                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+                {
+                    return false;
+                }
+            },
+            exitApp: () => _ = Task.Delay(3500).ContinueWith(_ => Dispatcher.InvokeAsync(Shutdown)));
         var elevation = new WindowsElevation();
         var fixFlow = new FixFlowViewModel(
-            [cleanup, gdpiRemove, dnsRepair, dnsReset, gdpiInstall, autoStartFix, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
+            [cleanup, gdpiRemove, dnsRepair, dnsReset, gdpiInstall, autoStartFix, uninstall, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
 
         Func<string?> trialBlocker = () =>
         {

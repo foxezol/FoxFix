@@ -101,7 +101,7 @@ public sealed class ProgressBarTests : IDisposable
     }
 
     [Fact]
-    public async Task A_single_fix_without_progress_keeps_the_bar_moving_instead_of_showing_a_wrong_percentage()
+    public async Task A_single_fix_without_progress_ends_the_bar_at_one_hundred_and_clears_the_time_text()
     {
         var flow = Create(new Silent("a"));
         await flow.StartSingleCommand.ExecuteAsync("a");
@@ -111,7 +111,52 @@ public sealed class ProgressBarTests : IDisposable
         SynchronizationContext.SetSynchronizationContext(null); // an awaited call above may have put xUnit's context back
         await flow.ApplyCommand.ExecuteAsync(null);
 
-        flow.HasProgress.Should().BeFalse();
+        flow.ProgressPercent.Should().Be(100);
+        flow.ProgressText.Should().BeEmpty();
+    }
+
+    /// <summary>Waits until released, like a step that depends on Windows.</summary>
+    private sealed class Waiting(string id, TaskCompletionSource release) : IFix
+    {
+        public string Id => id;
+
+        public string Title => id;
+
+        public bool IncludedInRepair => false;
+
+        public bool RequiresAdmin => false;
+
+        public Task<FixPreview> PreviewAsync(CancellationToken ct) => Task.FromResult(new FixPreview(["x " + id]));
+
+        public async Task<FixResult> ApplyAsync(UndoJournal journal, CancellationToken ct)
+        {
+            await release.Task;
+            return new FixResult(true, "ok");
+        }
+
+        public Task UndoAsync(UndoRecord record, CancellationToken ct) => Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task A_step_that_cannot_say_how_far_it_is_still_shows_a_filling_bar_and_the_time_left_never_past_ninety_percent()
+    {
+        var release = new TaskCompletionSource();
+        var flow = Create(new Waiting("a", release));
+        await flow.StartSingleCommand.ExecuteAsync("a");
+        flow.IsConfirmed = true;
+        SynchronizationContext.SetSynchronizationContext(null);
+
+        var applying = flow.ApplyCommand.ExecuteAsync(null);
+        await Task.Delay(700);
+
+        flow.HasProgress.Should().BeTrue();
+        flow.IsIndeterminate.Should().BeFalse("people should see how long it takes, not a bar that only moves");
+        flow.ProgressPercent.Should().BeInRange(1, 90);
+        flow.ProgressText.Should().Contain("kaldı");
+
+        release.SetResult();
+        await applying;
+        flow.ProgressPercent.Should().Be(100);
     }
 
     [Fact]

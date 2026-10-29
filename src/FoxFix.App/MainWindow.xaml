@@ -349,6 +349,13 @@
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
                                Text="FoxDPI, erişim engeli bulunan sitelere güvenli bağlantı sağlar. Açık kaynaklı GoodbyeDPI tabanlıdır ve ağınız için en uygun konfigürasyonu tespit edip uygular. Çekirdek bileşenlere ait lisans dosyaları FoxDPI dizininde yer almaktadır." />
                     
+                    <Border Background="{DynamicResource Card}" CornerRadius="10" Padding="16,12" Margin="0,14,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Oyunlar ve hile önleme sistemleri" FontWeight="SemiBold" />
+                            <TextBlock Style="{StaticResource BodyMuted}" FontSize="13" Margin="0,4,0,0"
+                                       Text="Bazı oyunların hile önleme sistemleri (EasyAntiCheat, Vanguard, FACEIT gibi), FoxDPI'ın kullandığı WinDivert sürücüsünü engelleyebilir. Oyunu başlatmadan önce FoxDPI penceresini kapatmanız önerilir. Pencere kapatıldığında sürücü bellekten otomatik olarak kaldırılır ve bilgisayarı yeniden başlatmanız gerekmez." />
+                        </StackPanel>
+                    </Border>
                     <TextBlock Text="{Binding Dpi.StatusText}" Margin="0,12,0,0" FontWeight="SemiBold" TextWrapping="Wrap"
                                AutomationProperties.LiveSetting="Polite" />
 
@@ -384,7 +391,10 @@
                                Visibility="{Binding Dpi.HasResult, Converter={StaticResource BoolToVis}}" />
 
                     <!-- The settings, one per line: pick the one to install -->
-                    <ItemsControl ItemsSource="{Binding Dpi.Rows}" Margin="0,14,0,0">
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,14,0,0"
+                               Text="FoxDPI hizmet olarak kurulu olduğu için ayar değiştirilemez. Ayarı değiştirmek için hizmeti kaldırın."
+                               Visibility="{Binding Dpi.IsServiceInstalled, Converter={StaticResource BoolToVis}}" />
+                    <ItemsControl ItemsSource="{Binding Dpi.Rows}" Margin="0,14,0,0" IsEnabled="{Binding Dpi.CanChangeSetting}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,2">
@@ -719,8 +729,26 @@
                     <TextBlock Text="Şu değişiklikler yapılacak" Style="{StaticResource SectionTitle}" FontSize="22"
                                Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
-                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Fix.ProgressPercent}"
-                                 IsIndeterminate="{Binding Fix.IsIndeterminate}" Margin="0,8,0,0"
+                    <!-- While it runs: say so, so nobody thinks the app froze -->
+                    <StackPanel Visibility="{Binding Fix.ShowBusyNote, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Style="{StaticResource SectionTitle}" FontSize="20" TextWrapping="Wrap"
+                                   Text="Yapılan işlem sürüyor, lütfen bekleyiniz." AutomationProperties.LiveSetting="Polite" />
+                    </StackPanel>
+
+                    <!-- When it is over: say plainly whether it worked -->
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Fix.HasResultTitle, Converter={StaticResource BoolToVis}}">
+                        <Path Width="18" Height="18" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
+                              StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" VerticalAlignment="Center"
+                              Visibility="{Binding Fix.ResultSucceeded, Converter={StaticResource BoolToVis}}" />
+                        <Path Width="18" Height="18" Stretch="Uniform" Data="M4.2,4.2 L11.8,11.8 M11.8,4.2 L4.2,11.8" Stroke="{DynamicResource StatusBad}"
+                              StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center"
+                              Visibility="{Binding Fix.ResultSucceeded, Converter={StaticResource InverseBoolToVis}}" />
+                        <TextBlock Text="{Binding Fix.ResultTitle}" Style="{StaticResource SectionTitle}" FontSize="22" Margin="10,0,0,0"
+                                   AutomationProperties.LiveSetting="Polite" />
+                    </StackPanel>
+
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Fix.ProgressPercent}" Height="6"
+                                 IsIndeterminate="{Binding Fix.IsIndeterminate}" Margin="0,14,0,0"
                                  Visibility="{Binding Fix.IsBusy, Converter={StaticResource BoolToVis}}"
                                  AutomationProperties.Name="İşlem ilerlemesi" />
                     <TextBlock Text="{Binding Fix.ProgressText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,4"
@@ -742,9 +770,11 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <TextBlock Text="{Binding Fix.AdminNote, StringFormat='ℹ  {0}'}" Foreground="{DynamicResource AccentText}"
-                               Margin="0,12,0,0" TextWrapping="Wrap"
-                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
+                    <StackPanel Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="{Binding Fix.AdminNote}" Foreground="{DynamicResource AccentText}"
+                                   Margin="0,12,0,0" TextWrapping="Wrap"
+                                   Visibility="{Binding Fix.HasAdminNote, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
 
                     <TextBlock Text="{Binding Fix.Message}" TextWrapping="Wrap" Margin="0,12,0,0" LineHeight="21"
                                Visibility="{Binding Fix.ShowPanelMessage, Converter={StaticResource BoolToVis}}" />
@@ -774,7 +804,7 @@
                               AutomationProperties.Name="Değişiklikleri onaylıyorum"
                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
-                    <CheckBox Content="Temizlik bitince bilgisayarı kendiliğinden yeniden başlat. 20 saniye geri sayar, iptal edebilirsin."
+                    <CheckBox Content="İşlemlerden sonra yeniden başlat"
                               IsChecked="{Binding Fix.AutoRestart}"
                               AutomationProperties.Name="Kendiliğinden yeniden başlat"
                               Visibility="{Binding Fix.ShowAutoRestartOption, Converter={StaticResource BoolToVis}}">
@@ -860,8 +890,13 @@
                             <TextBlock Text="Geri bildirim" Style="{StaticResource BodyMuted}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
-                </Grid>                <Button Content="Kapat" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
-                        HorizontalAlignment="Left" Margin="0,22,0,0" AutomationProperties.Name="Kapat" />
+                </Grid>                <Grid Margin="0,22,0,0">
+                    <Button Content="Kapat" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left" Margin="0" AutomationProperties.Name="Kapat" />
+                    <Button Content="FoxFix'i kaldır" Command="{Binding UninstallCommand}" Style="{StaticResource DangerButton}"
+                            HorizontalAlignment="Right" Margin="0" ToolTip="FoxDPI, ayarlar ve program silinir; geri alınamaz"
+                            AutomationProperties.Name="FoxFix'i kaldır" />
+                </Grid>
             </StackPanel>
         </Border>
     </Grid>

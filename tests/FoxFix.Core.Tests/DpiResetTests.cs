@@ -244,9 +244,40 @@ public sealed class DpiResetTests : IDisposable
         var result = await fix.ApplyAsync(journal, CancellationToken.None);
 
         result.Success.Should().BeTrue();
+        result.RequiresReboot.Should().BeFalse("everything could be deleted, nothing waits for a restart");
         _services.Configs.Should().BeEmpty();
         Directory.Exists(_folder).Should().BeFalse();
         (await journal.LoadAsync(CancellationToken.None)).Select(r => r.FixId).Should().Equal("dns-reset");
+    }
+
+    [Fact]
+    public async Task A_loaded_driver_makes_the_preview_offer_the_restart_before_anything_is_changed()
+    {
+        GoodbyeDpiFiles.Prepare(_payload, _folder, _payload.Hashes);
+        _machine.ServiceList.Add(new ServiceEntry("WinDivert1.4", Path.Combine(_folder, "WinDivert64.sys"), IsDriver: true, IsRunning: true));
+        var fix = new GoodbyeDpiRemoveFix(NewStatus(), new GoodbyeDpiTeardown(_services, _launcher, _folder), _folder);
+
+        var preview = await fix.PreviewAsync(CancellationToken.None);
+
+        preview.RequiresReboot.Should().BeTrue();
+        preview.Changes.Should().Contain(Strings.Get(Strings.PreviewReboot));
+    }
+
+    [Fact]
+    public async Task Files_that_stay_behind_because_they_are_locked_ask_for_a_restart()
+    {
+        GoodbyeDpiFiles.Prepare(_payload, _folder, _payload.Hashes);
+        var fix = new GoodbyeDpiRemoveFix(NewStatus(), new GoodbyeDpiTeardown(_services, _launcher, _folder), _folder);
+
+        FixResult result;
+        using (new FileStream(Path.Combine(_folder, "WinDivert64.sys"), FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            result = await fix.ApplyAsync(NewJournal(), CancellationToken.None);
+        }
+
+        result.Success.Should().BeTrue();
+        result.RequiresReboot.Should().BeTrue("the locked file can only go after a restart");
+        result.Summary.Should().Be(Strings.Get(Strings.GdpiRemovePartial));
     }
 
     [Fact]
@@ -264,6 +295,50 @@ public sealed class DpiResetTests : IDisposable
 
     private FoxDpiSession NewSession() =>
         new(_payload, _launcher, NewStatus(), _folder, (_, _) => Task.CompletedTask, _payload.Hashes);
+
+    [Fact]
+    public async Task Ending_FoxDPI_lets_the_driver_go_and_an_idle_session_does_not_touch_it()
+    {
+        var unloads = 0;
+        var session = new FoxDpiSession(
+            _payload, _launcher, NewStatus(), _folder, (_, _) => Task.CompletedTask, _payload.Hashes,
+            unloadDriver: _ =>
+            {
+                unloads++;
+                return Task.CompletedTask;
+            });
+
+        await session.StopAsync();
+        unloads.Should().Be(0, "nothing was running, so there is nothing to let go");
+
+        (await session.StartAsync(GoodbyeDpiProfiles.Find("turkey-2")!, CancellationToken.None)).Started.Should().BeTrue();
+        await session.StopAsync();
+
+        unloads.Should().Be(1);
+        session.IsRunning.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Starting_again_waits_until_the_driver_of_the_run_that_just_ended_is_gone()
+    {
+        var release = new TaskCompletionSource();
+        var session = new FoxDpiSession(
+            _payload, _launcher, NewStatus(), _folder, (_, _) => Task.CompletedTask, _payload.Hashes,
+            unloadDriver: _ => release.Task);
+        (await session.StartAsync(GoodbyeDpiProfiles.Find("turkey-2")!, CancellationToken.None)).Started.Should().BeTrue();
+
+        var stopping = session.StopAsync();
+        var startingAgain = session.StartAsync(GoodbyeDpiProfiles.Find("turkey-2")!, CancellationToken.None);
+        await Task.Delay(150);
+
+        startingAgain.IsCompleted.Should().BeFalse("the driver is still being removed; a new run would hit it half-deleted");
+        _launcher.Started.Should().HaveCount(1);
+
+        release.SetResult();
+        await stopping;
+        (await startingAgain).Started.Should().BeTrue();
+        _launcher.Started.Should().HaveCount(2);
+    }
 
     [Fact]
     public async Task Starting_writes_the_files_runs_the_chosen_setting_hidden_and_remembers_it()

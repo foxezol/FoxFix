@@ -223,6 +223,20 @@ public static class Strings
     public const string FlowUndoUnknownFix = nameof(FlowUndoUnknownFix);
     public const string FlowNeedsAdmin = nameof(FlowNeedsAdmin);
 
+    public const string UninstallTitle = nameof(UninstallTitle);
+    public const string UninstallPreviewDpi = nameof(UninstallPreviewDpi);
+    public const string UninstallPreviewTask = nameof(UninstallPreviewTask);
+    public const string UninstallPreviewData = nameof(UninstallPreviewData);
+    public const string UninstallPreviewInstalled = nameof(UninstallPreviewInstalled);
+    public const string UninstallPreviewPortable = nameof(UninstallPreviewPortable);
+    public const string UninstallPreviewManual = nameof(UninstallPreviewManual);
+    public const string UninstallIrreversible = nameof(UninstallIrreversible);
+    public const string UninstallResultInstalled = nameof(UninstallResultInstalled);
+    public const string UninstallResultClosing = nameof(UninstallResultClosing);
+    public const string UninstallResultManual = nameof(UninstallResultManual);
+    public const string FlowResultOk = nameof(FlowResultOk);
+    public const string FlowResultFailed = nameof(FlowResultFailed);
+    public const string FlowBusyText = nameof(FlowBusyText);
     public const string DpiProfile1 = nameof(DpiProfile1);
     public const string DpiProfile2 = nameof(DpiProfile2);
     public const string DpiProfile3 = nameof(DpiProfile3);

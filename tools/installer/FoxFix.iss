@@ -32,7 +32,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "Masaüstüne kısayol koy"; Flags: unchecked
-Name: "portable"; Description: "Verileri kurulum klasöründe tut (günlük, geri alma kaydı, GoodbyeDPI kopyası). Kaldırınca hepsi birlikte gider."; Flags: unchecked
+Name: "portable"; Description: "Verileri kurulum klasöründe tut (günlük, geri alma kaydı, GoodbyeDPI kopyası). Kaldırınca hepsi birlikte gider."
 
 [Files]
 Source: "{#SourceDir}\FoxFix.exe"; DestDir: "{app}"; Flags: ignoreversion
@@ -49,6 +49,14 @@ Name: "{autodesktop}\FoxFix"; Filename: "{app}\FoxFix.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\FoxFix.exe"; Description: "FoxFix'i aç (FoxDPI.exe için ilk çalıştırma)"; Flags: nowait postinstall skipifsilent shellexec
+
+; Removing from Windows' "Apps" list while FoxFix is open: close it first (a running exe cannot be deleted), then take FoxDPI's
+; service and the start-with-Windows task away, the same things FoxFix's own "FoxFix'i kaldır" button does.
+[UninstallRun]
+Filename: "{sys}\taskkill.exe"; Parameters: "/F /IM FoxFix.exe"; Flags: runhidden; RunOnceId: "FoxFixClose"
+Filename: "{sys}\sc.exe"; Parameters: "stop FoxFixGoodbyeDPI"; Flags: runhidden; RunOnceId: "FoxFixSvcStop"
+Filename: "{sys}\sc.exe"; Parameters: "delete FoxFixGoodbyeDPI"; Flags: runhidden; RunOnceId: "FoxFixSvcDelete"
+Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN ""FoxFix\FoxDPI"" /F"; Flags: runhidden; RunOnceId: "FoxFixTask"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\Veri"

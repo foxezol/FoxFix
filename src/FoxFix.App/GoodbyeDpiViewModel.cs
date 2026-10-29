@@ -235,7 +235,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     private string _trialProgressText = "";
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanAct))]
+    [NotifyPropertyChangedFor(nameof(CanAct), nameof(CanChangeSetting))]
     [NotifyCanExecuteChangedFor(nameof(RunTrialCommand), nameof(InstallServiceCommand), nameof(ToggleFoxDpiCommand), nameof(ResetCommand), nameof(ToggleAutoStartCommand))]
     private bool _isTesting;
 
@@ -244,9 +244,16 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(StopCommand), nameof(ToggleFoxDpiCommand))]
     private bool _isActive;
 
+    /// <summary>
+    /// While FoxDPI is installed as a service its setting is fixed: the list of settings and the search for the best one are
+    /// locked. Removing the service unlocks them again.
+    /// </summary>
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(RemoveServiceCommand))]
+    [NotifyPropertyChangedFor(nameof(CanChangeSetting))]
+    [NotifyCanExecuteChangedFor(nameof(RemoveServiceCommand), nameof(RunTrialCommand))]
     private bool _isServiceInstalled;
+
+    public bool CanChangeSetting => !IsServiceInstalled && !IsTesting;
 
     /// <summary>True while the FoxDPI window of this very program is the one running GoodbyeDPI.</summary>
     [ObservableProperty]
@@ -342,7 +349,9 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanAct), IncludeCancelCommand = true)]
+    private bool CanRunTrial() => CanAct && !IsServiceInstalled;
+
+    [RelayCommand(CanExecute = nameof(CanRunTrial), IncludeCancelCommand = true)]
     private async Task RunTrialAsync(CancellationToken ct)
     {
         var targets = TrialTargets.Parse(Hosts);

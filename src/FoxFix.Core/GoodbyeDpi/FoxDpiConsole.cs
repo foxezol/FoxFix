@@ -14,6 +14,7 @@ public sealed class FoxDpiSession
 {
     private readonly Dictionary<string, DpiRuntime> _runtimes = [];
     private readonly GoodbyeDpiStatusReader _status;
+    private readonly Func<CancellationToken, Task>? _unloadDriver;
     private readonly Func<TimeSpan, CancellationToken, Task> _delay;
 
     private IGoodbyeDpiProcess? _process;
@@ -25,8 +26,10 @@ public sealed class FoxDpiSession
         string folder,
         Func<TimeSpan, CancellationToken, Task>? delay = null,
         IReadOnlyDictionary<string, string>? expectedHashes = null,
-        IEnumerable<DpiRuntime>? otherEngines = null)
+        IEnumerable<DpiRuntime>? otherEngines = null,
+        Func<CancellationToken, Task>? unloadDriver = null)
     {
+        _unloadDriver = unloadDriver;
         _status = status;
         _delay = delay ?? Task.Delay;
         _runtimes[DpiEngines.GoodbyeDpiId] = new DpiRuntime(DpiEngines.GoodbyeDpi, payload, launcher, folder, expectedHashes);
@@ -42,7 +45,40 @@ public sealed class FoxDpiSession
 
     public GoodbyeDpiProfile? Profile { get; private set; }
 
+    /// <summary>
+    /// One start or stop at a time. Without this, starting again right after closing the window could begin while the driver of the
+    /// run that just ended was still being removed, and the new run then died with "service marked for deletion".
+    /// </summary>
+    private readonly SemaphoreSlim _gate = new(1, 1);
+
     public async Task<FoxDpiStartResult> StartAsync(GoodbyeDpiProfile profile, CancellationToken ct)
+    {
+        await _gate.WaitAsync(ct);
+        try
+        {
+            return await StartCoreAsync(profile, ct);
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    /// <summary>Ends GoodbyeDPI. Safe to call when it is not running.</summary>
+    public async Task StopAsync()
+    {
+        await _gate.WaitAsync();
+        try
+        {
+            await StopCoreAsync();
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private async Task<FoxDpiStartResult> StartCoreAsync(GoodbyeDpiProfile profile, CancellationToken ct)
     {
         if (IsRunning)
         {
@@ -94,8 +130,7 @@ public sealed class FoxDpiSession
         return new FoxDpiStartResult(true, Strings.Get(Strings.FoxDpiStarted));
     }
 
-    /// <summary>Ends GoodbyeDPI. Safe to call when it is not running.</summary>
-    public async Task StopAsync()
+    private async Task StopCoreAsync()
     {
         var process = _process;
         _process = null;
@@ -117,6 +152,19 @@ public sealed class FoxDpiSession
         finally
         {
             process.Dispose();
+        }
+
+        // FoxDPI is over: let the driver go too, so a game started next finds nothing of it in memory.
+        if (_unloadDriver is not null)
+        {
+            try
+            {
+                await _unloadDriver(CancellationToken.None);
+            }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or IOException or TimeoutException)
+            {
+                // The driver stays until the next restart; harmless.
+            }
         }
     }
 }

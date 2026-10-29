@@ -225,6 +225,20 @@
   <data name="FlowNeedsAdmin" xml:space="preserve"><value>Bu değişiklikler için yönetici izni gerekiyor.</value></data>
 
   <data name="EngineError" xml:space="preserve"><value>[FX-6002] Bu kontrol çalışırken hata çıktı: {0}</value></data>
+  <data name="UninstallTitle" xml:space="preserve"><value>FoxFix&apos;i kaldır</value></data>
+  <data name="UninstallPreviewDpi" xml:space="preserve"><value>FoxDPI çalışıyorsa kapatılır. Hizmeti, WinDivert sürücüsü ve dosyaları kaldırılır.</value></data>
+  <data name="UninstallPreviewTask" xml:space="preserve"><value>&quot;Windows açılınca başlat&quot; görevi varsa silinir.</value></data>
+  <data name="UninstallPreviewData" xml:space="preserve"><value>FoxFix&apos;in kullanıcı verileri silinir (günlükler, geri alma kayıtları): {0}</value></data>
+  <data name="UninstallPreviewInstalled" xml:space="preserve"><value>FoxFix kapanır ve kaldırma sihirbazı program dosyalarını silmek üzere arka planda çalışır.</value></data>
+  <data name="UninstallPreviewPortable" xml:space="preserve"><value>FoxFix kapanır, ardından program dosyaları ve klasörü silinir. Yalnızca FoxFix&apos;in kendi dosyaları silinir.</value></data>
+  <data name="UninstallPreviewManual" xml:space="preserve"><value>Program dosyaları silinmez, çünkü yerleri bilinmiyor. Klasörü kendiniz silebilirsiniz.</value></data>
+  <data name="UninstallIrreversible" xml:space="preserve"><value>Bu işlem geri alınamaz.</value></data>
+  <data name="UninstallResultInstalled" xml:space="preserve"><value>Kaldırma başlatıldı. FoxFix birkaç saniye içinde kapanacak, program dosyaları arka planda silinecek.</value></data>
+  <data name="UninstallResultClosing" xml:space="preserve"><value>Kaldırma başlatıldı. FoxFix birkaç saniye içinde kapanacak, dosyaları arka planda silinecek.</value></data>
+  <data name="UninstallResultManual" xml:space="preserve"><value>FoxDPI ve verileri kaldırıldı. Program dosyalarını silmek için FoxFix klasörünü kendiniz silebilirsiniz.</value></data>
+  <data name="FlowResultOk" xml:space="preserve"><value>İşlem başarılı</value></data>
+  <data name="FlowResultFailed" xml:space="preserve"><value>İşlem tamamlanamadı</value></data>
+  <data name="FlowBusyText" xml:space="preserve"><value>Yapılan işlem sürüyor, lütfen bekleyiniz.</value></data>
   <data name="DpiProfile1" xml:space="preserve"><value>Standart (-5, TTL 5, DNS yönlendirme)</value></data>
   <data name="DpiProfile2" xml:space="preserve"><value>Yalnızca -5, DNS yönlendirme yok</value></data>
   <data name="DpiProfile3" xml:space="preserve"><value>TTL 3 ve DNS yönlendirme</value></data>
