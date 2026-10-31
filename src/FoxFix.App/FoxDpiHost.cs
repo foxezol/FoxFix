@@ -76,7 +76,11 @@ public sealed class FoxDpiHost
 
     private System.Windows.Forms.NotifyIcon CreateTray()
     {
+        // A colour was chosen: the icon is drawn at run time (a RenderTargetBitmap); otherwise the icon file is used as it is.
         using var stream = Application.GetResourceStream(new Uri("pack://application:,,,/Assets/FoxDpi.ico")).Stream;
+        var icon = Application.Current.Resources[ThemeManager.DpiIconKey] is System.Windows.Media.Imaging.RenderTargetBitmap drawn
+            ? BoxedIcon.ToTrayIcon(drawn)
+            : new System.Drawing.Icon(stream);
 
         var menu = new System.Windows.Forms.ContextMenuStrip();
         menu.Items.Add("Göster", null, (_, _) => _window?.Restore());
@@ -87,7 +91,7 @@ public sealed class FoxDpiHost
 
         var tray = new System.Windows.Forms.NotifyIcon
         {
-            Icon = new System.Drawing.Icon(stream),
+            Icon = icon,
             Text = "FoxDPI aktif",
             ContextMenuStrip = menu,
             Visible = true,

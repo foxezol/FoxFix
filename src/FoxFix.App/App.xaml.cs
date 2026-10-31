@@ -65,7 +65,8 @@ public partial class App : Application
         // "--tema=acik" or "--tema=koyu" forces one (handy for screenshots).
         var settingsStore = new AppSettingsStore();
         var settings = settingsStore.Load();
-        _theme = new ThemeManager(Resources, ThemeManager.ParseForcedTheme(e.Args), LoadLogo);
+        _theme = new ThemeManager(Resources, ThemeManager.ParseForcedTheme(e.Args),
+            () => LoadImage("FoxLogo.png"), () => LoadImage("FoxDpiLogo.png"));
         _theme.Configure(settings);
 
         // FoxDPI.exe opens only FoxDPI: no splash, no main window.
@@ -352,7 +353,7 @@ public partial class App : Application
             return;
         }
 
-        _startingScreen = new SplashWindow("FoxDPI", "Assets/FoxDpiLogo.png", "FoxDPI başlatılıyor…");
+        _startingScreen = new SplashWindow("FoxDPI", (System.Windows.Media.ImageSource)Resources[ThemeManager.DpiLogoKey], "FoxDPI başlatılıyor…");
         _startingScreen.Show();
         _startingScreen.Report(0.92, TimeSpan.FromSeconds(3.2));
     }
@@ -407,14 +408,14 @@ public partial class App : Application
         }
     }
 
-    /// <summary>The fox logo, which the theme paints in the accent colour on request. Null when it cannot be read.</summary>
-    private static System.Windows.Media.Imaging.BitmapSource? LoadLogo()
+    /// <summary>A logo picture, which the theme paints in the accent colour on request. Null when it cannot be read.</summary>
+    private static System.Windows.Media.Imaging.BitmapSource? LoadImage(string fileName)
     {
         try
         {
             var logo = new System.Windows.Media.Imaging.BitmapImage();
             logo.BeginInit();
-            logo.UriSource = new Uri("pack://application:,,,/FoxFix;component/Assets/FoxLogo.png");
+            logo.UriSource = new Uri("pack://application:,,,/FoxFix;component/Assets/" + fileName);
             logo.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
             logo.EndInit();
             logo.Freeze();

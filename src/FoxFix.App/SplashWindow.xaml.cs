@@ -12,12 +12,12 @@ public partial class SplashWindow : Window
     }
 
     /// <summary>The same screen for something else that takes a moment (FoxDPI starting): its own logo, name and a line under it.</summary>
-    public SplashWindow(string title, string logoPath, string subtitle)
+    public SplashWindow(string title, System.Windows.Media.ImageSource logo, string subtitle)
         : this()
     {
         Title = title;
         TitleText.Text = title;
-        Logo.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/" + logoPath));
+        Logo.Source = logo;
         SubtitleText.Text = subtitle;
         SubtitleText.Visibility = Visibility.Visible;
     }

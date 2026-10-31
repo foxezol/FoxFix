@@ -350,6 +350,53 @@ public class ThemeManagerTests
     }
 
     [Fact]
+    public void The_window_icon_is_a_box_in_the_accent_colour_and_the_shipped_icon_comes_back_with_the_default()
+    {
+        var glyph = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgra32, null, new byte[] { 158, 32, 230, 255 }, 4);
+        var shipped = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgra32, null, new byte[] { 1, 2, 3, 255 }, 4);
+        var resources = new ResourceDictionary { [ThemeManager.IconKey] = shipped, [ThemeManager.DpiIconKey] = shipped };
+        using var theme = new ThemeManager(resources, forcedLight: false, logoLoader: () => glyph, dpiLogoLoader: () => glyph);
+
+        theme.Configure(new AppSettings { AccentColor = "#2F7DF6" });
+
+        foreach (var key in new[] { ThemeManager.IconKey, ThemeManager.DpiIconKey })
+        {
+            var icon = resources[key].Should().BeOfType<RenderTargetBitmap>().Subject;
+            icon.PixelWidth.Should().Be(256);
+            icon.PixelHeight.Should().Be(256);
+        }
+
+        theme.Configure(new AppSettings());
+        resources[ThemeManager.IconKey].Should().BeSameAs(shipped);
+        resources[ThemeManager.DpiIconKey].Should().BeSameAs(shipped);
+    }
+
+    [Fact]
+    public void FoxDPIs_logo_follows_the_colour_like_FoxFixs()
+    {
+        var glyph = BitmapSource.Create(1, 1, 96, 96, PixelFormats.Bgra32, null, new byte[] { 158, 32, 230, 255 }, 4);
+        var resources = new ResourceDictionary();
+        using var theme = new ThemeManager(resources, forcedLight: false, dpiLogoLoader: () => glyph);
+
+        theme.Configure(new AppSettings { AccentColor = "#E5484D" });
+
+        resources[ThemeManager.DpiLogoKey].Should().NotBeSameAs(glyph);
+        theme.Configure(new AppSettings());
+        resources[ThemeManager.DpiLogoKey].Should().BeSameAs(glyph);
+    }
+
+    [Theory]
+    [InlineData("#9E20E6")]
+    [InlineData("#000080")]
+    [InlineData("#FFFF00")]
+    public void The_fox_stays_visible_on_the_box_whatever_the_colour(string hex)
+    {
+        ColorMath.TryParse(hex, out var box);
+        var ink = ColorMath.Contrast(Colors.Black, box) >= 3 ? Colors.Black : Colors.White;
+
+        ColorMath.Contrast(ink, box).Should().BeGreaterThanOrEqualTo(3);
+    }
+    [Fact]
     public void A_logo_that_cannot_be_read_leaves_the_resource_alone()
     {
         var resources = new ResourceDictionary();

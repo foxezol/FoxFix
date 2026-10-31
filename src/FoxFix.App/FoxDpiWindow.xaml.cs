@@ -31,6 +31,18 @@ public partial class FoxDpiWindow : Window
         if (theme is not null)
         {
             WindowTheme.Follow(this, theme);
+
+            void UpdateIcon(bool _)
+            {
+                if (Application.Current.Resources[ThemeManager.DpiIconKey] is System.Windows.Media.ImageSource icon)
+                {
+                    Icon = icon;
+                }
+            }
+
+            UpdateIcon(theme.IsLight);
+            theme.Changed += UpdateIcon;
+            Closed += (_, _) => theme.Changed -= UpdateIcon;
         }
     }
 

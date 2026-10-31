@@ -16,7 +16,9 @@
         <SolidColorBrush x:Key="AccentForeground" Color="#FFFFFF" />
         <!-- The fox logo; ThemeManager swaps it for a copy painted in the accent colour when the person asked for that. -->
         <BitmapImage x:Key="FoxLogoImage" UriSource="Assets/FoxLogo.png" />
-        <SolidColorBrush x:Key="ButtonSecondary" Color="#1E222A" />
+        <BitmapImage x:Key="FoxIconImage" UriSource="Assets/FoxFix.ico" />
+        <BitmapImage x:Key="FoxDpiLogoImage" UriSource="Assets/FoxDpiLogo.png" />
+        <BitmapImage x:Key="FoxDpiIconImage" UriSource="Assets/FoxDpi.ico" />        <SolidColorBrush x:Key="ButtonSecondary" Color="#1E222A" />
         <SolidColorBrush x:Key="StatusOk" Color="#46D18B" />
         <SolidColorBrush x:Key="StatusWarn" Color="#FFC24D" />
         <SolidColorBrush x:Key="StatusBad" Color="#FF6B6B" />

@@ -167,29 +167,99 @@ public static class LogoTint
 }
 
 /// <summary>
+/// The window and task bar icon: the fox in dark ink on a rounded square in the accent colour (the same look as the icon file),
+/// drawn at run time so it can follow the colour the person chose.
+/// </summary>
+public static class BoxedIcon
+{
+    public static BitmapSource Create(BitmapSource glyph, Color box, int size = 256)
+    {
+        // Black ink as in the icon file, unless the box is so dark that it would vanish.
+        var ink = ColorMath.Contrast(Colors.Black, box) >= 3 ? Colors.Black : Colors.White;
+        var fox = LogoTint.Tint(glyph, ink);
+
+        var visual = new DrawingVisual();
+        RenderOptions.SetBitmapScalingMode(visual, BitmapScalingMode.HighQuality);
+        using (var context = visual.RenderOpen())
+        {
+            var brush = new SolidColorBrush(box);
+            brush.Freeze();
+            context.DrawRoundedRectangle(brush, null, new Rect(0, 0, size, size), size * 0.22, size * 0.22);
+
+            var height = size * 0.74;
+            var width = height * glyph.PixelWidth / glyph.PixelHeight;
+            context.DrawImage(fox, new Rect((size - width) / 2, (size - height) / 2, width, height));
+        }
+
+        var target = new RenderTargetBitmap(size, size, 96, 96, PixelFormats.Pbgra32);
+        target.Render(visual);
+        target.Freeze();
+        return target;
+    }
+
+    /// <summary>The notification-area icon of FoxDPI, made from the same picture.</summary>
+    public static System.Drawing.Icon ToTrayIcon(BitmapSource image)
+    {
+        var scaled = new TransformedBitmap(image, new ScaleTransform(32.0 / image.PixelWidth, 32.0 / image.PixelHeight));
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(scaled));
+
+        using var stream = new System.IO.MemoryStream();
+        encoder.Save(stream);
+        stream.Position = 0;
+        using var bitmap = new System.Drawing.Bitmap(stream);
+
+        var handle = bitmap.GetHicon();
+        try
+        {
+            using var icon = System.Drawing.Icon.FromHandle(handle);
+            return (System.Drawing.Icon)icon.Clone();
+        }
+        finally
+        {
+            DestroyIcon(handle);
+        }
+    }
+
+    [DllImport("user32.dll")]
+    private static extern bool DestroyIcon(IntPtr handle);
+}
+/// <summary>
 /// Applies a palette to the application's brush resources and follows the Windows "app mode" setting live (unless the
 /// person chose light or dark themselves). Brushes are replaced (not mutated), and the XAML uses DynamicResource,
 /// so every control updates.
 /// </summary>
 public sealed class ThemeManager : IDisposable
 {
+    /// <summary>The fox (sidebar, pop-ups) and the boxed window icon, for FoxFix and for FoxDPI.</summary>
     public const string LogoKey = "FoxLogoImage";
+
+    public const string IconKey = "FoxIconImage";
+
+    public const string DpiLogoKey = "FoxDpiLogoImage";
+
+    public const string DpiIconKey = "FoxDpiIconImage";
 
     private const string PersonalizeKey = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
 
     private readonly ResourceDictionary _resources;
     private readonly bool? _forcedLight;
-    private readonly Func<BitmapSource?>? _logoLoader;
+    private readonly Brand _fox;
+    private readonly Brand _dpi;
 
-    private BitmapSource? _originalLogo;
     private Color? _appliedAccent;
     private bool _appliedLogoTint;
 
-    public ThemeManager(ResourceDictionary resources, bool? forcedLight = null, Func<BitmapSource?>? logoLoader = null)
+    public ThemeManager(
+        ResourceDictionary resources,
+        bool? forcedLight = null,
+        Func<BitmapSource?>? logoLoader = null,
+        Func<BitmapSource?>? dpiLogoLoader = null)
     {
         _resources = resources;
         _forcedLight = forcedLight;
-        _logoLoader = logoLoader;
+        _fox = new Brand(LogoKey, IconKey, logoLoader);
+        _dpi = new Brand(DpiLogoKey, DpiIconKey, dpiLogoLoader);
 
         SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
     }
@@ -247,7 +317,9 @@ public sealed class ThemeManager : IDisposable
         Apply(palette);
 
         var tint = RecolorLogo && palette.Colors["Accent"] != ThemePalettes.DefaultAccent;
-        ApplyLogo(tint ? palette.Colors["Accent"] : null);
+        var tintColor = tint ? palette.Colors["Accent"] : (Color?)null;
+        ApplyBrand(_fox, tintColor);
+        ApplyBrand(_dpi, tintColor);
 
         var changed = light != IsLight || _appliedAccent != Accent || _appliedLogoTint != tint;
         IsLight = light;
@@ -274,21 +346,52 @@ public sealed class ThemeManager : IDisposable
         }
     }
 
-    /// <summary>The logo in the sidebar, the pop-ups and the window's own icon: the original, or painted in the accent colour.</summary>
-    private void ApplyLogo(Color? tint)
+    /// <summary>
+    /// One product's pictures: the fox (sidebar, pop-ups) and the boxed window icon. Untouched they are the files as shipped;
+    /// with a colour chosen the fox is painted in it and the icon is drawn on a box of that colour.
+    /// </summary>
+    private sealed class Brand(string logoKey, string iconKey, Func<BitmapSource?>? loader)
     {
-        if (_logoLoader is null)
+        public string LogoKey { get; } = logoKey;
+
+        public string IconKey { get; } = iconKey;
+
+        public Func<BitmapSource?>? Loader { get; } = loader;
+
+        public BitmapSource? Glyph { get; set; }
+
+        public object? ShippedIcon { get; set; }
+    }
+
+    private void ApplyBrand(Brand brand, Color? tint)
+    {
+        if (brand.Loader is null)
         {
             return;
         }
 
-        _originalLogo ??= _logoLoader();
-        if (_originalLogo is null)
+        brand.Glyph ??= brand.Loader();
+        if (brand.Glyph is null)
         {
             return;
         }
 
-        _resources[LogoKey] = tint is { } color ? LogoTint.Tint(_originalLogo, color) : _originalLogo;
+        // The icon file that came with the program (from App.xaml), remembered so the default colour can bring it back.
+        brand.ShippedIcon ??= _resources.Contains(brand.IconKey) ? _resources[brand.IconKey] : null;
+
+        if (tint is { } color)
+        {
+            _resources[brand.LogoKey] = LogoTint.Tint(brand.Glyph, color);
+            _resources[brand.IconKey] = BoxedIcon.Create(brand.Glyph, color);
+        }
+        else
+        {
+            _resources[brand.LogoKey] = brand.Glyph;
+            if (brand.ShippedIcon is not null)
+            {
+                _resources[brand.IconKey] = brand.ShippedIcon;
+            }
+        }
     }
 
     private static bool ReadSystemIsLight()

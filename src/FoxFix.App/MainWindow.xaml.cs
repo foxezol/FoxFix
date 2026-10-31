@@ -123,10 +123,10 @@ public partial class MainWindow : Window
 
         WindowTheme.Follow(this, theme);
 
-        // The window and task bar icon is the fox in the accent colour, for as long as the program runs.
+        // The window and task bar icon is the boxed fox in the accent colour, for as long as the program runs.
         void UpdateIcon(bool _)
         {
-            if (Application.Current.Resources[ThemeManager.LogoKey] is System.Windows.Media.ImageSource logo)
+            if (Application.Current.Resources[ThemeManager.IconKey] is System.Windows.Media.ImageSource logo)
             {
                 Icon = logo;
             }
