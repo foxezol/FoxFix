@@ -45,6 +45,8 @@ Hata kodunun ilk hanesi, sorunun kaynaklandığı sistem bileşenini belirtir:
 | `FX-5002` | Rapor dosyası kaydedilemedi | Kayıt işlemi için farklı bir dizin seçiniz veya dosya adının işletim sistemi standartlarında (geçerli karakterlerle) yazıldığından emin olunuz. |
 | `FX-6001` | Hız testi başarısız | İnternet bağlantınızın aktif olduğunu ve Cloudflare sunucularına erişim engeli bulunmadığını doğrulayıp tekrar deneyiniz. |
 | `FX-6002` | Alt test işlemi sırasında hata | Bu durum, devam eden diğer teşhis süreçlerini etkilemez. "Yeniden kontrol et" butonuyla taramayı tekrarlayınız. |
+| `FX-6003` | Güncelleme denetlenemedi | İnternet bağlantınızı kontrol ediniz. Denetim yalnızca GitHub'a (api.github.com) bağlanır; erişim engelliyse FoxDPI açıkken tekrar deneyiniz. Yeni sürümleri depodaki Releases sayfasından da görebilirsiniz. |
+| `FX-6004` | Güncelleme indirilemedi veya doğrulanamadı | İnternet bağlantınızı kontrol edip tekrar deneyiniz. İndirilen dosyanın SHA-256 özeti yayımlananla uyuşmazsa hiçbir şey çalıştırılmaz. Sorun sürerse yeni sürümü Releases sayfasından elle indirip kurabilirsiniz. |
 | `FX-9001` | Beklenmeyen kritik hata | Hata detayları log dizinindeki crash.txt dosyasına kaydedilmiştir. Sorunun tespiti için bu dosyayı Discord üzerinden bana iletebilirsiniz. |
 
 ## Geri Bildirim ve Destek

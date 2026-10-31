@@ -41,6 +41,8 @@ public static class ErrorCodes
     public const string ReportSaveFailed = "FX-5002";
     public const string SpeedFailed = "FX-6001";
     public const string CheckFailed = "FX-6002";
+    public const string UpdateCheckFailed = "FX-6003";
+    public const string UpdateInstallFailed = "FX-6004";
     public const string Unexpected = "FX-9001";
 
     public static IReadOnlyList<ErrorInfo> All { get; } =
@@ -76,6 +78,8 @@ public static class ErrorCodes
         new(ReportSaveFailed, "Rapor dosyası kaydedilemedi", "Kayıt işlemi için farklı bir dizin seçiniz veya dosya adının işletim sistemi standartlarında (geçerli karakterlerle) yazıldığından emin olunuz."),
         new(SpeedFailed, "Hız testi başarısız", "İnternet bağlantınızın aktif olduğunu ve Cloudflare sunucularına erişim engeli bulunmadığını doğrulayıp tekrar deneyiniz."),
         new(CheckFailed, "Alt test işlemi sırasında hata", "Bu durum, devam eden diğer teşhis süreçlerini etkilemez. \"Yeniden kontrol et\" butonuyla taramayı tekrarlayınız."),
+        new(UpdateCheckFailed, "Güncelleme denetlenemedi", "İnternet bağlantınızı kontrol ediniz. Denetim yalnızca GitHub'a (api.github.com) bağlanır; erişim engelliyse FoxDPI açıkken tekrar deneyiniz. Yeni sürümleri depodaki Releases sayfasından da görebilirsiniz."),
+        new(UpdateInstallFailed, "Güncelleme indirilemedi veya doğrulanamadı", "İnternet bağlantınızı kontrol edip tekrar deneyiniz. İndirilen dosyanın SHA-256 özeti yayımlananla uyuşmazsa hiçbir şey çalıştırılmaz. Sorun sürerse yeni sürümü Releases sayfasından elle indirip kurabilirsiniz."),
         new(Unexpected, "Beklenmeyen kritik hata", "Hata detayları log dizinindeki crash.txt dosyasına kaydedilmiştir. Sorunun tespiti için bu dosyayı Discord üzerinden bana iletebilirsiniz."),
     ];
 

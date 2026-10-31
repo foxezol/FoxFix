@@ -236,7 +236,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanAct), nameof(CanChangeSetting))]
-    [NotifyCanExecuteChangedFor(nameof(RunTrialCommand), nameof(InstallServiceCommand), nameof(ToggleFoxDpiCommand), nameof(ResetCommand), nameof(ToggleAutoStartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RunTrialCommand), nameof(InstallServiceCommand), nameof(ToggleFoxDpiCommand), nameof(ResetCommand), nameof(ToggleAutoStartCommand), nameof(SetCloudflareDnsCommand))]
     private bool _isTesting;
 
     [ObservableProperty]
@@ -502,6 +502,13 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     /// </summary>
     [RelayCommand(CanExecute = nameof(IsNotTesting))]
     private Task ResetAsync() => _flow.StartManyAsync(ResetFixIds);
+
+    /// <summary>
+    /// Sets Windows' DNS to 1.1.1.1 and 1.0.0.1. Some connections need it for FoxDPI to work. It goes through the usual preview,
+    /// confirmation and undo like every other change.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(IsNotTesting))]
+    private Task SetCloudflareDnsAsync() => _flow.StartSingleCommand.ExecuteAsync(DnsCloudflareFix.FixIdValue);
 
     private System.Diagnostics.Stopwatch? _trialClock;
     private TimeSpan _stepElapsed;

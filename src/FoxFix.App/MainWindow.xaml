@@ -447,10 +447,17 @@
                               AutomationProperties.Name="FoxDPI'yı Windows açılınca başlat" />
                     <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="28,4,0,0" TextWrapping="Wrap"
                                Text="Sistem hizmeti kurmadan, zamanlanmış görev olarak çalışır. UAC (Kullanıcı Hesabı Denetimi) uyarısı gerektirmez." />
-                </StackPanel>
-                <Border Height="1" Background="{DynamicResource Divider}" Margin="0,36,0,0" />
 
-<StackPanel Margin="0,30,0,0">
+                    <TextBlock Text="Windows DNS ayarı" FontWeight="SemiBold" Margin="0,26,0,0" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap"
+                               Text="Eğer hala daha bağlanmakta sorun yaşıyorsanız Windows DNS Ayarını deneyiniz." />
+                    <Button Content="DNS'i 1.1.1.1 ve 1.0.0.1 yap" Command="{Binding Dpi.SetCloudflareDnsCommand}"
+                            Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
+                            AutomationProperties.Name="DNS'i 1.1.1.1 ve 1.0.0.1 yap" />
+                </StackPanel>
+                <Border Height="1" Background="{DynamicResource Divider}" Margin="0,22,0,0" />
+
+                <StackPanel Margin="0,22,0,0">
                     <TextBlock Text="DPI Sıfırlama" Style="{StaticResource SectionTitle}" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0" TextWrapping="Wrap"
                                Text="Bu işlem, ağ ayarlarınızı temizleyerek Windows varsayılanlarına döndürür:" />
@@ -585,6 +592,112 @@
                               AutomationProperties.Name="Maskelemeyi devre dışı bırak" />
                 </StackPanel>
             </StackPanel>
+
+            <!-- ============ SETTINGS ============ -->
+            <StackPanel Visibility="{Binding IsSettings, Converter={StaticResource BoolToVis}}">
+
+                <StackPanel Margin="0,24,0,0">
+                    <TextBlock Text="Güncellemeler" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="Seçili olduğunda FoxFix her açıldığında arka planda GitHub'a en son sürümü sorar ve yeni bir sürüm varsa pencere ile haber verir. Yeni sürüm yalnızca siz &quot;Şimdi güncelle&quot; dediğinizde indirilir ve kurulur; bilgisayarınız hakkında bilgi gönderilmez." />
+                    <CheckBox Content="Güncellemeleri her açılışta otomatik denetle" IsChecked="{Binding Settings.AutoCheckUpdates}"
+                              Margin="0,14,0,0" HorizontalAlignment="Left"
+                              AutomationProperties.Name="Güncellemeleri her açılışta otomatik denetle" />
+                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                        <Button Content="Güncellemeleri denetle" Command="{Binding Updates.CheckNowCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Güncellemeleri denetle" />
+                        <TextBlock Text="{Binding Updates.CurrentVersionText}" Style="{StaticResource BodyMuted}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Updates.StatusText}" Margin="0,10,0,0" TextWrapping="Wrap"
+                               AutomationProperties.LiveSetting="Polite"
+                               Visibility="{Binding Updates.HasStatus, Converter={StaticResource BoolToVis}}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Visibility="{Binding Updates.HasUpdate, Converter={StaticResource BoolToVis}}">
+                        <Button Content="Şimdi güncelle" Command="{Binding Updates.InstallCommand}"
+                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Şimdi güncelle"
+                                Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
+                        <Button Content="Sürüm sayfasını aç" Command="{Binding Updates.OpenReleaseCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sürüm sayfasını aç" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Section}" Margin="0,20,0,0">
+                    <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,18" />
+                    <TextBlock Text="Görünüm" Style="{StaticResource SectionTitle}" />
+
+                    <TextBlock Text="Tema" FontWeight="SemiBold" Margin="0,14,0,0" />
+                    <WrapPanel Margin="0,8,0,0">
+                        <RadioButton GroupName="theme" Content="Windows'a uy" IsChecked="{Binding Settings.IsSystemTheme}"
+                                     Margin="0,0,22,0" AutomationProperties.Name="Tema: Windows'a uy" />
+                        <RadioButton GroupName="theme" Content="Aydınlık" IsChecked="{Binding Settings.IsLightTheme}"
+                                     Margin="0,0,22,0" AutomationProperties.Name="Tema: Aydınlık" />
+                        <RadioButton GroupName="theme" Content="Karanlık" IsChecked="{Binding Settings.IsDarkTheme}"
+                                     AutomationProperties.Name="Tema: Karanlık" />
+                    </WrapPanel>
+
+                    <TextBlock Text="Vurgu rengi" FontWeight="SemiBold" Margin="0,22,0,0" />
+                    <ItemsControl ItemsSource="{Binding Settings.Swatches}" Margin="0,10,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Command="{Binding DataContext.Settings.PickAccentCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        CommandParameter="{Binding Hex}" ToolTip="{Binding Name}" AutomationProperties.Name="{Binding Name}"
+                                        Margin="0,0,8,8" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Ring" Width="36" Height="36" CornerRadius="18" BorderThickness="2" Padding="3"
+                                                    BorderBrush="Transparent" Background="Transparent">
+                                                <Ellipse Fill="{Binding Fill}" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Muted}" />
+                                                </Trigger>
+                                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                    <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Foreground}" />
+                                                </DataTrigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                        <TextBox Text="{Binding Settings.AccentInput, UpdateSourceTrigger=PropertyChanged}" Width="120" MaxLength="7"
+                                 HorizontalAlignment="Left" AutomationProperties.Name="Vurgu rengi (#RRGGBB)" />
+                        <Border Width="28" Height="28" CornerRadius="8" Margin="12,0,0,0" Background="{DynamicResource Accent}"
+                                BorderBrush="{DynamicResource Divider}" BorderThickness="1" />
+                        <Button Content="Varsayılan renk" Command="{Binding Settings.ResetAccentCommand}"
+                                Style="{StaticResource SecondaryButton}" Margin="14,0,0,0" AutomationProperties.Name="Varsayılan renge dön" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding Settings.AccentError}" Foreground="{DynamicResource StatusBad}" FontSize="12.5" Margin="0,6,0,0"
+                               TextWrapping="Wrap" Visibility="{Binding Settings.HasAccentError, Converter={StaticResource BoolToVis}}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,8,0,0" TextWrapping="Wrap"
+                               Text="Listeden seçebilir veya #RRGGBB biçiminde kendi renginizi yazabilirsiniz. Okunabilirlik için çok açık veya çok koyu renkler gerektiğinde otomatik olarak ayarlanır." />
+
+                    <CheckBox Content="Logoyu ve pencere simgesini de bu renge boya" IsChecked="{Binding Settings.RecolorLogo}"
+                              Margin="0,16,0,0" HorizontalAlignment="Left"
+                              AutomationProperties.Name="Logoyu ve pencere simgesini de bu renge boya" />
+                    <TextBlock Style="{StaticResource BodyMuted}" FontSize="12" Margin="28,4,0,0" TextWrapping="Wrap"
+                               Text="Uygulama içindeki logo ile program çalışırken pencere ve görev çubuğundaki simge bu renkte olur. Kısayolların ve program dosyasının simgesi Windows tarafından dosyadan okunduğu için değişmez." />
+                    <TextBlock Text="{Binding Settings.SaveError}" Foreground="{DynamicResource StatusBad}" Margin="0,12,0,0" TextWrapping="Wrap"
+                               Visibility="{Binding Settings.HasSaveError, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+
+                <StackPanel Style="{StaticResource Section}" Margin="0,20,0,0">
+                    <Border Height="1" Background="{DynamicResource Divider}" Margin="0,0,0,18" />
+                    <TextBlock Text="Uygulamayı kaldır" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0" TextWrapping="Wrap"
+                               Text="FoxDPI, hizmet, zamanlanmış görev, ayarlar ve program silinir. Bu işlem geri alınamaz; önce neler silineceği gösterilir ve onayınız istenir." />
+                    <Button Content="FoxFix'i kaldır" Command="{Binding UninstallCommand}" Style="{StaticResource DangerButton}"
+                            HorizontalAlignment="Left" Margin="0,16,0,0" AutomationProperties.Name="FoxFix'i kaldır" />
+                </StackPanel>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 
@@ -621,7 +734,7 @@
             </StackPanel>
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="8,0,0,26">
-                    <Image Source="Assets/FoxLogo.png" Height="40" RenderOptions.BitmapScalingMode="HighQuality"
+                    <Image Source="{DynamicResource FoxLogoImage}" Height="40" RenderOptions.BitmapScalingMode="HighQuality"
                            AutomationProperties.Name="FoxFix logosu" />
                     <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
                                Margin="10,0,0,0" VerticalAlignment="Center" />
@@ -683,6 +796,16 @@
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsReport}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Content="Ayarlar" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Settings}"
+                        AutomationProperties.Name="Ayarlar">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSettings}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
@@ -804,15 +927,13 @@
                               AutomationProperties.Name="Değişiklikleri onaylıyorum"
                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
-                    <CheckBox Content="İşlemlerden sonra yeniden başlat"
-                              IsChecked="{Binding Fix.AutoRestart}"
-                              AutomationProperties.Name="Kendiliğinden yeniden başlat"
+                    <CheckBox IsChecked="{Binding Fix.AutoRestart}"
+                              AutomationProperties.Name="Kendiliğinden yeniden başlat (tavsiye edilen)"
                               Visibility="{Binding Fix.ShowAutoRestartOption, Converter={StaticResource BoolToVis}}">
-                        <CheckBox.Resources>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="TextWrapping" Value="Wrap" />
-                            </Style>
-                        </CheckBox.Resources>
+                        <TextBlock TextWrapping="Wrap">
+                            <Run Text="İşlemlerden sonra yeniden başlat" />
+                            <Run Text=" (Tavsiye edilen.)" FontSize="11.5" Foreground="{DynamicResource StatusBad}" />
+                        </TextBlock>
                     </CheckBox>
 
                     <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
@@ -847,6 +968,61 @@
         </Border>
     </Grid>
 
+    <!-- ============ UPDATE AVAILABLE (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Updates.IsPromptOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="#99000000" />
+        <Border Background="{DynamicResource Card}" BorderBrush="{DynamicResource Divider}" BorderThickness="1" CornerRadius="16"
+                Padding="26" MaxWidth="460" Margin="24" VerticalAlignment="Center" HorizontalAlignment="Center"
+                RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{DynamicResource FoxLogoImage}" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Updates.PromptTitle}" Style="{StaticResource SectionTitle}" FontSize="20"
+                                   AutomationProperties.LiveSetting="Assertive" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding Updates.CurrentVersionText}" Style="{StaticResource BodyMuted}" />
+                    </StackPanel>
+                </StackPanel>
+                <ScrollViewer MaxHeight="190" VerticalScrollBarVisibility="Auto" Margin="0,16,0,0"
+                              Visibility="{Binding Updates.HasNotes, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding Updates.PromptNotes}" TextWrapping="Wrap" LineHeight="21" />
+                </ScrollViewer>
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,14,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}"
+                           Text="&quot;Şimdi güncelle&quot; yeni sürümü indirir ve dosyasının SHA-256 özetini doğrular. Ardından FoxFix kapanır, yeni sürüm kurulur ve kendiliğinden açılır. FoxDPI çalışıyorsa durur; verileriniz ve ayarlarınız korunur." />
+                <TextBlock Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,14,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding Updates.CanInstall, Converter={StaticResource InverseBoolToVis}}"
+                           Text="Sürüm sayfası tarayıcıda açılır. Yeni sürümü oradan indirebilirsiniz; güncellemeden önce FoxFix ve FoxDPI'ı kapatmanız önerilir." />
+                <StackPanel Margin="0,16,0,0" Visibility="{Binding Updates.IsInstalling, Converter={StaticResource BoolToVis}}">
+                    <ProgressBar Minimum="0" Maximum="100" Value="{Binding Updates.InstallPercent}" Height="4"
+                                 Foreground="{DynamicResource Accent}" Background="{DynamicResource Divider}" BorderThickness="0"
+                                 AutomationProperties.Name="Güncelleme ilerlemesi" />
+                    <TextBlock Text="{Binding Updates.InstallText}" Style="{StaticResource BodyMuted}" FontSize="12.5" Margin="0,6,0,0"
+                               AutomationProperties.LiveSetting="Polite" />
+                </StackPanel>
+                <TextBlock Text="{Binding Updates.InstallError}" Foreground="{DynamicResource StatusBad}" TextWrapping="Wrap" Margin="0,14,0,0"
+                           AutomationProperties.LiveSetting="Assertive"
+                           Visibility="{Binding Updates.HasInstallError, Converter={StaticResource BoolToVis}}" />
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="Şimdi güncelle" Command="{Binding Updates.InstallCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Şimdi güncelle"
+                            Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
+                    <Button Content="Sürüm sayfasını aç" Command="{Binding Updates.OpenReleaseCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Sürüm sayfasını aç"
+                            Visibility="{Binding Updates.CanInstall, Converter={StaticResource InverseBoolToVis}}" />
+                    <Button Content="Sürüm sayfası" Command="{Binding Updates.OpenReleaseCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sürüm sayfasını aç"
+                            Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
+                    <Button Content="Sonra" Command="{Binding Updates.ClosePromptCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sonra" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
     <!-- ============ INFO (pop-up) ============ -->
     <Grid Grid.ColumnSpan="2" Visibility="{Binding Info.IsOpen, Converter={StaticResource BoolToVis}}"
           IsVisibleChanged="OnDialogVisibleChanged">
@@ -859,7 +1035,7 @@
             </Border.RenderTransform>
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="Assets/FoxLogo.png" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <Image Source="{DynamicResource FoxLogoImage}" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
                     <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
                         <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding Info.VersionText}" Style="{StaticResource BodyMuted}" />
@@ -893,9 +1069,7 @@
                 </Grid>                <Grid Margin="0,22,0,0">
                     <Button Content="Kapat" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
                             HorizontalAlignment="Left" Margin="0" AutomationProperties.Name="Kapat" />
-                    <Button Content="FoxFix'i kaldır" Command="{Binding UninstallCommand}" Style="{StaticResource DangerButton}"
-                            HorizontalAlignment="Right" Margin="0" ToolTip="FoxDPI, ayarlar ve program silinir; geri alınamaz"
-                            AutomationProperties.Name="FoxFix'i kaldır" />
+
                 </Grid>
             </StackPanel>
         </Border>

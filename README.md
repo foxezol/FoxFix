@@ -2,7 +2,7 @@
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
+> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, güncelleme denetimi, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, uygulama içi güncelleme ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
 
 ## Açık Kaynak
 
@@ -11,7 +11,7 @@ FoxFix'in bütün kaynak kodu bu depoda, [MIT lisansıyla](LICENSE) yayımlanmı
 - Kodu inceleyebilirsiniz. Sistemde değişiklik yapan her işlem `src/FoxFix.Core` altında, önizleme, onay ve Geri Al kaydıyla birlikte yer alır.
 - Kendi bilgisayarınızda derleyip kendi `exe` dosyanızı üretebilirsiniz (aşağıdaki "Geliştiriciler İçin Derleme" bölümüne bakın).
 - Uygulamanın içinde taşıdığı GoodbyeDPI ve WinDivert dosyaları SHA-256 özetleriyle sabitlenmiştir. Özetler `src/FoxFix.Core/GoodbyeDpi/Files.cs` dosyasındadır, dosyalar `src/FoxFix.App/Assets/GoodbyeDpi` klasöründedir; özetleri kendiniz hesaplayıp karşılaştırabilirsiniz. Özet tutmayan dosya çalıştırılmaz.
-- Ağa çıkan işlemler şunlarla sınırlıdır: bağlantı kontrolü (açılışta ve "Yeniden kontrol et" ile ping, DNS ve HTTPS denemesi), erişim testi ve ayar denemesi (yazdığınız siteler), hız testi (siz başlatınca, Cloudflare). Telemetri ya da istatistik gönderen bir kod yoktur.
+- Ağa çıkan işlemler şunlarla sınırlıdır: bağlantı kontrolü (açılışta ve "Yeniden kontrol et" ile ping, DNS ve HTTPS denemesi), erişim testi ve ayar denemesi (yazdığınız siteler), hız testi (siz başlatınca, Cloudflare) ve güncelleme denetimi (GitHub'a, yalnızca en son sürüm numarasını soran tek bir istek; hiçbir veri göndermez ve Ayarlar sayfasından kapatılabilir; yeni sürüm yalnızca "Şimdi güncelle" dediğinizde GitHub'dan indirilir). Telemetri ya da istatistik gönderen bir kod yoktur.
 
 ## Altyapı ve Teşekkür
 
@@ -24,12 +24,14 @@ Made by foxezol, Claude Code
 ## Temel Özellikler
 
 - **Bağlantı Kontrolü:** Ağ adaptörü, IP yapılandırması, ping, DNS ve HTTPS protokollerini sırasıyla test ederek ağdaki sorunları tespit eder.
-- **DNS ve DPI:** Hazır GoodbyeDPI ayarlarını ağınızda dener (her ayar için google.com ping değeri de gösterilir) ve çalışanı bulur. Sistem hizmeti (Service) olarak veya bağımsız bir pencere üzerinden çalıştırılabilir. Windows açılınca otomatik başlatılabilir.
+- **DNS ve DPI:** Hazır GoodbyeDPI ayarlarını ağınızda dener (her ayar için google.com ping değeri de gösterilir) ve çalışanı bulur. Sistem hizmeti (Service) olarak veya bağımsız bir pencere üzerinden çalıştırılabilir. Windows açılınca otomatik başlatılabilir. Bazı bağlantılarda FoxDPI'ın çalışması için gereken "DNS'i 1.1.1.1 ve 1.0.0.1 yap" düğmesi de bu sayfadadır; önizleme gösterir ve "Geri Al" ile geri alınabilir.
 - **Erişim Testi:** Belirttiğiniz web sitelerinin erişilebilirliğini güvenli bağlantı üzerinden test eder. FoxDPI açıkken ve kapalıyken çalıştırıp karşılaştırma yapabilirsiniz.
 - **Hız Testi:** İndirme, yükleme, ping ve titreşimi ölçer. Sonucu görsel olarak panoya kopyalayıp paylaşabilirsiniz.
 - **Anlaşılır Hatalar:** Bir şey ters giderse mesajın başında `[FX-xxxx]` biçiminde bir kod bulunur. Her kodun anlamı ve çözümü [docs/HATA-KODLARI.md](docs/HATA-KODLARI.md) tablosundadır.
 - **Sistem Hızlandırma:** Başlangıç uygulamalarını yönetmenizi ve gereksiz geçici dosyaları temizlemenizi sağlar.
 - **DPI Sıfırlama:** Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını ve manuel DNS girişlerini temizleyerek ağ ayarlarını Windows varsayılanlarına döndürür.
+- **Güncelleme Denetimi:** FoxFix her açıldığında arka planda yeni bir sürüm olup olmadığına bakar; yalnızca yeni sürüm varsa bir pencere ile haber verir. Pencerede "Şimdi güncelle" dediğinizde yeni sürüm GitHub'dan indirilir ve GitHub'ın o dosya için yayımladığı SHA-256 özetiyle doğrulanır (uyuşmazsa hiçbir şey çalıştırılmaz); ardından FoxFix kapanır, güncellenir ve yeniden açılır. Verileriniz ve ayarlarınız korunur. Güncellemeyi siz başlatmadıkça hiçbir şey indirilmez veya kurulmaz. Ayarlar sayfasından kapatılabilir; aynı sayfadaki düğmeyle elle de denetlenebilir.
+- **Ayarlar ve Görünüm:** Açık, karanlık veya Windows'a uyan tema; hazır listeden ya da `#RRGGBB` olarak yazılan vurgu rengi; logonun ve pencere simgesinin bu renge boyanması. Uygulamayı kaldırma düğmesi de bu sayfadadır.
 - **Güvenli Raporlama:** Sorun tespiti için paylaşılabilir bir rapor oluşturur. Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri gibi hassas veriler varsayılan olarak maskelenir. Teşhis için yalnızca `1.1.1.1` gibi bilinen genel DNS adresleri ve `127.0.0.1` görünür bırakılır. İstendiğinde maskeleme devre dışı bırakılabilir.
 
 <img width="986" height="773" alt="image" src="https://github.com/user-attachments/assets/5967ae25-b091-428d-9205-f8cca651d928" />
@@ -44,6 +46,8 @@ Made by foxezol, Claude Code
 |---|---|
 | **Standart Kurulum** (`FoxFixSetup.exe`) | Klasik kurulum sihirbazıdır (varsayılan hedef: `Program Files\FoxFix`, klasörü siz seçersiniz). Kurulum sırasında "Verileri kurulum klasöründe tut" seçeneği işaretlenirse veriler kurulum klasöründe saklanır. İşaretlenmezse veriler `%LocalAppData%\FoxFix` ve `%ProgramData%\FoxFix` dizinlerine kaydedilir. |
 | **Taşınabilir Sürüm** (`FoxFix-…-tasinabilir.zip`) | Kurulum gerektirmez. Arşivi bir klasöre çıkartıp doğrudan çalıştırabilirsiniz. İçindeki `FoxFix.portable` dosyası, tüm verilerin (günlükler, geri alma kayıtları, DPI dosyaları) programın bulunduğu dizindeki `Veri` klasöründe tutulmasını sağlar. Klasörü sildiğinizde sistemde iz kalmaz. |
+
+**Güncelleme:** Uygulama içinden "Şimdi güncelle" düğmesiyle yapılır (yeni sürüm olduğunda açılan pencerede ya da Ayarlar sayfasında). Elle güncellemek isterseniz: kurulumlu sürümde yeni `FoxFixSetup.exe` dosyasını eskisinin üstüne çalıştırmanız yeterlidir; DPI dosyalarınız, ayarlarınız ve geri alma kayıtlarınız korunur. Taşınabilir sürümde yeni ZIP'i eski klasörün üstüne çıkartın (`Veri` klasörü ZIP'te olmadığı için silinmez). Güncellemeden önce FoxFix ve FoxDPI'ı kapatın.
 
 **Uyarı:** Uygulama dijital olarak imzalanmadığı için Windows SmartScreen uyarısı verebilir. Devam etmek için "Ek bilgi" ardından "Yine de çalıştır" seçeneğini kullanabilirsiniz. Güvenmiyorsanız projeyi kaynak kodundan kendiniz derleyebilirsiniz.
 
@@ -77,6 +81,11 @@ Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirli�
 - Hizmet (Service) kurma/kaldırma ve DPI Sıfırlama (sanal makine anlık görüntüsü ile test edilmesi önerilir).
 - Uygulamayı kaldırma ("Bilgi" penceresindeki "FoxFix'i kaldır" düğmesi) ve işlemler sonrası otomatik yeniden başlatma.
 - Hile önleme sistemleriyle (EasyAntiCheat, Vanguard, FACEIT) uyumluluk: oyun bazında değişir, test edilmemiştir.
+- DNS düğmesi (1.1.1.1 / 1.0.0.1): ayarın uygulanması ve "Geri Al" ile eski değerlerin geri gelmesi.
+- Güncelleme denetimi: yeni sürüm penceresi ve sürüm sayfasının açılması, ayarlardan kapatılabilmesi.
+- Tema ve vurgu rengi: farklı renklerde okunabilirlik; pencere ve görev çubuğu simgesinin renklenmesi.
+- "Şimdi güncelle": kurulumlu sürümde sessiz kurulumun (`FoxFixSetup.exe /VERYSILENT /YENIDEN=1`) çalışıp yeni FoxFix'in açılması; ZIP sürümde iki exe dosyasının değiştirilip yeniden başlatılması; yönetici izniyle çalışırken UAC çıkmaması.
+- Güncelleme: eski sürümün üstüne yeni kurulum ya da ZIP çıkartma (hizmet kuruluyken de).
 - Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
 - Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.
 

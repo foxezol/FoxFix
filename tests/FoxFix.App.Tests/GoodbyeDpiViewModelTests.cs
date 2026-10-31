@@ -210,7 +210,7 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
         var teardown = new GoodbyeDpiTeardown(_services, _launcher, _folder);
         var foxDpi = new FoxDpiSession(_payload, _launcher, status, _folder, (_, _) => Task.CompletedTask, _payload.Hashes);
         flow = new FixFlowViewModel(
-            [new Stub(DpiCleanupFix.FixId), new GoodbyeDpiRemoveFix(status, teardown, _folder), new Stub(DnsResetFix.FixIdValue), install, .. _autoStartFix is null ? Array.Empty<IFix>() : new IFix[] { _autoStartFix }],
+            [new Stub(DpiCleanupFix.FixId), new GoodbyeDpiRemoveFix(status, teardown, _folder), new Stub(DnsResetFix.FixIdValue), new Stub(DnsCloudflareFix.FixIdValue), install, .. _autoStartFix is null ? Array.Empty<IFix>() : new IFix[] { _autoStartFix }],
             new UndoJournal(Path.Combine(_root, "undo.json")), _elevation, new NoReboot());
         return new GoodbyeDpiViewModel(trial, install, status, teardown, foxDpi, flow, _elevation, _choice, _notice, _autoStart, _autoStartFix);
     }
@@ -501,6 +501,18 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
         await vm.PendingRefresh;
     }
 
+    [Fact]
+    public async Task The_Cloudflare_DNS_button_shows_a_preview_and_changes_nothing_before_confirmation()
+    {
+        var vm = Create(out var flow);
+
+        await vm.SetCloudflareDnsCommand.ExecuteAsync(null);
+
+        flow.Stage.Should().Be(FlowStage.AwaitingConfirmation);
+        flow.PreviewLines.Select(l => l.Text).Should().Contain("değişiklik dns-cloudflare");
+        flow.PreviewLines.Select(l => l.Text).Should().NotContain(l => l.Contains("dns-reset") || l.Contains("dpi-cleanup"), "only the DNS change is offered, not the whole reset");
+        await vm.PendingRefresh;
+    }
     [Fact]
     public async Task The_start_with_Windows_box_follows_the_scheduled_task_and_asks_before_changing_it()
     {

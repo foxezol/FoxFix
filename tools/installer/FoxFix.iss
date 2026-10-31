@@ -49,6 +49,8 @@ Name: "{autodesktop}\FoxFix"; Filename: "{app}\FoxFix.exe"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\FoxFix.exe"; Description: "FoxFix'i aç (FoxDPI.exe için ilk çalıştırma)"; Flags: nowait postinstall skipifsilent shellexec
+; "Şimdi güncelle" in FoxFix runs this setup silently with /YENIDEN=1 once the old FoxFix has closed: open the new one.
+Filename: "{app}\FoxFix.exe"; Flags: nowait shellexec; Check: IsUpdateRestart
 
 ; Removing from Windows' "Apps" list while FoxFix is open: close it first (a running exe cannot be deleted), then take FoxDPI's
 ; service and the start-with-Windows task away, the same things FoxFix's own "FoxFix'i kaldır" button does.
@@ -60,3 +62,9 @@ Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN ""FoxFix\FoxDPI"" /F"; 
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\Veri"
+
+[Code]
+function IsUpdateRestart: Boolean;
+begin
+  Result := ExpandConstant('{param:YENIDEN|0}') = '1';
+end;

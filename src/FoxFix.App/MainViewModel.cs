@@ -17,6 +17,7 @@ public enum AppPage
     DnsDpi,
     Access,
     Report,
+    Settings,
 }
 
 public enum VerdictState
@@ -87,9 +88,13 @@ public sealed partial class MainViewModel : ObservableObject
         GoodbyeDpiViewModel? dpi = null,
         Action<string>? openLink = null,
         NoticeViewModel? notice = null,
-        AccessViewModel? access = null)
+        AccessViewModel? access = null,
+        SettingsViewModel? settings = null,
+        UpdateViewModel? updates = null)
     {
         Access = access;
+        Settings = settings;
+        Updates = updates;
         Notice = notice ?? new NoticeViewModel();
         Info = new InfoViewModel(TryOpenLink);
         Dpi = dpi;
@@ -118,7 +123,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(
-        nameof(IsHome), nameof(IsConnection), nameof(IsSpeedup), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport),
+        nameof(IsHome), nameof(IsConnection), nameof(IsSpeedup), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport), nameof(IsSettings),
         nameof(ShowBack), nameof(PageTitle))]
     private AppPage _page = AppPage.Home;
 
@@ -134,8 +139,16 @@ public sealed partial class MainViewModel : ObservableObject
 
     public bool IsReport => Page == AppPage.Report;
 
+    public bool IsSettings => Page == AppPage.Settings;
+
     /// <summary>The access test; null in tests that do not need it.</summary>
     public AccessViewModel? Access { get; }
+
+    /// <summary>The Ayarlar page; null in tests that do not need it.</summary>
+    public SettingsViewModel? Settings { get; }
+
+    /// <summary>Update checks and their pop-up; null in tests that do not need them.</summary>
+    public UpdateViewModel? Updates { get; }
 
     public bool ShowBack => Page != AppPage.Home;
 
@@ -146,6 +159,7 @@ public sealed partial class MainViewModel : ObservableObject
         AppPage.DnsDpi => "DNS ve DPI",
         AppPage.Access => "Erişim testi",
         AppPage.Report => "Rapor ve geçmiş",
+        AppPage.Settings => "Ayarlar",
         _ => "",
     };
 
@@ -180,7 +194,7 @@ public sealed partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void OpenFeedback() => TryOpenLink(FeedbackUrl);
 
-    /// <summary>The red button in "Bilgi": closes the panel and shows the usual preview of what will be removed, then asks.</summary>
+    /// <summary>The red button on the Ayarlar page: closes any pop-up and shows the usual preview of what will be removed, then asks.</summary>
     [RelayCommand]
     private async Task UninstallAsync()
     {

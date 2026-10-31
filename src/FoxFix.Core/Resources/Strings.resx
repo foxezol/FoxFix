@@ -297,4 +297,20 @@
   <data name="AutoStartFailed" xml:space="preserve"><value>[FX-3001] Zamanlanmış görev ayarlanamadı: {0}</value></data>
   <data name="AutoStartUndoOn" xml:space="preserve"><value>FoxDPI&apos;nın Windows açılınca başlaması geri alınabilir</value></data>
   <data name="AutoStartUndoOff" xml:space="preserve"><value>FoxDPI&apos;nın Windows açılınca başlamaması geri alınabilir</value></data>
+  <data name="DnsCloudflareTitle" xml:space="preserve"><value>DNS&apos;i 1.1.1.1 ve 1.0.0.1 yap</value></data>
+  <data name="DnsCloudflareNothing" xml:space="preserve"><value>DNS zaten 1.1.1.1 ve 1.0.0.1.</value></data>
+  <data name="DnsCloudflarePreviewAdapter" xml:space="preserve"><value>{0}: DNS ({1}) yerine 1.1.1.1 ve 1.0.0.1 kullanılacak.</value></data>
+  <data name="DnsCloudflareAutomatic" xml:space="preserve"><value>otomatik, modemden</value></data>
+  <data name="DnsCloudflareResultDone" xml:space="preserve"><value>{0} bağlantının DNS&apos;i 1.1.1.1 ve 1.0.0.1 yapıldı.</value></data>
+  <data name="DnsCloudflareUndoDescription" xml:space="preserve"><value>{0} bağlantısının önceki DNS ayarı geri alınabilir</value></data>
+  <data name="UpdateUpToDate" xml:space="preserve"><value>FoxFix güncel.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Yeni sürüm yayımlandı: {0}</value></data>
+  <data name="UpdateFailed" xml:space="preserve"><value>Güncelleme denetlenemedi: {0}</value></data>
+  <data name="UpdateManualOnly" xml:space="preserve"><value>Bu kopya burada güncellenemez (kurulum ya da ZIP sürümü olarak tanınmadı). Yeni sürümü sürüm sayfasından indirebilirsiniz.</value></data>
+  <data name="UpdateNoDigest" xml:space="preserve"><value>[FX-6004] Bu sürümün dosyası için doğrulanabilir bir SHA-256 özeti yok; güvenlik için otomatik güncelleme yapılmadı. Yeni sürümü sürüm sayfasından indirebilirsiniz.</value></data>
+  <data name="UpdateHashMismatch" xml:space="preserve"><value>[FX-6004] İndirilen dosyanın SHA-256 özeti yayımlananla uyuşmuyor. Dosya silindi ve çalıştırılmadı. Daha sonra tekrar deneyin ya da sürüm sayfasından indirin.</value></data>
+  <data name="UpdateDownloadFailed" xml:space="preserve"><value>[FX-6004] Güncelleme indirilemedi veya hazırlanamadı: {0}</value></data>
+  <data name="UpdatePathUnsafe" xml:space="preserve"><value>[FX-6004] FoxFix&apos;in bulunduğu klasörün yolunda güncelleme komutunu bozabilecek özel bir karakter var (% ^ &quot; !). Yeni sürümü sürüm sayfasından indirip elle kurabilirsiniz.</value></data>
+  <data name="UpdateRestarting" xml:space="preserve"><value>Güncelleme hazır. FoxFix kapanacak, yeni sürüm kurulacak ve kendiliğinden açılacak.</value></data>
+  <data name="UpdateStartFailed" xml:space="preserve"><value>[FX-6004] Güncelleme başlatılamadı. Yeni sürümü sürüm sayfasından indirip elle kurabilirsiniz.</value></data>
 </root>

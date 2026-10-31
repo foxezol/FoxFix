@@ -47,6 +47,7 @@ public sealed class MainViewModelTests : IDisposable
     [InlineData(AppPage.DnsDpi, "DNS ve DPI")]
     [InlineData(AppPage.Access, "Erişim testi")]
     [InlineData(AppPage.Report, "Rapor ve geçmiş")]
+    [InlineData(AppPage.Settings, "Ayarlar")]
     public void Each_card_opens_its_own_page_with_its_title_and_a_back_button(AppPage page, string title)
     {
         var vm = CreateWithChecks();
@@ -68,7 +69,7 @@ public sealed class MainViewModelTests : IDisposable
         {
             vm.OpenPageCommand.Execute(page);
 
-            new[] { vm.IsHome, vm.IsConnection, vm.IsSpeedup, vm.IsDnsDpi, vm.IsAccess, vm.IsReport }
+            new[] { vm.IsHome, vm.IsConnection, vm.IsSpeedup, vm.IsDnsDpi, vm.IsAccess, vm.IsReport, vm.IsSettings }
                 .Count(shown => shown).Should().Be(1, $"only {page} is shown");
         }
     }

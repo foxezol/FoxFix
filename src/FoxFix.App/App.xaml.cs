@@ -12,7 +12,9 @@ using FoxFix.Core.GoodbyeDpi;
 using FoxFix.Core.Network;
 using FoxFix.Core.Reporting;
 using FoxFix.Core.Safety;
+using FoxFix.Core.Settings;
 using FoxFix.Core.SpeedTest;
+using FoxFix.Core.Updates;
 
 namespace FoxFix.App;
 
@@ -59,9 +61,12 @@ public partial class App : Application
         };
         AppDomain.CurrentDomain.UnhandledException += (_, args) => CrashLog.Write(args.ExceptionObject as Exception);
 
-        // Follows the Windows light/dark setting live; "--tema=acik" or "--tema=koyu" forces one (handy for screenshots).
-        _theme = new ThemeManager(Resources, ThemeManager.ParseForcedTheme(e.Args));
-        _theme.Refresh();
+        // Follows the Windows light/dark setting live unless the person chose a theme and colour on the Ayarlar page;
+        // "--tema=acik" or "--tema=koyu" forces one (handy for screenshots).
+        var settingsStore = new AppSettingsStore();
+        var settings = settingsStore.Load();
+        _theme = new ThemeManager(Resources, ThemeManager.ParseForcedTheme(e.Args), LoadLogo);
+        _theme.Configure(settings);
 
         // FoxDPI.exe opens only FoxDPI: no splash, no main window.
         var onlyFoxDpi = e.Args.Contains(DirectStart.Argument);
@@ -102,6 +107,7 @@ public partial class App : Application
         var cleanup = new DpiCleanupFix(detector, services, serviceManager, new SystemProcessKiller());
         var dnsRepair = new DnsRepairFix(network, services, dnsConfigurator);
         var dnsReset = new DnsResetFix(network, services, dnsConfigurator);
+        var dnsCloudflare = new DnsCloudflareFix(network, services, dnsConfigurator);
         var journal = new UndoJournal(UndoJournal.DefaultPath);
         var startupFix = new StartupFix(new RegistryStartupStore());
         var cleanupTargets = CleanupTargets.Default();
@@ -115,31 +121,15 @@ public partial class App : Application
         var notice = new NoticeViewModel();
         var autoStart = new FoxDpiAutoStart(runner);
         var autoStartFix = new FoxDpiAutoStartFix(autoStart, () => Environment.ProcessPath, () => Environment.UserDomainName + "\\" + Environment.UserName);
+        var installPlan = UninstallPlan.Create(Environment.ProcessPath, AppPaths.LocalRoot, AppPaths.SharedRoot);
         var uninstall = new UninstallFix(
             autoStart, gdpiTeardown, () => foxDpi.StopAsync(),
-            UninstallPlan.Create(Environment.ProcessPath, AppPaths.LocalRoot, AppPaths.SharedRoot),
-            startFinisher: command =>
-            {
-                try
-                {
-                    // Detached on purpose: it outlives FoxFix, waits for it to close and then deletes what a running program cannot.
-                    using var started = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe", $"/d /s /c \"{command}\"")
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WorkingDirectory = Environment.SystemDirectory,
-                    });
-                    return started is not null;
-                }
-                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
-                {
-                    return false;
-                }
-            },
+            installPlan,
+            startFinisher: StartDetached,
             exitApp: () => _ = Task.Delay(3500).ContinueWith(_ => Dispatcher.InvokeAsync(Shutdown)));
         var elevation = new WindowsElevation();
         var fixFlow = new FixFlowViewModel(
-            [cleanup, gdpiRemove, dnsRepair, dnsReset, gdpiInstall, autoStartFix, uninstall, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
+            [cleanup, gdpiRemove, dnsRepair, dnsReset, dnsCloudflare, gdpiInstall, autoStartFix, uninstall, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
 
         Func<string?> trialBlocker = () =>
         {
@@ -161,9 +151,22 @@ public partial class App : Application
             startupStore, startupFix.SetDesired, () => fixFlow.StartOptionalCommand.ExecuteAsync(StartupFix.FixIdValue), StartupIcons.Load);
         var cleanupVm = new CleanupViewModel(
             cleanupTargets, cleanupFix.Select, () => fixFlow.StartOptionalCommand.ExecuteAsync(DiskCleanupFix.FixIdValue));
+        var updates = new UpdateViewModel(
+            new UpdateChecker(new GitHubReleaseSource(GitHubReleaseSource.CreateClient())),
+            Version.Parse(InfoViewModel.Version),
+            url => OpenLinkOrExplain(url, notice),
+            UpdateLog.Write,
+            new SelfUpdater(
+                new HttpPackageDownloader(HttpPackageDownloader.CreateClient()), installPlan.Kind, installPlan.ProgramFolder,
+                Path.Combine(AppPaths.SharedRoot, SelfUpdater.WorkFolderName)),
+            () => foxDpi.StopAsync(),
+            StartDetached,
+            () => _ = Task.Delay(1500).ContinueWith(_ => Dispatcher.InvokeAsync(Shutdown)));
+        var settingsVm = new SettingsViewModel(settingsStore, settings, _theme.Configure, updates);
         _main = new MainViewModel(
             engine, fixFlow, reports, new WpfClipboardService(), new WindowsReportFileSaver(),
-            speed, startupVm, cleanupVm, gdpi, OpenLink, notice, new AccessViewModel(new AccessTester(new SystemHttpsProbe()), gdpi));
+            speed, startupVm, cleanupVm, gdpi, OpenLink, notice, new AccessViewModel(new AccessTester(new SystemHttpsProbe()), gdpi),
+            settingsVm, updates);
         splash?.Report(0.45);
 
         // The small FoxDPI window (and its notification-area icon) exists exactly while FoxDPI runs.
@@ -224,6 +227,12 @@ public partial class App : Application
         splash.Close();
         WindowFocus.BringToFront(window);
 
+        // Quiet: nothing is shown unless a newer version exists. The Ayarlar page switches it off.
+        if (settingsVm.AutoCheckUpdates)
+        {
+            _ = updates.RunStartupCheckAsync();
+        }
+
         // Screenshot helpers: "--goster=foxdpi" opens the small FoxDPI window and "--goster=bildirim" a sample message, without changing anything.
         if (e.Args.Contains("--goster=foxdpi"))
         {
@@ -232,6 +241,10 @@ public partial class App : Application
         else if (e.Args.Contains("--goster=bildirim"))
         {
             notice.Show("FoxDPI başlamadı", Strings.Get(Strings.GdpiBlockedForeign));
+        }
+        else if (e.Args.Contains("--goster=guncelleme"))
+        {
+            updates.Offer(new ReleaseInfo(new Version(9, 9, 9), "v9.9.9", UpdateViewModel.ReleasesUrl, "- Örnek bir yenilik\n- Başka bir yenilik"), "Yeni sürüm yayımlandı: 9.9.9");
         }
 
         // The elevated relaunch from the GoodbyeDPI page comes back to that page.
@@ -359,8 +372,60 @@ public partial class App : Application
         screen.Close();
     }
 
-    private static void OpenLink(string url) =>
+    /// <summary>
+    /// Starts a command line detached: it outlives FoxFix, waits for it to close and then does what a running program cannot
+    /// (deleting or replacing its own files). Used by "FoxFix'i kaldır" and by "Şimdi güncelle".
+    /// </summary>
+    private static bool StartDetached(string command)
+    {
+        try
+        {
+            using var started = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd.exe", $"/d /s /c \"{command}\"")
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WorkingDirectory = Environment.SystemDirectory,
+            });
+            return started is not null;
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            return false;
+        }
+    }    private static void OpenLink(string url) =>
         System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
+
+    private static void OpenLinkOrExplain(string url, NoticeViewModel notice)
+    {
+        try
+        {
+            OpenLink(url);
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+        {
+            notice.Show("Bağlantı açılamadı", ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
+        }
+    }
+
+    /// <summary>The fox logo, which the theme paints in the accent colour on request. Null when it cannot be read.</summary>
+    private static System.Windows.Media.Imaging.BitmapSource? LoadLogo()
+    {
+        try
+        {
+            var logo = new System.Windows.Media.Imaging.BitmapImage();
+            logo.BeginInit();
+            logo.UriSource = new Uri("pack://application:,,,/FoxFix;component/Assets/FoxLogo.png");
+            logo.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+            logo.EndInit();
+            logo.Freeze();
+            return logo;
+        }
+        catch (Exception ex) when (ex is IOException or UriFormatException or NotSupportedException)
+        {
+            CrashLog.Write(ex);
+            return null;
+        }
+    }
 
     /// <summary>The DNS redirect is expected while FoxFix's own GoodbyeDPI runs with a setting that redirects DNS.</summary>
     private static Func<bool> RedirectIsFoxFixs(GoodbyeDpiStatusReader status) => () =>

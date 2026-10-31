@@ -354,7 +354,7 @@ public sealed class DnsRepairFixTests : IDisposable
     }
 
     /// <summary>One coherent fake: adapters whose DNS reacts to the configurator, plus a call log.</summary>
-    private sealed class FakeDnsMachine : INetworkInfoProvider, IDnsConfigurator, IServiceSource
+    internal sealed class FakeDnsMachine : INetworkInfoProvider, IDnsConfigurator, IServiceSource
     {
         private readonly List<(string Name, string Description, OperationalStatus Status)> _meta = [];
         private readonly Dictionary<string, (List<string> V4, List<string> V6)> _static = [];
@@ -454,8 +454,17 @@ public sealed class DnsRepairFixTests : IDisposable
             return Task.FromResult(!FailFlush);
         }
 
-        public Task<bool> SetStaticAsync(string adapterName, IReadOnlyList<string> v4Servers, IReadOnlyList<string> v6Servers, CancellationToken ct) =>
-            Task.FromResult(true);
+        public Task<bool> SetStaticAsync(string adapterName, IReadOnlyList<string> v4Servers, IReadOnlyList<string> v6Servers, CancellationToken ct)
+        {
+            Calls.Add($"static:{adapterName}:{string.Join(',', v4Servers)}");
+            if (FailSet.Contains(adapterName))
+            {
+                return Task.FromResult(false);
+            }
+
+            _static[adapterName] = (v4Servers.ToList(), v6Servers.ToList());
+            return Task.FromResult(true);
+        }
 
     }
 }

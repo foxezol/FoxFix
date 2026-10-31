@@ -8,7 +8,7 @@
     <Border BorderBrush="{DynamicResource Divider}" BorderThickness="1">
         <Grid>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Image x:Name="Logo" Source="Assets/FoxLogo.png" Height="118" RenderOptions.BitmapScalingMode="HighQuality"
+                <Image x:Name="Logo" Source="{DynamicResource FoxLogoImage}" Height="118" RenderOptions.BitmapScalingMode="HighQuality"
                        HorizontalAlignment="Center" />
                 <TextBlock x:Name="TitleText" Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="26" FontWeight="Bold"
                            HorizontalAlignment="Center" Margin="0,18,0,0" />

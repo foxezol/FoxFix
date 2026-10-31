@@ -38,6 +38,10 @@ public partial class MainWindow : Window
             {
                 vm.Notice.CloseCommand.Execute(null);
             }
+            else if (vm.Updates?.IsPromptOpen == true)
+            {
+                vm.Updates.ClosePromptCommand.Execute(null);
+            }
             else if (vm.Info.IsOpen)
             {
                 vm.Info.CloseCommand.Execute(null);
@@ -118,6 +122,19 @@ public partial class MainWindow : Window
         _theme = theme;
 
         WindowTheme.Follow(this, theme);
+
+        // The window and task bar icon is the fox in the accent colour, for as long as the program runs.
+        void UpdateIcon(bool _)
+        {
+            if (Application.Current.Resources[ThemeManager.LogoKey] is System.Windows.Media.ImageSource logo)
+            {
+                Icon = logo;
+            }
+        }
+
+        UpdateIcon(theme.IsLight);
+        theme.Changed += UpdateIcon;
+        Closed += (_, _) => theme.Changed -= UpdateIcon;
     }
 
     /// <summary>Fades the window in; the splash fades out at the same time so the two meet in the middle.</summary>

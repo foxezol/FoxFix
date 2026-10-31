@@ -12,6 +12,10 @@
         <SolidColorBrush x:Key="Muted" Color="#9097A5" />
         <SolidColorBrush x:Key="Accent" Color="#9E20E6" />
         <SolidColorBrush x:Key="AccentText" Color="#C58AF9" />
+        <!-- The label on an accent-coloured button: white or black, whichever reads better on the chosen colour. -->
+        <SolidColorBrush x:Key="AccentForeground" Color="#FFFFFF" />
+        <!-- The fox logo; ThemeManager swaps it for a copy painted in the accent colour when the person asked for that. -->
+        <BitmapImage x:Key="FoxLogoImage" UriSource="Assets/FoxLogo.png" />
         <SolidColorBrush x:Key="ButtonSecondary" Color="#1E222A" />
         <SolidColorBrush x:Key="StatusOk" Color="#46D18B" />
         <SolidColorBrush x:Key="StatusWarn" Color="#FFC24D" />
@@ -90,7 +94,7 @@
             <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Background" Value="{DynamicResource Accent}" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentForeground}" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Margin" Value="0,0,10,0" />
             <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -424,7 +428,7 @@
                             <Border x:Name="Box" Width="18" Height="18" CornerRadius="5" BorderThickness="1.5"
                                     BorderBrush="{DynamicResource Muted}" Background="Transparent" VerticalAlignment="Top" Margin="0,1,0,0">
                                 <Path x:Name="Tick" Data="M1,5 L4,8 L10,1" Width="10" Height="8" Stretch="Uniform"
-                                      Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                      Stroke="{DynamicResource AccentForeground}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                       StrokeLineJoin="Round" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
                             </Border>
                             <ContentPresenter Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True" />

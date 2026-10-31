@@ -300,6 +300,24 @@ public static class Strings
     public const string AutoStartUndoOn = nameof(AutoStartUndoOn);
     public const string AutoStartUndoOff = nameof(AutoStartUndoOff);
 
+    public const string DnsCloudflareTitle = nameof(DnsCloudflareTitle);
+    public const string DnsCloudflareNothing = nameof(DnsCloudflareNothing);
+    public const string DnsCloudflarePreviewAdapter = nameof(DnsCloudflarePreviewAdapter);
+    public const string DnsCloudflareAutomatic = nameof(DnsCloudflareAutomatic);
+    public const string DnsCloudflareResultDone = nameof(DnsCloudflareResultDone);
+    public const string DnsCloudflareUndoDescription = nameof(DnsCloudflareUndoDescription);
+    public const string UpdateUpToDate = nameof(UpdateUpToDate);
+    public const string UpdateAvailable = nameof(UpdateAvailable);
+    public const string UpdateFailed = nameof(UpdateFailed);
+
+    public const string UpdateManualOnly = nameof(UpdateManualOnly);
+    public const string UpdateNoDigest = nameof(UpdateNoDigest);
+    public const string UpdateHashMismatch = nameof(UpdateHashMismatch);
+    public const string UpdateDownloadFailed = nameof(UpdateDownloadFailed);
+    public const string UpdatePathUnsafe = nameof(UpdatePathUnsafe);
+    public const string UpdateRestarting = nameof(UpdateRestarting);
+    public const string UpdateStartFailed = nameof(UpdateStartFailed);
+
     public const string EngineError = nameof(EngineError);
 
     private static readonly ResourceManager Manager = new("FoxFix.Core.Resources.Strings", typeof(Strings).Assembly);
