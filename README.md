@@ -2,7 +2,7 @@
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, güncelleme denetimi, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, uygulama içi güncelleme, Windows ayarları sayfası ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
+> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, Windows ayarları sayfası ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Güncelleme denetimi ve uygulama içi güncelleme gerçek bir bilgisayarda denenmiştir (0.10.1'den 0.10.2'ye) ve çalışmaktadır. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
 
 ## Açık Kaynak
 
@@ -85,9 +85,8 @@ Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirli�
 - Uygulamayı kaldırma ("Bilgi" penceresindeki "FoxFix'i kaldır" düğmesi) ve işlemler sonrası otomatik yeniden başlatma.
 - Hile önleme sistemleriyle (EasyAntiCheat, Vanguard, FACEIT) uyumluluk: oyun bazında değişir, test edilmemiştir.
 - DNS düğmesi (1.1.1.1 / 1.0.0.1): ayarın uygulanması ve "Geri Al" ile eski değerlerin geri gelmesi.
-- Güncelleme denetimi: yeni sürüm penceresi ve sürüm sayfasının açılması, ayarlardan kapatılabilmesi.
 - Tema ve vurgu rengi: farklı renklerde okunabilirlik; pencere ve görev çubuğu simgesinin renklenmesi.
-- "Şimdi güncelle": kurulumlu sürümde sessiz kurulumun (`FoxFixSetup.exe /VERYSILENT /YENIDEN=1`) çalışıp yeni FoxFix'in açılması; ZIP sürümde iki exe dosyasının değiştirilip yeniden başlatılması; yönetici izniyle çalışırken UAC çıkmaması.
+- "Şimdi güncelle": bir kopyada denenmiş ve çalışmıştır; kurulumlu sürümde sessiz kurulumun (`FoxFixSetup.exe /VERYSILENT /YENIDEN=1`) ve ZIP sürümde iki exe dosyasının değiştirilmesinin ikisinin de ayrı ayrı, yönetici izniyle çalışırken UAC çıkmadan denenmesi gerekir.
 - Windows ayarları: kayıt defteri değişikliklerinin gerçek bir Windows'ta uygulanması ve "Geri Al" ile eski değerlerin (ve FoxFix'in oluşturduğu anahtarların silinmesinin) geri gelmesi. Sanal makine anlık görüntüsüyle denenmesi önerilir.
 - Windows ayarları: "Şu anki ayarları kaydet", ayarları uygulama ve kayıttan "Geri yükle"; "Windows varsayılanına döndür" düğmesinin gerçek Windows varsayılanlarını verdiği.
 - Güncelleme: eski sürümün üstüne yeni kurulum ya da ZIP çıkartma (hizmet kuruluyken de).
