@@ -15,7 +15,40 @@ public class ThemePaletteTests
     [
         "Background", "Card", "Divider", "Foreground", "Muted", "Accent", "AccentText", "AccentForeground",
         "ButtonSecondary", "StatusOk", "StatusWarn", "StatusBad", "StatusNeutral",
+        "Raised", "AccentSoft", "OkSoft", "WarnSoft", "BadSoft",
     ];
+
+    [Theory]
+    [MemberData(nameof(Names))]
+    public void Text_stays_readable_on_the_tinted_surfaces(string name)
+    {
+        var c = Palette(name).Colors;
+
+        foreach (var key in new[] { "AccentSoft", "OkSoft", "WarnSoft", "BadSoft", "Raised" })
+        {
+            Contrast(c["Foreground"], c[key]).Should().BeGreaterThanOrEqualTo(4.5, $"body text on {key} ({name})");
+            Contrast(c["Muted"], c[key]).Should().BeGreaterThanOrEqualTo(4.5, $"muted text on {key} ({name})");
+        }
+
+        // The current page's mark and a callout's status words sit on these tints too.
+        Contrast(c["StatusOk"], c["OkSoft"]).Should().BeGreaterThanOrEqualTo(4.5, name);
+        Contrast(c["StatusBad"], c["BadSoft"]).Should().BeGreaterThanOrEqualTo(4.5, name);
+        Contrast(c["AccentText"], c["AccentSoft"]).Should().BeGreaterThanOrEqualTo(3.0, $"menu mark ({name})");
+    }
+
+    [Fact]
+    public void A_chosen_accent_colour_also_gets_a_readable_tint()
+    {
+        foreach (var light in new[] { true, false })
+        {
+            foreach (var hex in new[] { "#FFFF00", "#000080", "#2F7DF6", "#E5484D" })
+            {
+                ColorMath.TryParse(hex, out var accent).Should().BeTrue();
+                var c = ThemePalettes.Build(light, accent).Colors;
+                Contrast(c["Foreground"], c["AccentSoft"]).Should().BeGreaterThanOrEqualTo(4.5, $"{hex} light={light}");
+            }
+        }
+    }
 
     public static TheoryData<string> Names => ["koyu", "açık"];
 

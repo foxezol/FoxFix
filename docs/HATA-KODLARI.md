@@ -41,6 +41,10 @@ Hata kodunun ilk hanesi, sorunun kaynaklandığı sistem bileşenini belirtir:
 | `FX-4006` | Başlangıç kaydı değiştirilemedi | İlgili kayıt defteri (Registry) girdisi korunuyor olabilir. Uygulamayı yönetici yetkileriyle başlatıp yeniden deneyiniz. |
 | `FX-4007` | Dosya temizleme işlemi başarısız | Hedef dosyalar halihazırda başka bir sistem işlemi tarafından kullanılıyor olabilir. İlgili uygulamaları kapatarak tekrar deneyiniz. |
 | `FX-4008` | Yeniden başlatma komutu işlenemedi | Bilgisayarınızı manuel olarak yeniden başlatınız. Mevcut bir yeniden başlatma zamanlayıcısını iptal etmek için komut satırına (CMD) shutdown /a yazabilirsiniz. |
+| `FX-4009` | Windows ayarı uygulanamadı | Yönetici haklarıyla çalıştığınızdan emin olunuz. İlgili kayıt defteri anahtarı kurumsal bir ilke (grup ilkesi) veya güvenlik yazılımı tarafından korunuyor olabilir. Değişiklik yarım kalırsa FoxFix eski değerleri geri yazar; yazamazsa mesajda belirtir ve "Rapor ve geçmiş" sayfasındaki Geri Al ile denenebilir. |
+| `FX-4010` | Windows ayarları kaydedilemedi | Kayıtlar FoxFix veri klasöründeki ayar-yedekleri klasörüne yazılır. Diskte yer olduğundan ve klasöre yazma iznizin bulunduğundan emin olunuz; güvenlik yazılımı klasörü engelliyor olabilir. |
+| `FX-4011` | Kayıtlı Windows ayarları geri yüklenemedi | Yönetici haklarıyla çalıştığınızdan emin olunuz. Geri yükleme yarım kalırsa FoxFix önceki değerleri geri yazar; yazamazsa mesajda belirtir ve "Rapor ve geçmiş" sayfasındaki Geri Al ile denenebilir. |
+| `FX-4012` | Kayıtlı Windows ayarı okunamadı | Kayıt dosyası silinmiş, değiştirilmiş veya bozulmuş olabilir. Dosyayı ayar-yedekleri klasöründen silip ayarları yeniden kaydedebilirsiniz. |
 | `FX-5001` | Rapor oluşturulamadı | İşlemi tekrarlayınız. Sorun devam ederse uygulamayı tamamen kapatıp yeniden başlatınız. |
 | `FX-5002` | Rapor dosyası kaydedilemedi | Kayıt işlemi için farklı bir dizin seçiniz veya dosya adının işletim sistemi standartlarında (geçerli karakterlerle) yazıldığından emin olunuz. |
 | `FX-6001` | Hız testi başarısız | İnternet bağlantınızın aktif olduğunu ve Cloudflare sunucularına erişim engeli bulunmadığını doğrulayıp tekrar deneyiniz. |

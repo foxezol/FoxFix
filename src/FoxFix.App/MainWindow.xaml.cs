@@ -42,6 +42,10 @@ public partial class MainWindow : Window
             {
                 vm.Updates.ClosePromptCommand.Execute(null);
             }
+            else if (vm.Tweaks?.IsBackupPromptOpen == true)
+            {
+                vm.Tweaks.CloseBackupPromptCommand.Execute(null);
+            }
             else if (vm.Info.IsOpen)
             {
                 vm.Info.CloseCommand.Execute(null);

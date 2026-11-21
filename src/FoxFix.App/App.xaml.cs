@@ -14,6 +14,7 @@ using FoxFix.Core.Reporting;
 using FoxFix.Core.Safety;
 using FoxFix.Core.Settings;
 using FoxFix.Core.SpeedTest;
+using FoxFix.Core.Tweaks;
 using FoxFix.Core.Updates;
 
 namespace FoxFix.App;
@@ -128,9 +129,15 @@ public partial class App : Application
             installPlan,
             startFinisher: StartDetached,
             exitApp: () => _ = Task.Delay(3500).ContinueWith(_ => Dispatcher.InvokeAsync(Shutdown)));
+        var tweakCatalog = TweakCatalog.Load();
+        var registry = new SystemRegistryStore();
+        var tweakFix = new WindowsTweakFix(tweakCatalog, registry);
+        var tweakBackups = new TweakBackupStore();
+        var tweakBackupService = new TweakBackupService(tweakCatalog, registry, tweakBackups);
+        var tweakRestore = new TweakRestoreFix(tweakBackups, registry);
         var elevation = new WindowsElevation();
         var fixFlow = new FixFlowViewModel(
-            [cleanup, gdpiRemove, dnsRepair, dnsReset, dnsCloudflare, gdpiInstall, autoStartFix, uninstall, startupFix, cleanupFix], journal, elevation, new WindowsRebootService(runner));
+            [cleanup, gdpiRemove, dnsRepair, dnsReset, dnsCloudflare, gdpiInstall, autoStartFix, uninstall, startupFix, cleanupFix, tweakFix, tweakRestore], journal, elevation, new WindowsRebootService(runner));
 
         Func<string?> trialBlocker = () =>
         {
@@ -167,7 +174,12 @@ public partial class App : Application
         _main = new MainViewModel(
             engine, fixFlow, reports, new WpfClipboardService(), new WindowsReportFileSaver(),
             speed, startupVm, cleanupVm, gdpi, OpenLink, notice, new AccessViewModel(new AccessTester(new SystemHttpsProbe()), gdpi),
-            settingsVm, updates);
+            settingsVm, updates,
+            new TweaksViewModel(
+                tweakCatalog, tweakFix, Environment.OSVersion.Version.Build,
+                () => fixFlow.StartOptionalCommand.ExecuteAsync(WindowsTweakFix.FixIdValue),
+                tweakBackupService, tweakBackups, tweakRestore,
+                () => fixFlow.StartOptionalCommand.ExecuteAsync(TweakRestoreFix.FixIdValue)));
         splash?.Report(0.45);
 
         // The small FoxDPI window (and its notification-area icon) exists exactly while FoxDPI runs.
@@ -211,6 +223,7 @@ public partial class App : Application
         // Looking is read-only, so the first thing the user sees is already the answer.
         var firstCheck = _main.RunDiagnosticsCommand.ExecuteAsync(null);
         _main.Startup.RefreshCommand.Execute(null);
+        _main.Tweaks?.Refresh();
         _main.Cleanup.ScanCommand.Execute(null);
         _ = gdpi.RefreshStatusAsync();
         _mainStarted = true;
@@ -297,6 +310,7 @@ public partial class App : Application
             _mainStarted = true;
             _ = _main.RunDiagnosticsCommand.ExecuteAsync(null);
             _main.Startup.RefreshCommand.Execute(null);
+            _main.Tweaks?.Refresh();
             _main.Cleanup.ScanCommand.Execute(null);
             _ = _main.Dpi?.RefreshStatusAsync();
             _main.Dpi?.RememberChoice();

@@ -13,7 +13,7 @@ public enum AppPage
 {
     Home,
     Connection,
-    Speedup,
+    Tweaks,
     DnsDpi,
     Access,
     Report,
@@ -90,9 +90,11 @@ public sealed partial class MainViewModel : ObservableObject
         NoticeViewModel? notice = null,
         AccessViewModel? access = null,
         SettingsViewModel? settings = null,
-        UpdateViewModel? updates = null)
+        UpdateViewModel? updates = null,
+        TweaksViewModel? tweaks = null)
     {
         Access = access;
+        Tweaks = tweaks;
         Settings = settings;
         Updates = updates;
         Notice = notice ?? new NoticeViewModel();
@@ -113,6 +115,7 @@ public sealed partial class MainViewModel : ObservableObject
             {
                 startup.RefreshCommand.Execute(null);
                 cleanup.ScanCommand.Execute(null);
+                tweaks?.Refresh();
             }
         };
         _reports = reports;
@@ -123,15 +126,15 @@ public sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(
-        nameof(IsHome), nameof(IsConnection), nameof(IsSpeedup), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport), nameof(IsSettings),
-        nameof(ShowBack), nameof(PageTitle))]
+        nameof(IsHome), nameof(IsConnection), nameof(IsTweaks), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport), nameof(IsSettings),
+        nameof(ShowBack), nameof(PageTitle), nameof(PageSubtitle))]
     private AppPage _page = AppPage.Home;
 
     public bool IsHome => Page == AppPage.Home;
 
     public bool IsConnection => Page == AppPage.Connection;
 
-    public bool IsSpeedup => Page == AppPage.Speedup;
+    public bool IsTweaks => Page == AppPage.Tweaks;
 
     public bool IsDnsDpi => Page == AppPage.DnsDpi;
 
@@ -144,6 +147,9 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>The access test; null in tests that do not need it.</summary>
     public AccessViewModel? Access { get; }
 
+    /// <summary>The Windows settings page (from Win11Debloat); null in tests that do not need it.</summary>
+    public TweaksViewModel? Tweaks { get; }
+
     /// <summary>The Ayarlar page; null in tests that do not need it.</summary>
     public SettingsViewModel? Settings { get; }
 
@@ -155,7 +161,7 @@ public sealed partial class MainViewModel : ObservableObject
     public string PageTitle => Page switch
     {
         AppPage.Connection => "Bağlantı kontrolü",
-        AppPage.Speedup => "Bilgisayarı hızlandır",
+        AppPage.Tweaks => "Hızlandırma ve ayarlar",
         AppPage.DnsDpi => "DNS ve DPI",
         AppPage.Access => "Erişim testi",
         AppPage.Report => "Rapor ve geçmiş",
@@ -163,8 +169,29 @@ public sealed partial class MainViewModel : ObservableObject
         _ => "",
     };
 
+    /// <summary>One line under the page title: what the page is for, in the person's words.</summary>
+    public string PageSubtitle => Page switch
+    {
+        AppPage.Connection => "Bilgisayarınızdan internete kadar her adımın sonucu ve ayrıntısı.",
+        AppPage.Tweaks => "Açılış programları, disk temizliği ve Windows ayarları. Siz onaylamadan hiçbir şey değişmez.",
+        AppPage.DnsDpi => "Erişim engellerine karşı FoxDPI, DNS ayarı ve ağ ayarlarını sıfırlama.",
+        AppPage.Access => "Sitelere ulaşılıp ulaşılamadığını ağ ayarlarına dokunmadan dener.",
+        AppPage.Report => "FoxFix'in yaptığı değişiklikler, geri alma ve destek raporu.",
+        AppPage.Settings => "Güncellemeler, görünüm ve uygulamayı kaldırma.",
+        _ => "",
+    };
+
     [RelayCommand]
-    private void OpenPage(AppPage page) => Page = page;
+    private void OpenPage(AppPage page)
+    {
+        Page = page;
+
+        // The Windows settings change Windows itself: on arriving, the page reads the saved settings and warns when there are none.
+        if (page == AppPage.Tweaks)
+        {
+            Tweaks?.OnEntered();
+        }
+    }
 
     [RelayCommand]
     private void GoHome() => Page = AppPage.Home;
@@ -207,6 +234,9 @@ public sealed partial class MainViewModel : ObservableObject
 
     [RelayCommand]
     private void OpenRepo() => TryOpenLink(RepoUrl);
+
+    [RelayCommand]
+    private void OpenWin11Debloat() => TryOpenLink(InfoViewModel.Win11DebloatUrl);
 
     /// <summary>Raised after the project address is on the clipboard; the window shows a small "Kopyalandı" that floats up and fades.</summary>
     public event Action? RepoLinkCopied;

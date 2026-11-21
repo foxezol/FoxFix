@@ -318,6 +318,35 @@ public static class Strings
     public const string UpdateRestarting = nameof(UpdateRestarting);
     public const string UpdateStartFailed = nameof(UpdateStartFailed);
 
+    public const string TweaksTitle = nameof(TweaksTitle);
+    public const string TweaksNothing = nameof(TweaksNothing);
+    public const string TweaksRestartNote = nameof(TweaksRestartNote);
+    public const string TweaksUndoNote = nameof(TweaksUndoNote);
+    public const string TweaksUndoDescription = nameof(TweaksUndoDescription);
+    public const string TweaksResultDone = nameof(TweaksResultDone);
+    public const string TweaksResultPartial = nameof(TweaksResultPartial);
+    public const string TweaksFailed = nameof(TweaksFailed);
+    public const string TweaksFailedNotRestored = nameof(TweaksFailedNotRestored);
+    public const string TweaksUnsupportedValue = nameof(TweaksUnsupportedValue);
+    public const string TweaksUndoFailed = nameof(TweaksUndoFailed);
+
+    public const string TweaksPreviewReset = nameof(TweaksPreviewReset);
+    public const string BackupDefaultName = nameof(BackupDefaultName);
+    public const string BackupSaved = nameof(BackupSaved);
+    public const string BackupSaveFailed = nameof(BackupSaveFailed);
+    public const string BackupUnsupportedValue = nameof(BackupUnsupportedValue);
+    public const string BackupNotFound = nameof(BackupNotFound);
+    public const string BackupDeleteFailed = nameof(BackupDeleteFailed);
+    public const string BackupListProblem = nameof(BackupListProblem);
+    public const string RestoreTitle = nameof(RestoreTitle);
+    public const string RestoreNothing = nameof(RestoreNothing);
+    public const string RestorePreviewMain = nameof(RestorePreviewMain);
+    public const string RestorePreviewCount = nameof(RestorePreviewCount);
+    public const string RestoreResultDone = nameof(RestoreResultDone);
+    public const string RestoreFailed = nameof(RestoreFailed);
+    public const string RestoreFailedNotRestored = nameof(RestoreFailedNotRestored);
+    public const string RestoreUndoDescription = nameof(RestoreUndoDescription);
+
     public const string EngineError = nameof(EngineError);
 
     private static readonly ResourceManager Manager = new("FoxFix.Core.Resources.Strings", typeof(Strings).Assembly);

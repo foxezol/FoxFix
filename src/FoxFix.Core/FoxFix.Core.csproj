@@ -10,4 +10,9 @@
     <PackageReference Include="System.Management" Version="10.0.14" />
   </ItemGroup>
 
+  <!-- The Windows settings (made from Win11Debloat by tools\win11debloat-katalog.ps1). -->
+  <ItemGroup>
+    <EmbeddedResource Include="Tweaks\Katalog.json" LogicalName="Tweaks.Katalog.json" />
+  </ItemGroup>
+
 </Project>

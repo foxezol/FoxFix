@@ -20,7 +20,7 @@ public sealed partial class RepairPickerViewModel : ObservableObject
         _cleanup = cleanup;
         _flow = flow;
 
-        // The startup and cleanup choices are made on the "Bilgisayarı hızlandır" page; the picker only reflects them.
+        // The startup and cleanup choices are made on the "Hızlandırma ve ayarlar" page; the picker only reflects them.
         startup.PropertyChanged += (_, _) => Refresh();
         cleanup.PropertyChanged += (_, _) => Refresh();
     }
@@ -45,8 +45,8 @@ public sealed partial class RepairPickerViewModel : ObservableObject
     public bool StartupAvailable => _startup.HasChanges;
 
     public string StartupText => _startup.HasChanges
-        ? $"Açılışta başlayan programlar: {_startup.ChangeCount} değişiklik, Bilgisayarı hızlandır sayfasında seçtiğin"
-        : "Açılışta başlayan programlar: henüz bir şey seçmedin. Seçmek için Bilgisayarı hızlandır sayfasına bak.";
+        ? $"Açılışta başlayan programlar: {_startup.ChangeCount} değişiklik, Hızlandırma ve ayarlar sayfasında seçtiğin"
+        : "Açılışta başlayan programlar: henüz bir şey seçmedin. Seçmek için Hızlandırma ve ayarlar sayfasına bak.";
 
     public string CleanupText => _cleanup.HasSelection
         ? $"Disk temizliği: seçtiklerin {_cleanup.SelectedTotalText} yer açar"

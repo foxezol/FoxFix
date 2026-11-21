@@ -37,6 +37,10 @@ public static class ErrorCodes
     public const string StartupChangeFailed = "FX-4006";
     public const string CleanupFailed = "FX-4007";
     public const string RebootFailed = "FX-4008";
+    public const string TweakFailed = "FX-4009";
+    public const string BackupSaveFailed = "FX-4010";
+    public const string BackupRestoreFailed = "FX-4011";
+    public const string BackupUnreadable = "FX-4012";
     public const string ReportBuildFailed = "FX-5001";
     public const string ReportSaveFailed = "FX-5002";
     public const string SpeedFailed = "FX-6001";
@@ -74,6 +78,10 @@ public static class ErrorCodes
         new(StartupChangeFailed, "Başlangıç kaydı değiştirilemedi", "İlgili kayıt defteri (Registry) girdisi korunuyor olabilir. Uygulamayı yönetici yetkileriyle başlatıp yeniden deneyiniz."),
         new(CleanupFailed, "Dosya temizleme işlemi başarısız", "Hedef dosyalar halihazırda başka bir sistem işlemi tarafından kullanılıyor olabilir. İlgili uygulamaları kapatarak tekrar deneyiniz."),
         new(RebootFailed, "Yeniden başlatma komutu işlenemedi", "Bilgisayarınızı manuel olarak yeniden başlatınız. Mevcut bir yeniden başlatma zamanlayıcısını iptal etmek için komut satırına (CMD) shutdown /a yazabilirsiniz."),
+        new(TweakFailed, "Windows ayarı uygulanamadı", "Yönetici haklarıyla çalıştığınızdan emin olunuz. İlgili kayıt defteri anahtarı kurumsal bir ilke (grup ilkesi) veya güvenlik yazılımı tarafından korunuyor olabilir. Değişiklik yarım kalırsa FoxFix eski değerleri geri yazar; yazamazsa mesajda belirtir ve \"Rapor ve geçmiş\" sayfasındaki Geri Al ile denenebilir."),
+        new(BackupSaveFailed, "Windows ayarları kaydedilemedi", "Kayıtlar FoxFix veri klasöründeki ayar-yedekleri klasörüne yazılır. Diskte yer olduğundan ve klasöre yazma iznizin bulunduğundan emin olunuz; güvenlik yazılımı klasörü engelliyor olabilir."),
+        new(BackupRestoreFailed, "Kayıtlı Windows ayarları geri yüklenemedi", "Yönetici haklarıyla çalıştığınızdan emin olunuz. Geri yükleme yarım kalırsa FoxFix önceki değerleri geri yazar; yazamazsa mesajda belirtir ve \"Rapor ve geçmiş\" sayfasındaki Geri Al ile denenebilir."),
+        new(BackupUnreadable, "Kayıtlı Windows ayarı okunamadı", "Kayıt dosyası silinmiş, değiştirilmiş veya bozulmuş olabilir. Dosyayı ayar-yedekleri klasöründen silip ayarları yeniden kaydedebilirsiniz."),
         new(ReportBuildFailed, "Rapor oluşturulamadı", "İşlemi tekrarlayınız. Sorun devam ederse uygulamayı tamamen kapatıp yeniden başlatınız."),
         new(ReportSaveFailed, "Rapor dosyası kaydedilemedi", "Kayıt işlemi için farklı bir dizin seçiniz veya dosya adının işletim sistemi standartlarında (geçerli karakterlerle) yazıldığından emin olunuz."),
         new(SpeedFailed, "Hız testi başarısız", "İnternet bağlantınızın aktif olduğunu ve Cloudflare sunucularına erişim engeli bulunmadığını doğrulayıp tekrar deneyiniz."),

@@ -85,32 +85,36 @@ public static class ThemePalettes
 {
     public static Color DefaultAccent { get; } = Rgb(0x9E20E6);
 
+    // 0.10: a blue-slate ink instead of a neutral black, so the purple sits on something with a temperature of its own.
+    // "Card" is every raised surface (the menu, panels, pop-ups); "Raised" is a control on it, or a surface under the pointer.
     private static readonly Dictionary<string, Color> DarkBase = new()
     {
-        ["Background"] = Rgb(0x0F1115),
-        ["Card"] = Rgb(0x16191F),
-        ["Divider"] = Rgb(0x23272F),
-        ["Foreground"] = Rgb(0xECEEF2),
-        ["Muted"] = Rgb(0x9097A5),
-        ["ButtonSecondary"] = Rgb(0x1E222A),
-        ["StatusOk"] = Rgb(0x46D18B),
-        ["StatusWarn"] = Rgb(0xFFC24D),
-        ["StatusBad"] = Rgb(0xFF6B6B),
-        ["StatusNeutral"] = Rgb(0x9097A5),
+        ["Background"] = Rgb(0x10131A),
+        ["Card"] = Rgb(0x181C25),
+        ["Divider"] = Rgb(0x2A303D),
+        ["Foreground"] = Rgb(0xE9EDF4),
+        ["Muted"] = Rgb(0x9AA3B5),
+        ["ButtonSecondary"] = Rgb(0x232835),
+        ["Raised"] = Rgb(0x2B3140),
+        ["StatusOk"] = Rgb(0x3DD68C),
+        ["StatusWarn"] = Rgb(0xF5B946),
+        ["StatusBad"] = Rgb(0xFF7A70),
+        ["StatusNeutral"] = Rgb(0x9AA3B5),
     };
 
     private static readonly Dictionary<string, Color> LightBase = new()
     {
-        ["Background"] = Rgb(0xFAFAFB),
+        ["Background"] = Rgb(0xF3F4F7),
         ["Card"] = Rgb(0xFFFFFF),
-        ["Divider"] = Rgb(0xE6E8EC),
-        ["Foreground"] = Rgb(0x1B1E23),
-        ["Muted"] = Rgb(0x56606D),
-        ["ButtonSecondary"] = Rgb(0xEEF0F3),
-        ["StatusOk"] = Rgb(0x17794A),
-        ["StatusWarn"] = Rgb(0x9A5B00),
-        ["StatusBad"] = Rgb(0xC0262D),
-        ["StatusNeutral"] = Rgb(0x56606D),
+        ["Divider"] = Rgb(0xDDE1E8),
+        ["Foreground"] = Rgb(0x161A22),
+        ["Muted"] = Rgb(0x535C6C),
+        ["ButtonSecondary"] = Rgb(0xEBEDF2),
+        ["Raised"] = Rgb(0xE1E4EB),
+        ["StatusOk"] = Rgb(0x15774A),
+        ["StatusWarn"] = Rgb(0x965800),
+        ["StatusBad"] = Rgb(0xBF2A2F),
+        ["StatusNeutral"] = Rgb(0x535C6C),
     };
 
     public static ThemePalette Dark { get; } = Build(light: false, DefaultAccent);
@@ -132,6 +136,16 @@ public static class ThemePalettes
         colors["Accent"] = shape;
         colors["AccentText"] = text;
         colors["AccentForeground"] = ColorMath.Contrast(Colors.White, shape) >= ColorMath.Contrast(Colors.Black, shape) ? Colors.White : Colors.Black;
+
+        // Tinted backgrounds for the active page, a selected row and status notes. Only a tint of the panel colour, so the text
+        // on them keeps the contrast it has on a panel (checked in the tests).
+        var card = colors["Card"];
+        var tint = light ? 0.10 : 0.16;
+        const double statusTint = 0.08;
+        colors["AccentSoft"] = ColorMath.Mix(card, shape, tint);
+        colors["OkSoft"] = ColorMath.Mix(card, colors["StatusOk"], statusTint);
+        colors["WarnSoft"] = ColorMath.Mix(card, colors["StatusWarn"], statusTint);
+        colors["BadSoft"] = ColorMath.Mix(card, colors["StatusBad"], statusTint);
 
         return new ThemePalette(light ? "açık" : "koyu", colors);
     }

@@ -313,4 +313,31 @@
   <data name="UpdatePathUnsafe" xml:space="preserve"><value>[FX-6004] FoxFix&apos;in bulunduğu klasörün yolunda güncelleme komutunu bozabilecek özel bir karakter var (% ^ &quot; !). Yeni sürümü sürüm sayfasından indirip elle kurabilirsiniz.</value></data>
   <data name="UpdateRestarting" xml:space="preserve"><value>Güncelleme hazır. FoxFix kapanacak, yeni sürüm kurulacak ve kendiliğinden açılacak.</value></data>
   <data name="UpdateStartFailed" xml:space="preserve"><value>[FX-6004] Güncelleme başlatılamadı. Yeni sürümü sürüm sayfasından indirip elle kurabilirsiniz.</value></data>
+  <data name="TweaksTitle" xml:space="preserve"><value>Windows ayarları</value></data>
+  <data name="TweaksNothing" xml:space="preserve"><value>Seçilen ayarlar zaten uygulanmış ya da hiçbir ayar seçilmedi.</value></data>
+  <data name="TweaksRestartNote" xml:space="preserve"><value>Bazı değişiklikler oturumu kapatıp açınca ya da bilgisayarı yeniden başlatınca görünür.</value></data>
+  <data name="TweaksUndoNote" xml:space="preserve"><value>Değişiklikler &quot;Geri Al&quot; ile eski haline döndürülebilir.</value></data>
+  <data name="TweaksUndoDescription" xml:space="preserve"><value>Windows ayarı geri alınabilir: {0}</value></data>
+  <data name="TweaksResultDone" xml:space="preserve"><value>{0} ayar uygulandı.</value></data>
+  <data name="TweaksResultPartial" xml:space="preserve"><value>{0} ayar uygulandı, {1} ayarda hata oldu.</value></data>
+  <data name="TweaksFailed" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot; uygulanamadı, yapılan değişiklik geri alındı: {1}</value></data>
+  <data name="TweaksFailedNotRestored" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot; uygulanamadı ve eski değerler tamamen geri yazılamadı: {1} &quot;Rapor ve geçmiş&quot; sayfasından Geri Al&apos;ı deneyin.</value></data>
+  <data name="TweaksUnsupportedValue" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot;: kayıt defterindeki mevcut değer FoxFix&apos;in geri yazamayacağı bir türde, dokunulmadı.</value></data>
+  <data name="TweaksUndoFailed" xml:space="preserve"><value>[FX-4009] Geri alınamadı: {0}</value></data>
+  <data name="TweaksPreviewReset" xml:space="preserve"><value>Windows varsayılanına dönecek: {0}</value></data>
+  <data name="BackupDefaultName" xml:space="preserve"><value>Ayarlarım {0:dd.MM.yyyy HH:mm}</value></data>
+  <data name="BackupSaved" xml:space="preserve"><value>Şu anki Windows ayarlarınız kaydedildi: {0}</value></data>
+  <data name="BackupSaveFailed" xml:space="preserve"><value>[FX-4010] Ayarlar kaydedilemedi: {0}</value></data>
+  <data name="BackupUnsupportedValue" xml:space="preserve"><value>Bazı kayıt değerleri FoxFix&apos;in geri yazamayacağı bir türde.</value></data>
+  <data name="BackupNotFound" xml:space="preserve"><value>[FX-4012] Kayıtlı ayar bulunamadı ya da okunamadı. Dosya silinmiş veya bozulmuş olabilir.</value></data>
+  <data name="BackupDeleteFailed" xml:space="preserve"><value>[FX-4010] Kayıt silinemedi: {0}</value></data>
+  <data name="BackupListProblem" xml:space="preserve"><value>[FX-4012] {0} kayıt dosyası okunamadı: {1}</value></data>
+  <data name="RestoreTitle" xml:space="preserve"><value>Kayıtlı Windows ayarlarını geri yükle</value></data>
+  <data name="RestoreNothing" xml:space="preserve"><value>Şu anki ayarlar bu kayıtla zaten aynı, değiştirilecek bir şey yok.</value></data>
+  <data name="RestorePreviewMain" xml:space="preserve"><value>&quot;{0}&quot; ({1:dd.MM.yyyy HH:mm}) kaydındaki Windows ayarları geri yüklenecek.</value></data>
+  <data name="RestorePreviewCount" xml:space="preserve"><value>{0} kayıt değeri şu anki durumdan farklı ve kayıttaki haline getirilecek.</value></data>
+  <data name="RestoreResultDone" xml:space="preserve"><value>&quot;{0}&quot; kaydındaki ayarlar geri yüklendi.</value></data>
+  <data name="RestoreFailed" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; geri yüklenemedi, yapılan değişiklik geri alındı: {1}</value></data>
+  <data name="RestoreFailedNotRestored" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; geri yüklenemedi ve önceki değerler tamamen geri yazılamadı: {1} &quot;Rapor ve geçmiş&quot; sayfasından Geri Al&apos;ı deneyin.</value></data>
+  <data name="RestoreUndoDescription" xml:space="preserve"><value>Kayıtlı ayarların geri yüklenmesi geri alınabilir: {0}</value></data>
 </root>

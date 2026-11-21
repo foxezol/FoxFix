@@ -30,6 +30,72 @@ public sealed class MainViewModelTests : IDisposable
     private readonly FakeClipboard _clipboard = new();
     private readonly FakeSaver _saver = new();
 
+    private sealed class MemoryRegistry : FoxFix.Core.Tweaks.IRegistryStore
+    {
+        public FoxFix.Core.Tweaks.RegistryValueState Read(FoxFix.Core.Tweaks.RegHive hive, string key, string name) => FoxFix.Core.Tweaks.RegistryValueState.Missing;
+
+        public bool KeyExists(FoxFix.Core.Tweaks.RegHive hive, string key) => false;
+
+        public void Write(FoxFix.Core.Tweaks.RegHive hive, string key, string name, FoxFix.Core.Tweaks.RegKind kind, string data)
+        {
+        }
+
+        public void DeleteValue(FoxFix.Core.Tweaks.RegHive hive, string key, string name)
+        {
+        }
+
+        public bool DeleteKeyIfEmpty(FoxFix.Core.Tweaks.RegHive hive, string key) => false;
+    }
+
+    private (MainViewModel Main, TweaksViewModel Tweaks) CreateWithTweaks()
+    {
+        var catalog = FoxFix.Core.Tweaks.TweakCatalog.Load();
+        var registry = new MemoryRegistry();
+        var store = new FoxFix.Core.Tweaks.TweakBackupStore(Path.Combine(_dir, "yedekler"));
+        var tweaks = new TweaksViewModel(
+            catalog, new FoxFix.Core.Tweaks.WindowsTweakFix(catalog, registry, () => 26100), 26100, () => Task.CompletedTask,
+            new FoxFix.Core.Tweaks.TweakBackupService(catalog, registry, store, () => 26100), store,
+            new FoxFix.Core.Tweaks.TweakRestoreFix(store, registry), () => Task.CompletedTask);
+        var flow = new FixFlowViewModel([], new UndoJournal(Path.Combine(_dir, "undo.json")), new FakeElevation(), new FakeReboot());
+        var main = new MainViewModel(new DiagnosticsEngine([]), flow, _reports, _clipboard, _saver, NewSpeed(), NewStartup(), NewCleanup(), tweaks: tweaks);
+        return (main, tweaks);
+    }
+
+    [Fact]
+    public void Opening_the_Windows_settings_page_reads_the_saved_settings_and_warns_when_there_are_none()
+    {
+        var (main, tweaks) = CreateWithTweaks();
+
+        main.OpenPageCommand.Execute(AppPage.Tweaks);
+
+        main.IsTweaks.Should().BeTrue();
+        tweaks.NeedsBackup.Should().BeTrue();
+        tweaks.IsBackupPromptOpen.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Opening_any_other_page_does_not_raise_the_red_warning()
+    {
+        var (main, tweaks) = CreateWithTweaks();
+
+        main.OpenPageCommand.Execute(AppPage.Report);
+
+        tweaks.IsBackupPromptOpen.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Coming_back_to_the_page_after_saving_does_not_warn_again()
+    {
+        var (main, tweaks) = CreateWithTweaks();
+        main.OpenPageCommand.Execute(AppPage.Tweaks);
+        tweaks.SaveBackupCommand.Execute(null);
+        main.GoHomeCommand.Execute(null);
+
+        main.OpenPageCommand.Execute(AppPage.Tweaks);
+
+        tweaks.IsBackupPromptOpen.Should().BeFalse();
+        tweaks.NeedsBackup.Should().BeFalse();
+    }
     [Fact]
     public void The_app_opens_on_the_home_screen_without_a_back_button()
     {
@@ -43,11 +109,11 @@ public sealed class MainViewModelTests : IDisposable
 
     [Theory]
     [InlineData(AppPage.Connection, "Bağlantı kontrolü")]
-    [InlineData(AppPage.Speedup, "Bilgisayarı hızlandır")]
     [InlineData(AppPage.DnsDpi, "DNS ve DPI")]
     [InlineData(AppPage.Access, "Erişim testi")]
     [InlineData(AppPage.Report, "Rapor ve geçmiş")]
     [InlineData(AppPage.Settings, "Ayarlar")]
+    [InlineData(AppPage.Tweaks, "Hızlandırma ve ayarlar")]
     public void Each_card_opens_its_own_page_with_its_title_and_a_back_button(AppPage page, string title)
     {
         var vm = CreateWithChecks();
@@ -58,6 +124,21 @@ public sealed class MainViewModelTests : IDisposable
         vm.PageTitle.Should().Be(title);
         vm.ShowBack.Should().BeTrue();
         vm.IsHome.Should().BeFalse();
+        vm.PageSubtitle.Should().NotBeNullOrWhiteSpace("every page says in one line what it is for");
+    }
+
+    [Fact]
+    public void The_overview_has_no_subtitle_and_the_subtitle_follows_the_page()
+    {
+        var vm = CreateWithChecks();
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.PageSubtitle.Should().BeEmpty();
+        vm.OpenPageCommand.Execute(AppPage.DnsDpi);
+
+        changed.Should().Contain(nameof(MainViewModel.PageSubtitle));
+        vm.PageSubtitle.Should().Contain("FoxDPI");
     }
 
     [Fact]
@@ -69,7 +150,7 @@ public sealed class MainViewModelTests : IDisposable
         {
             vm.OpenPageCommand.Execute(page);
 
-            new[] { vm.IsHome, vm.IsConnection, vm.IsSpeedup, vm.IsDnsDpi, vm.IsAccess, vm.IsReport, vm.IsSettings }
+            new[] { vm.IsHome, vm.IsConnection, vm.IsDnsDpi, vm.IsAccess, vm.IsReport, vm.IsSettings, vm.IsTweaks }
                 .Count(shown => shown).Should().Be(1, $"only {page} is shown");
         }
     }
@@ -78,7 +159,7 @@ public sealed class MainViewModelTests : IDisposable
     public void Going_home_returns_from_any_page()
     {
         var vm = CreateWithChecks();
-        vm.OpenPageCommand.Execute(AppPage.Speedup);
+        vm.OpenPageCommand.Execute(AppPage.Access);
 
         vm.GoHomeCommand.Execute(null);
 

@@ -2,7 +2,7 @@
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, güncelleme denetimi, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, uygulama içi güncelleme ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
+> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, güncelleme denetimi, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, uygulama içi güncelleme, Windows ayarları sayfası ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
 
 ## Açık Kaynak
 
@@ -17,6 +17,8 @@ FoxFix'in bütün kaynak kodu bu depoda, [MIT lisansıyla](LICENSE) yayımlanmı
 
 FoxFix, çekirdek bir DPI atlatma aracı değildir. Arka planda [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI) ve onun [Türkiye sürümü](https://github.com/cagritaskn/GoodbyeDPI-Turkey) (0.2.3rc3) projesini temel alır. FoxFix bu aracı entegre bir arayüzle sunar: ağınızda hangi ayarın çalıştığını dener, seçilen ayarı çalıştırır ve yapılan her değişikliği geri alınabilir tutar. Asıl teknik başarı bu açık kaynaklı projelerin geliştiricilerine aittir.
 
+Windows ayarları sayfasındaki ayar listesi ve Türkçe açıklamaları, Raphire'nin açık kaynaklı [Win11Debloat](https://github.com/Raphire/Win11Debloat) projesinden (MIT) alınmıştır. FoxFix o betiği çalıştırmaz; yalnızca düz kayıt defteri değişikliklerini alır ve kendi koduyla uygular, böylece her ayar önizlenir, kaydedilir ve "Geri Al" ile geri alınabilir.
+
 Proje, karmaşık ağ araçlarının son kullanıcı için basitleştirilmesi amacıyla Claude Code ve "vibe coding" yaklaşımıyla foxezol tarafından geliştirilmiştir.
 
 Made by foxezol, Claude Code
@@ -28,7 +30,8 @@ Made by foxezol, Claude Code
 - **Erişim Testi:** Belirttiğiniz web sitelerinin erişilebilirliğini güvenli bağlantı üzerinden test eder. FoxDPI açıkken ve kapalıyken çalıştırıp karşılaştırma yapabilirsiniz.
 - **Hız Testi:** İndirme, yükleme, ping ve titreşimi ölçer. Sonucu görsel olarak panoya kopyalayıp paylaşabilirsiniz.
 - **Anlaşılır Hatalar:** Bir şey ters giderse mesajın başında `[FX-xxxx]` biçiminde bir kod bulunur. Her kodun anlamı ve çözümü [docs/HATA-KODLARI.md](docs/HATA-KODLARI.md) tablosundadır.
-- **Sistem Hızlandırma:** Başlangıç uygulamalarını yönetmenizi ve gereksiz geçici dosyaları temizlemenizi sağlar.
+- **Windows Ayarları:** Win11Debloat'tan alınan, kayıt defterine dayanan yaklaşık 80 ayar: telemetri ve öneriler, yapay zeka (Copilot, Recall...), animasyonlar ve saydamlık, oyun kaydı, Başlat ve arama, görev çubuğu, Dosya Gezgini, Windows Update. Her ayarın yanında ne işe yaradığı, kabaca bir etki tahmini (ölçüm değildir) ve önerilenler işaretlidir. Ayar arama, katlanır listeler, "Önerilen ayarları seç" ve "Windows varsayılanına döndür" düğmeleri; uygulanmış her ayarın yanında da tek tek "Geri aç" düğmesi vardır. Sayfa, ayarlara dokunmadan önce şu anki Windows ayarlarınızı kaydetmenizi ister; kayıtlar buradan geri yüklenebilir. Hiçbiri siz onaylamadan değişmez. Uygulama kaldırma (Xbox, Edge vb.) ve geri alınamayan ayarlar bilerek dışarıda bırakılmıştır.
+- **Sistem Hızlandırma:** Başlangıç uygulamalarını yönetmenizi ve gereksiz geçici dosyaları temizlemenizi sağlar. Windows ayarlarıyla birlikte "Hızlandırma ve ayarlar" sayfasındadır.
 - **DPI Sıfırlama:** Eski GoodbyeDPI, WinDivert ve Zapret kalıntılarını ve manuel DNS girişlerini temizleyerek ağ ayarlarını Windows varsayılanlarına döndürür.
 - **Güncelleme Denetimi:** FoxFix her açıldığında arka planda yeni bir sürüm olup olmadığına bakar; yalnızca yeni sürüm varsa bir pencere ile haber verir. Pencerede "Şimdi güncelle" dediğinizde yeni sürüm GitHub'dan indirilir ve GitHub'ın o dosya için yayımladığı SHA-256 özetiyle doğrulanır (uyuşmazsa hiçbir şey çalıştırılmaz); ardından FoxFix kapanır, güncellenir ve yeniden açılır. Verileriniz ve ayarlarınız korunur. Güncellemeyi siz başlatmadıkça hiçbir şey indirilmez veya kurulmaz. Ayarlar sayfasından kapatılabilir; aynı sayfadaki düğmeyle elle de denetlenebilir.
 - **Ayarlar ve Görünüm:** Açık, karanlık veya Windows'a uyan tema; hazır listeden ya da `#RRGGBB` olarak yazılan vurgu rengi; logonun ve pencere simgesinin bu renge boyanması. Uygulamayı kaldırma düğmesi de bu sayfadadır.
@@ -85,18 +88,21 @@ Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirli�
 - Güncelleme denetimi: yeni sürüm penceresi ve sürüm sayfasının açılması, ayarlardan kapatılabilmesi.
 - Tema ve vurgu rengi: farklı renklerde okunabilirlik; pencere ve görev çubuğu simgesinin renklenmesi.
 - "Şimdi güncelle": kurulumlu sürümde sessiz kurulumun (`FoxFixSetup.exe /VERYSILENT /YENIDEN=1`) çalışıp yeni FoxFix'in açılması; ZIP sürümde iki exe dosyasının değiştirilip yeniden başlatılması; yönetici izniyle çalışırken UAC çıkmaması.
+- Windows ayarları: kayıt defteri değişikliklerinin gerçek bir Windows'ta uygulanması ve "Geri Al" ile eski değerlerin (ve FoxFix'in oluşturduğu anahtarların silinmesinin) geri gelmesi. Sanal makine anlık görüntüsüyle denenmesi önerilir.
+- Windows ayarları: "Şu anki ayarları kaydet", ayarları uygulama ve kayıttan "Geri yükle"; "Windows varsayılanına döndür" düğmesinin gerçek Windows varsayılanlarını verdiği.
 - Güncelleme: eski sürümün üstüne yeni kurulum ya da ZIP çıkartma (hizmet kuruluyken de).
 - Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
 - Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.
 
 ## Lisans ve Telif Hakları
 
-FoxFix MIT lisanslıdır. FoxDPI, GoodbyeDPI'ın Türkiye sürümünü (0.2.3rc3) ve onun kullandığı WinDivert sürücüsünü uygulamanın içinde taşır. Her bileşen kendi lisansıyla dağıtılır:
+FoxFix MIT lisanslıdır. FoxDPI, GoodbyeDPI'ın Türkiye sürümünü (0.2.3rc3) ve onun kullandığı WinDivert sürücüsünü uygulamanın içinde taşır; Windows ayarları listesi Win11Debloat'tan alınmıştır. Her bileşen kendi lisansıyla dağıtılır:
 
 - `LICENSE-goodbyedpi.txt`
 - `LICENSE-windivert.txt`
+- `LICENSE-win11debloat.txt` (Windows ayarları listesi)
 
-Bu dosyalar kaynak kodda `src/FoxFix.App/Assets/GoodbyeDpi` dizininde, derlenmiş paketlerde `Licenses` klasöründe yer alır.
+Bu dosyalar kaynak kodda `src/FoxFix.App/Assets/GoodbyeDpi` ve `src/FoxFix.App/Assets/Licenses` dizinlerinde, derlenmiş paketlerde `Licenses` klasöründe yer alır.
 
 ## Geri Bildirim ve Destek
 
