@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿﻿using System.Collections.ObjectModel;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -129,6 +129,9 @@ public sealed partial class MainViewModel : ObservableObject
         nameof(IsHome), nameof(IsConnection), nameof(IsTweaks), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport), nameof(IsSettings),
         nameof(ShowBack), nameof(PageTitle), nameof(PageSubtitle))]
     private AppPage _page = AppPage.Home;
+
+    /// <summary>A one-off message ("Rapor kopyalandı.") belongs to the page it came from; it goes when the person moves on.</summary>
+    partial void OnPageChanged(AppPage value) => StatusText = "";
 
     public bool IsHome => Page == AppPage.Home;
 

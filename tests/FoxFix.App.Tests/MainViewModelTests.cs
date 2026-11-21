@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿﻿using FluentAssertions;
 using FoxFix.App;
 using FoxFix.Core.Diagnostics;
 using FoxFix.Core.Fixes;
@@ -125,6 +125,19 @@ public sealed class MainViewModelTests : IDisposable
         vm.ShowBack.Should().BeTrue();
         vm.IsHome.Should().BeFalse();
         vm.PageSubtitle.Should().NotBeNullOrWhiteSpace("every page says in one line what it is for");
+    }
+
+    [Fact]
+    public void A_one_off_message_goes_when_the_person_opens_another_page()
+    {
+        var vm = CreateWithChecks();
+        vm.OpenPageCommand.Execute(AppPage.Report);
+        vm.StatusText = "Rapor kopyalandı.";
+
+        vm.OpenPageCommand.Execute(AppPage.DnsDpi);
+
+        vm.StatusText.Should().BeEmpty();
+        vm.HasStatusText.Should().BeFalse();
     }
 
     [Fact]
