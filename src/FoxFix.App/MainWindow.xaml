@@ -634,30 +634,53 @@
                                                                 <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
                                                                 <TextBlock Text="{Binding Description}" Style="{StaticResource Caption}" Margin="0,2,0,0"
                                                                            Visibility="{Binding HasDescription, Converter={StaticResource BoolToVis}}" />
-                                                                <WrapPanel Margin="0,4,0,0">
-                                                                    <TextBlock Text="{Binding ImpactText}" FontSize="12" FontWeight="SemiBold" Margin="0,0,10,0"
-                                                                               Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
-                                                                        <TextBlock.Style>
-                                                                            <Style TargetType="TextBlock">
-                                                                                <Setter Property="Foreground" Value="{DynamicResource StatusOk}" />
+                                                                <WrapPanel Margin="0,6,0,0">
+                                                                    <!-- Area in plain muted words; the impact as a small badge: neutral text on a tint, with a dot in the level's colour -->
+                                                                    <TextBlock Text="{Binding AreaName}" Style="{StaticResource Caption}" Margin="0,0,10,0" VerticalAlignment="Center"
+                                                                               Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}" />
+                                                                    <Border CornerRadius="10" Padding="8,2" Margin="0,0,8,0" VerticalAlignment="Center"
+                                                                            Visibility="{Binding HasInfo, Converter={StaticResource BoolToVis}}">
+                                                                        <Border.Style>
+                                                                            <Style TargetType="Border">
+                                                                                <Setter Property="Background" Value="{DynamicResource OkSoft}" />
                                                                                 <Style.Triggers>
                                                                                     <DataTrigger Binding="{Binding ImpactLevel}" Value="Medium">
-                                                                                        <Setter Property="Foreground" Value="{DynamicResource StatusWarn}" />
+                                                                                        <Setter Property="Background" Value="{DynamicResource WarnSoft}" />
                                                                                     </DataTrigger>
                                                                                     <DataTrigger Binding="{Binding ImpactLevel}" Value="High">
-                                                                                        <Setter Property="Foreground" Value="{DynamicResource StatusBad}" />
+                                                                                        <Setter Property="Background" Value="{DynamicResource BadSoft}" />
                                                                                     </DataTrigger>
                                                                                 </Style.Triggers>
                                                                             </Style>
-                                                                        </TextBlock.Style>
-                                                                    </TextBlock>
-                                                                    <TextBlock Text="(Önerilen)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,0,10,0"
-                                                                               Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}" />
-                                                                    <StackPanel Orientation="Horizontal" Visibility="{Binding IsApplied, Converter={StaticResource BoolToVis}}">
+                                                                        </Border.Style>
+                                                                        <StackPanel Orientation="Horizontal">
+                                                                            <Ellipse Width="7" Height="7" Margin="0,0,6,0" VerticalAlignment="Center">
+                                                                                <Ellipse.Style>
+                                                                                    <Style TargetType="Ellipse">
+                                                                                        <Setter Property="Fill" Value="{DynamicResource StatusOk}" />
+                                                                                        <Style.Triggers>
+                                                                                            <DataTrigger Binding="{Binding ImpactLevel}" Value="Medium">
+                                                                                                <Setter Property="Fill" Value="{DynamicResource StatusWarn}" />
+                                                                                            </DataTrigger>
+                                                                                            <DataTrigger Binding="{Binding ImpactLevel}" Value="High">
+                                                                                                <Setter Property="Fill" Value="{DynamicResource StatusBad}" />
+                                                                                            </DataTrigger>
+                                                                                        </Style.Triggers>
+                                                                                    </Style>
+                                                                                </Ellipse.Style>
+                                                                            </Ellipse>
+                                                                            <TextBlock Text="{Binding ImpactBadgeText}" FontSize="12" Foreground="{DynamicResource Foreground}" />
+                                                                        </StackPanel>
+                                                                    </Border>
+                                                                    <Border BorderBrush="{DynamicResource AccentText}" BorderThickness="1" CornerRadius="10" Padding="7,1" Margin="0,0,8,0"
+                                                                            VerticalAlignment="Center" Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}">
+                                                                        <TextBlock Text="Önerilen" FontSize="12" Foreground="{DynamicResource AccentText}" />
+                                                                    </Border>
+                                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding IsApplied, Converter={StaticResource BoolToVis}}">
                                                                         <Path Width="11" Height="11" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
                                                                               StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                                                               VerticalAlignment="Center" Margin="0,0,5,0" />
-                                                                        <TextBlock Text="Uygulandı" FontSize="12" Foreground="{DynamicResource StatusOk}" />
+                                                                        <TextBlock Text="Uygulandı" FontSize="12" Foreground="{DynamicResource Foreground}" />
                                                                     </StackPanel>
                                                                 </WrapPanel>
                                                             </StackPanel>

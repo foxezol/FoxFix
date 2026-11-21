@@ -32,8 +32,16 @@ public sealed partial class TweakRow : ObservableObject
     /// <summary>"Hız · tahmini etki %12". It is a guess, and the page says so.</summary>
     public string ImpactText => Info is null ? "" : $"{Info.AreaName} · tahmini etki %{Info.Percent}";
 
-    /// <summary>"High", "Medium" or "Low": the view turns it into green, yellow or red.</summary>
+    /// <summary>"High", "Medium" or "Low": the view turns it into red, yellow or green.</summary>
     public string ImpactLevel => Info?.Level.ToString() ?? "Low";
+
+    /// <summary>What the setting is about ("Hız", "Gizlilik"...), shown in plain muted text.</summary>
+    public string AreaName => Info?.AreaName ?? "";
+
+    /// <summary>"Yüksek etki %30": the badge says it in words and a number, the colour only underlines it.</summary>
+    public string ImpactBadgeText => Info is null
+        ? ""
+        : $"{Info.Level switch { Core.Tweaks.ImpactLevel.High => "Yüksek", Core.Tweaks.ImpactLevel.Medium => "Orta", _ => "Düşük" }} etki %{Info.Percent}";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSelect), nameof(CanRevert))]

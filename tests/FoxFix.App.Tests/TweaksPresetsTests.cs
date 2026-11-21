@@ -94,6 +94,19 @@ public sealed class TweaksPresetsTests : IDisposable
     }
 
     [Fact]
+    public void The_impact_badge_says_the_level_in_words_so_colour_is_never_the_only_signal()
+    {
+        var (vm, _, _) = Create();
+
+        foreach (var row in vm.Categories.SelectMany(c => c.Toggles))
+        {
+            var word = row.ImpactLevel switch { "High" => "Yüksek", "Medium" => "Orta", _ => "Düşük" };
+            row.ImpactBadgeText.Should().Be($"{word} etki %{row.Info!.Percent}");
+            row.AreaName.Should().Be(row.Info.AreaName);
+        }
+    }
+
+    [Fact]
     public void A_list_says_whether_it_has_single_settings_for_its_recommended_button()
     {
         // The view shows "Bu listedeki önerilenleri seç" by this flag (a count bound to a yes/no converter never showed it).
