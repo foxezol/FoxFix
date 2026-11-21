@@ -88,6 +88,9 @@ public sealed partial class UpdateViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasUpdate), nameof(PromptTitle), nameof(PromptNotes), nameof(HasNotes), nameof(CanInstall))]
+    // The button asks the command whether it may run only when told that this changed: without this line it stays greyed out
+    // after the release arrives (the unit tests ask the command directly, which hid it).
+    [NotifyCanExecuteChangedFor(nameof(InstallCommand))]
     private ReleaseInfo? _latest;
 
     public bool HasUpdate => Latest is not null;

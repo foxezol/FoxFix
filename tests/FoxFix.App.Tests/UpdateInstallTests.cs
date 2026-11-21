@@ -88,6 +88,20 @@ public sealed class UpdateInstallTests : IDisposable
     }
 
     [Fact]
+    public async Task The_install_button_is_told_when_the_new_release_arrives()
+    {
+        // The window only re-asks the command when CanExecuteChanged is raised; without it "Şimdi güncelle" stayed greyed out.
+        var vm = Create();
+        var raised = 0;
+        vm.InstallCommand.CanExecuteChanged += (_, _) => raised++;
+
+        await vm.RunStartupCheckAsync();
+
+        vm.CanInstall.Should().BeTrue();
+        raised.Should().BeGreaterThan(0);
+    }
+
+    [Fact]
     public async Task A_copy_of_unknown_kind_cannot_install_itself()
     {
         var vm = Create(UninstallKind.Unknown);
