@@ -762,5 +762,78 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Minimise / maximise / close: flat squares in the window's own colours; closing turns red like Windows' own -->
+        <Style x:Key="CaptionButton" TargetType="Button">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="38" />
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Face" Background="{TemplateBinding Background}">
+                            <TextBlock Text="{TemplateBinding Content}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Face" Property="Background" Value="{DynamicResource ButtonSecondary}" /></Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter TargetName="Face" Property="Background" Value="{DynamicResource Raised}" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="CaptionCloseButton" TargetType="Button" BasedOn="{StaticResource CaptionButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Face" Background="{TemplateBinding Background}">
+                            <TextBlock x:Name="Glyph" Text="{TemplateBinding Content}" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{TemplateBinding Foreground}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Face" Property="Background" Value="#C42B1C" />
+                                <Setter TargetName="Glyph" Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter TargetName="Face" Property="Background" Value="#B22A1B" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <DataTemplate x:Key="StartupRow">
+            <CheckBox IsChecked="{Binding IsEnabled}" Margin="0,6,0,0" AutomationProperties.Name="{Binding Name}">
+                <StackPanel Orientation="Horizontal">
+                    <!-- The program's own icon; its first letter on a plain tile when it has none -->
+                    <Grid Width="28" Height="28" Margin="4,0,12,0" VerticalAlignment="Center">
+                        <Border CornerRadius="6" Background="{DynamicResource ButtonSecondary}"
+                                Visibility="{Binding HasIcon, Converter={StaticResource InverseBoolToVis}}">
+                            <TextBlock Text="{Binding Initial}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource Muted}" />
+                        </Border>
+                        <Image Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"
+                               Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}" />
+                    </Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock>
+                            <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" />
+                            <Run Text="{local:T UiYoneticiIzniGerekir}" Foreground="{DynamicResource Muted}" FontSize="12"
+                                 x:Name="AdminTag" />
+                        </TextBlock>
+                        <TextBlock Text="{Binding Command}" Style="{StaticResource Caption}"
+                                   TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="560" />
+                    </StackPanel>
+                </StackPanel>
+            </CheckBox>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NeedsAdmin}" Value="False">
+                    <Setter TargetName="AdminTag" Property="Text" Value="" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
     </Application.Resources>
 </Application>

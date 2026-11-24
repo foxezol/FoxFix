@@ -30,7 +30,7 @@ public sealed partial class TweakRow : ObservableObject
     public bool HasInfo => Info is not null;
 
     /// <summary>"Hız · tahmini etki %12". It is a guess, and the page says so.</summary>
-    public string ImpactText => Info is null ? "" : $"{Info.AreaName} · tahmini etki %{Info.Percent}";
+    public string ImpactText => Info is null ? "" : Strings.Format(Strings.ImpactEstimate, Info.AreaName, Info.Percent);
 
     /// <summary>"High", "Medium" or "Low": the view turns it into red, yellow or green.</summary>
     public string ImpactLevel => Info?.Level.ToString() ?? "Low";
@@ -41,7 +41,7 @@ public sealed partial class TweakRow : ObservableObject
     /// <summary>"Yüksek etki %30": the badge says it in words and a number, the colour only underlines it.</summary>
     public string ImpactBadgeText => Info is null
         ? ""
-        : $"{Info.Level switch { Core.Tweaks.ImpactLevel.High => "Yüksek", Core.Tweaks.ImpactLevel.Medium => "Orta", _ => "Düşük" }} etki %{Info.Percent}";
+        : Strings.Format(Info.Level switch { Core.Tweaks.ImpactLevel.High => Strings.ImpactHigh, Core.Tweaks.ImpactLevel.Medium => Strings.ImpactMedium, _ => Strings.ImpactLow }, Info.Percent);
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanSelect), nameof(CanRevert))]
@@ -77,7 +77,7 @@ public sealed partial class TweakChoice : ObservableObject
     public bool IsKeep { get; }
 
     /// <summary>The choice Windows itself has: its label says "(Varsayılan)".</summary>
-    public bool IsWindowsDefault => Label.Contains("(Varsayılan)", StringComparison.Ordinal);
+    public bool IsWindowsDefault => Label.Contains(Strings.Get(Strings.TweakDefaultMark), StringComparison.Ordinal);
 
     [ObservableProperty]
     private bool _isSelected;
@@ -280,7 +280,7 @@ public sealed partial class TweaksViewModel : ObservableObject
                     continue;
                 }
 
-                var choices = new List<TweakChoice> { new("Değiştirme", [], keep: true) { IsSelected = true } };
+                var choices = new List<TweakChoice> { new(Strings.Get(Strings.TweakKeep), [], keep: true) { IsSelected = true } };
                 choices.AddRange(options.Select(o => new TweakChoice(o.Label, o.TweakIds)));
 
                 var groupRow = new TweakGroupRow(group, choices);
@@ -323,7 +323,7 @@ public sealed partial class TweaksViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ApplyCommand))]
     private int _selectedCount;
 
-    public string SelectedText => SelectedCount == 0 ? "Seçili ayar yok" : $"{SelectedCount} ayar seçili";
+    public string SelectedText => SelectedCount == 0 ? Strings.Get(Strings.TweaksNoneSelected) : Strings.Format(Strings.TweaksSelected, SelectedCount);
 
     public bool HasResults => Categories.Any(c => c.HasVisible);
 
@@ -403,7 +403,7 @@ public sealed partial class TweaksViewModel : ObservableObject
         {
             var count = category.Toggles.Count + category.Groups.Count;
             var picked = category.Toggles.Count(t => t.IsSelected && t.CanSelect) + category.Groups.Count(g => g.PickedIds.Any());
-            category.Summary = picked > 0 ? $"{count} ayar · {picked} seçili" : $"{count} ayar";
+            category.Summary = picked > 0 ? Strings.Format(Strings.TweaksSummaryPicked, count, picked) : Strings.Format(Strings.TweaksSummary, count);
         }
     }
 
@@ -600,7 +600,7 @@ public sealed partial class TweaksViewModel : ObservableObject
         }
         else
         {
-            SetStatus("Kayıt silindi.", error: false);
+            SetStatus(Strings.Get(Strings.BackupDeleted), error: false);
         }
 
         RefreshBackups();

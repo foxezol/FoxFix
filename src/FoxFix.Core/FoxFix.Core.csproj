@@ -4,15 +4,20 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Texts are Turkish by default (Resources\Strings.resx); Strings.en.resx becomes the English satellite assembly. -->
+    <NeutralLanguage>tr</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="4.0.2" />
     <PackageReference Include="System.Management" Version="10.0.14" />
   </ItemGroup>
 
   <!-- The Windows settings (made from Win11Debloat by tools\win11debloat-katalog.ps1). -->
   <ItemGroup>
     <EmbeddedResource Include="Tweaks\Katalog.json" LogicalName="Tweaks.Katalog.json" />
+    <!-- A file name with ".en." looks like a culture to MSBuild and would end up in the English satellite assembly: WithCulture=false keeps it in the main one. -->
+    <EmbeddedResource Include="Tweaks\Katalog.en.json" LogicalName="Tweaks.Katalog.en.json" WithCulture="false" />
   </ItemGroup>
 
 </Project>

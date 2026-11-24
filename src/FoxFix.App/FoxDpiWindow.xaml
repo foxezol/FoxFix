@@ -1,12 +1,18 @@
 ﻿<Window x:Class="FoxFix.App.FoxDpiWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:FoxFix.App"
         Title="FoxDPI" Width="400" SizeToContent="Height" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
         Icon="Assets/FoxDpi.ico"
         Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
         FontFamily="{StaticResource UiFont}" FontSize="14"
-        TextOptions.TextFormattingMode="Display">
-    <StackPanel Margin="28,26,28,26">
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="34" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <Grid>
+    <!-- No Windows title bar: the whole top strip drags the window; only minimise and close are shown -->
+    <StackPanel Margin="26,22,26,22">
         <StackPanel Orientation="Horizontal">
             <!-- A calm pulse says "running" without anyone having to read it -->
             <Grid Width="16" Height="16" VerticalAlignment="Center">
@@ -28,16 +34,21 @@
                 </Ellipse>
                 <Ellipse Fill="{DynamicResource StatusOk}" Width="10" Height="10" />
             </Grid>
-            <TextBlock Text="FoxDPI aktif" FontFamily="{StaticResource DisplayFont}" FontSize="24" FontWeight="SemiBold"
+            <TextBlock Text="{local:T UiFoxdpiAktif}" FontFamily="{StaticResource DisplayFont}" FontSize="24" FontWeight="SemiBold"
                        Margin="14,0,0,0" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite" />
         </StackPanel>
         <TextBlock Style="{StaticResource BodyMuted}" Margin="30,8,0,0" TextWrapping="Wrap">
-            <Run Text="Ayar:" />
+            <Run Text="{local:T UiAyar}" />
             <Run Text="{Binding ProfileTitle, Mode=OneWay}" />
         </TextBlock>
         <StackPanel Orientation="Horizontal" Margin="0,22,0,0">
-            <Button Content="FoxFix'i aç" Command="{Binding OpenFoxFixCommand}" Style="{StaticResource SecondaryButton}" AutomationProperties.Name="FoxFix'i aç" />
-            <Button Content="DPI Ayarları" Command="{Binding OpenSettingsCommand}" Style="{StaticResource SecondaryButton}" Margin="0" AutomationProperties.Name="DPI ayarları" />
+            <Button Content="{local:T UiFoxfixIAc}" Command="{Binding OpenFoxFixCommand}" Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiFoxfixIAc}" />
+            <Button Content="{local:T UiDpiAyarlari2}" Command="{Binding OpenSettingsCommand}" Style="{StaticResource SecondaryButton}" Margin="0" AutomationProperties.Name="{local:T UiDpiAyarlari}" />
         </StackPanel>
     </StackPanel>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <Button Content="&#xE921;" Style="{StaticResource CaptionButton}" Height="34" Click="OnMinimize" AutomationProperties.Name="{local:T UiMinimize}" ToolTip="{local:T UiMinimize}" />
+        <Button Content="&#xE8BB;" Style="{StaticResource CaptionCloseButton}" Height="34" Click="OnCloseWindow" AutomationProperties.Name="{local:T UiCloseWindow}" ToolTip="{local:T UiCloseWindow}" />
+    </StackPanel>
+    </Grid>
 </Window>

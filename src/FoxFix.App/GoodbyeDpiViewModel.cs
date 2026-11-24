@@ -57,7 +57,7 @@ public sealed partial class TrialRow : ObservableObject
     public string Title => Profile.Title;
 
     [ObservableProperty]
-    private string _statusText = "Sırada";
+    private string _statusText = Strings.Get(Strings.TrialQueued);
 
     /// <summary>"Ok", "Warn", "Bad" or "Neutral": picks the colour, like the diagnosis rows.</summary>
     [ObservableProperty]
@@ -78,12 +78,12 @@ public sealed partial class TrialRow : ObservableObject
     {
         (StatusText, Kind) = step.Status switch
         {
-            TrialStatus.Testing => ("Deneniyor…", "Neutral"),
-            TrialStatus.AllOpened => ($"Hepsi açıldı ({step.Reached}/{step.Total}){PingText(step)}", "Ok"),
-            TrialStatus.SomeOpened => ($"Bir kısmı açıldı ({step.Reached}/{step.Total}){PingText(step)}", "Warn"),
-            TrialStatus.NothingOpened => ("Hiçbiri açılmadı", "Bad"),
-            TrialStatus.FailedToStart => ("Başlamadı", "Bad"),
-            _ => ("Sırada", "Neutral"),
+            TrialStatus.Testing => (Strings.Get(Strings.UiTesting), "Neutral"),
+            TrialStatus.AllOpened => (Strings.Format(Strings.TrialAllOpened, step.Reached, step.Total, PingText(step)), "Ok"),
+            TrialStatus.SomeOpened => (Strings.Format(Strings.TrialSomeOpened, step.Reached, step.Total, PingText(step)), "Warn"),
+            TrialStatus.NothingOpened => (Strings.Get(Strings.TrialNoneOpened), "Bad"),
+            TrialStatus.FailedToStart => (Strings.Get(Strings.TrialNotStarted), "Bad"),
+            _ => (Strings.Get(Strings.TrialQueued), "Neutral"),
         };
     }
 }
@@ -262,7 +262,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     private bool _isOwnSession;
 
     /// <summary>There is no stop button: FoxDPI is closed by closing its window.</summary>
-    public string FoxDpiButtonText => IsOwnSession ? "Pencereyi göster" : IsActive ? "Açık" : "FoxDPI'yı başlat";
+    public string FoxDpiButtonText => IsOwnSession ? Strings.Get(Strings.DpiShowWindow) : IsActive ? Strings.Get(Strings.DpiOn) : Strings.Get(Strings.DpiStart);
 
     public bool CanAct => IsElevated && !IsTesting;
 
@@ -319,7 +319,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     {
         if (result.Status is not { } status)
         {
-            StatusText = $"{ErrorCodes.Tag(ErrorCodes.StatusUnreadable)}Durum okunamadı: {result.Error}";
+            StatusText = ErrorCodes.Tag(ErrorCodes.StatusUnreadable) + Strings.Format(Strings.DpiStatusUnreadable, result.Error ?? "");
             return;
         }
 
@@ -330,11 +330,11 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         var profile = GoodbyeDpiProfiles.Find(status.State?.ProfileId);
         StatusText = status switch
         {
-            { OtherRunning: true } => "Başka bir GoodbyeDPI ya da Zapret çalışıyor. FoxDPI onunla aynı anda çalışamaz.",
-            { ServiceRunning: true } => $"Hizmet olarak çalışıyor. Ayar: {profile?.Title ?? "bilinmiyor"}",
-            { ManualRunning: true } => $"Çalışıyor. Ayar: {profile?.Title ?? "bilinmiyor"}",
-            { ServiceInstalled: true } => $"Hizmet kurulu ama durmuş. Ayar: {profile?.Title ?? "bilinmiyor"}",
-            _ => "Çalışmıyor.",
+            { OtherRunning: true } => Strings.Get(Strings.DpiStatusForeign),
+            { ServiceRunning: true } => Strings.Format(Strings.DpiStatusService, profile?.Title ?? Strings.Get(Strings.UnknownValue)),
+            { ManualRunning: true } => Strings.Format(Strings.DpiStatusManual, profile?.Title ?? Strings.Get(Strings.UnknownValue)),
+            { ServiceInstalled: true } => Strings.Format(Strings.DpiStatusInstalledStopped, profile?.Title ?? Strings.Get(Strings.UnknownValue)),
+            _ => Strings.Get(Strings.DpiStatusOff),
         };
     }
 
@@ -345,7 +345,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     {
         if (!_elevation.RestartElevated(argument))
         {
-            Notify("Yönetici izni", $"{ErrorCodes.Tag(ErrorCodes.AdminDenied)}Yönetici izni verilmedi. Hiçbir şey değişmedi.");
+            Notify(Strings.Get(Strings.AdminPermissionTitle), ErrorCodes.Tag(ErrorCodes.AdminDenied) + Strings.Get(Strings.AdminPermissionDenied));
         }
     }
 
@@ -357,14 +357,14 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         var targets = TrialTargets.Parse(Hosts);
         if (targets.Count == 0)
         {
-            ResultText = "Denenecek bir site adı yaz. Örnek: discord.com";
+            ResultText = Strings.Get(Strings.AccessNeedHost);
             return;
         }
 
         IsTesting = true;
         ResultText = "";
         TrialPercent = 0;
-        TrialProgressText = "Başlıyor…";
+        TrialProgressText = Strings.Get(Strings.Starting);
         var clock = System.Diagnostics.Stopwatch.StartNew();
         _trialClock = clock;
         _stepElapsed = TimeSpan.Zero;
@@ -372,7 +372,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         _ = TickTrialProgressAsync(ticker.Token);
         foreach (var row in Rows)
         {
-            row.StatusText = "Sırada";
+            row.StatusText = Strings.Get(Strings.TrialQueued);
             row.Kind = "Neutral";
             row.IsBest = false;
         }
@@ -390,11 +390,11 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            ResultText = "Deneme durduruldu.";
+            ResultText = Strings.Get(Strings.TrialStopped);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            ResultText = $"{ErrorCodes.Tag(ErrorCodes.TrialFileError)}Deneme bir dosya hatasıyla durdu: {ex.Message} Bilgisayarı yeniden başlatıp tekrar dene ya da DPI Sıfırlama'yı kullan.";
+            ResultText = ErrorCodes.Tag(ErrorCodes.TrialFileError) + Strings.Format(Strings.TrialFileError, ex.Message);
         }
         finally
         {
@@ -464,12 +464,12 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
 
         if (result.Started)
         {
+            // No pop-up here any more: how FoxDPI is used is told in the tour, or once on the DNS ve DPI page.
             FoxDpiStarted?.Invoke(SelectedProfile);
-            Notify(Strings.Get(Strings.FoxDpiExplainTitle), Strings.Get(Strings.FoxDpiExplain));
         }
         else
         {
-            Notify("FoxDPI başlamadı", result.Message);
+            Notify(Strings.Get(Strings.DpiNotStartedTitle), result.Message);
         }
 
         await RefreshStatusAsync();
@@ -484,7 +484,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
         }
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or IOException)
         {
-            Notify("FoxDPI durdurulamadı", ErrorCodes.Tag(ErrorCodes.DpiStopFailed) + ex.Message);
+            Notify(Strings.Get(Strings.DpiStopFailedTitle), ErrorCodes.Tag(ErrorCodes.DpiStopFailed) + ex.Message);
         }
 
         await RefreshStatusAsync();
@@ -533,7 +533,7 @@ public sealed partial class GoodbyeDpiViewModel : ObservableObject
     private void UpdateTrialProgress(TimeSpan elapsed)
     {
         var total = Rows.Count;
-        var tried = Rows.Count(r => r.StatusText != "Sırada" && r.StatusText != "Deneniyor…");
+        var tried = Rows.Count(r => r.StatusText != Strings.Get(Strings.TrialQueued) && r.StatusText != Strings.Get(Strings.UiTesting));
         if (total == 0)
         {
             return;

@@ -10,6 +10,8 @@ Hata kodunun ilk hanesi, sorunun kaynaklandığı sistem bileşenini belirtir:
 - **4:** Sistem Değişiklikleri ve Konfigürasyon
 - **5:** Loglama ve Raporlama Sistemi
 - **6:** Ağ Performans Ölçümleri
+- **7:** Ses, Mikrofon ve Kamera Kontrolleri
+- **8:** Oyun Göstergesi
 - **9:** Beklenmeyen Kritik Hatalar (Crash)
 
 | Hata Kodu | Anlamı | Uygulanabilecek Çözüm Adımları |
@@ -51,6 +53,8 @@ Hata kodunun ilk hanesi, sorunun kaynaklandığı sistem bileşenini belirtir:
 | `FX-6002` | Alt test işlemi sırasında hata | Bu durum, devam eden diğer teşhis süreçlerini etkilemez. "Yeniden kontrol et" butonuyla taramayı tekrarlayınız. |
 | `FX-6003` | Güncelleme denetlenemedi | İnternet bağlantınızı kontrol ediniz. Denetim yalnızca GitHub'a (api.github.com) bağlanır; erişim engelliyse FoxDPI açıkken tekrar deneyiniz. Yeni sürümleri depodaki Releases sayfasından da görebilirsiniz. |
 | `FX-6004` | Güncelleme indirilemedi veya doğrulanamadı | İnternet bağlantınızı kontrol edip tekrar deneyiniz. İndirilen dosyanın SHA-256 özeti yayımlananla uyuşmazsa hiçbir şey çalıştırılmaz. Sorun sürerse yeni sürümü Releases sayfasından elle indirip kurabilirsiniz. |
+| `FX-7001` | Ses veya kamera aygıtı kontrol edilemedi | Windows aygıtla ilgili soruya yanıt vermedi. Hiçbir şey değiştirilmedi. Aygıtı yeniden takınız, onu kullanıyor olabilecek uygulamaları kapatınız ve kontrolü tekrar deneyiniz. |
+| `FX-8001` | Oyun göstergesinde kare sayısı ölçülemedi | Windows'un görüntü olayları dinlenemedi; FPS ve kare süresi N/A görünür, işlemci ve ekran kartı değerleri çalışır. FoxFix'i yönetici olarak açtığınızdan emin olun, güvenlik yazılımınızın engellemediğini kontrol edin ve göstergeyi kapatıp açın. Hiçbir şey değiştirilmedi. |
 | `FX-9001` | Beklenmeyen kritik hata | Hata detayları log dizinindeki crash.txt dosyasına kaydedilmiştir. Sorunun tespiti için bu dosyayı Discord üzerinden bana iletebilirsiniz. |
 
 ## Geri Bildirim ve Destek

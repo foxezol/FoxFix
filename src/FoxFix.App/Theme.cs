@@ -72,6 +72,60 @@ public static class ColorMath
     }
 
     public static string ToHex(Color color) => $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+
+    /// <summary>Hue 0 to 360, saturation and value 0 to 1.</summary>
+    public static Color FromHsv(double hue, double saturation, double value)
+    {
+        hue = (hue % 360 + 360) % 360;
+        saturation = Math.Clamp(saturation, 0, 1);
+        value = Math.Clamp(value, 0, 1);
+
+        var chroma = value * saturation;
+        var x = chroma * (1 - Math.Abs(hue / 60 % 2 - 1));
+        var m = value - chroma;
+        var (r, g, b) = hue switch
+        {
+            < 60 => (chroma, x, 0.0),
+            < 120 => (x, chroma, 0.0),
+            < 180 => (0.0, chroma, x),
+            < 240 => (0.0, x, chroma),
+            < 300 => (x, 0.0, chroma),
+            _ => (chroma, 0.0, x),
+        };
+
+        return Color.FromRgb((byte)Math.Round((r + m) * 255), (byte)Math.Round((g + m) * 255), (byte)Math.Round((b + m) * 255));
+    }
+
+    public static (double Hue, double Saturation, double Value) ToHsv(Color color)
+    {
+        double r = color.R / 255.0, g = color.G / 255.0, b = color.B / 255.0;
+        var max = Math.Max(r, Math.Max(g, b));
+        var delta = max - Math.Min(r, Math.Min(g, b));
+        double hue = 0;
+
+        if (delta > 0)
+        {
+            if (max == r)
+            {
+                hue = 60 * (((g - b) / delta) % 6);
+            }
+            else if (max == g)
+            {
+                hue = 60 * ((b - r) / delta + 2);
+            }
+            else
+            {
+                hue = 60 * ((r - g) / delta + 4);
+            }
+
+            if (hue < 0)
+            {
+                hue += 360;
+            }
+        }
+
+        return (hue, max <= 0 ? 0 : delta / max, max);
+    }
 }
 
 /// <summary>
@@ -436,6 +490,8 @@ public sealed class ThemeManager : IDisposable
 public static class TitleBar
 {
     private const int UseImmersiveDarkMode = 20;
+    private const int WindowCornerPreference = 33;
+    private const int CornerRound = 2;
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
@@ -444,5 +500,12 @@ public static class TitleBar
     {
         var value = dark ? 1 : 0;
         _ = DwmSetWindowAttribute(hwnd, UseImmersiveDarkMode, ref value, sizeof(int));
+    }
+
+    /// <summary>Asks Windows 11 for round window corners (a window without a Windows title bar may otherwise get square ones). Older Windows ignores it.</summary>
+    public static void SetRounded(IntPtr hwnd)
+    {
+        var value = CornerRound;
+        _ = DwmSetWindowAttribute(hwnd, WindowCornerPreference, ref value, sizeof(int));
     }
 }

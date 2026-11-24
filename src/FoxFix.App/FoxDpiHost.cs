@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using FoxFix.Core;
+using System.Windows;
 using System.Windows.Threading;
 using FoxFix.Core.GoodbyeDpi;
 
@@ -66,7 +67,7 @@ public sealed class FoxDpiHost
             if (!_session.IsRunning)
             {
                 // A stopped session has no profile any more; a dead one does.
-                _ = EndAsync(_session.Profile is null ? null : $"{FoxFix.Core.ErrorCodes.Tag(FoxFix.Core.ErrorCodes.DpiStoppedUnexpectedly)}FoxDPI beklenmedik şekilde durdu. Yeniden başlatabilirsin.");
+                _ = EndAsync(_session.Profile is null ? null : FoxFix.Core.ErrorCodes.Tag(FoxFix.Core.ErrorCodes.DpiStoppedUnexpectedly) + Strings.Get(Strings.DpiStoppedUnexpectedly));
             }
         };
         _watch.Start();
@@ -83,11 +84,11 @@ public sealed class FoxDpiHost
             : new System.Drawing.Icon(stream);
 
         var menu = new System.Windows.Forms.ContextMenuStrip();
-        menu.Items.Add("Göster", null, (_, _) => _window?.Restore());
-        menu.Items.Add("FoxFix'i aç", null, (_, _) => _openFoxFix());
-        menu.Items.Add("DPI Ayarları", null, (_, _) => _openSettings());
+        menu.Items.Add(Strings.Get(Strings.TrayShow), null, (_, _) => _window?.Restore());
+        menu.Items.Add(Strings.Get(Strings.TrayOpenFoxFix), null, (_, _) => _openFoxFix());
+        menu.Items.Add(Strings.Get(Strings.TrayDpiSettings), null, (_, _) => _openSettings());
         menu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
-        menu.Items.Add("Çıkış", null, (_, _) => _ = EndAsync(null));
+        menu.Items.Add(Strings.Get(Strings.TrayExit), null, (_, _) => _ = EndAsync(null));
 
         var tray = new System.Windows.Forms.NotifyIcon
         {
@@ -105,7 +106,7 @@ public sealed class FoxDpiHost
         if (_window is { WindowState: WindowState.Minimized } && !_toldAboutTray)
         {
             _toldAboutTray = true;
-            _tray?.ShowBalloonTip(2500, "FoxDPI", "FoxDPI arka planda çalışıyor.", System.Windows.Forms.ToolTipIcon.Info);
+            _tray?.ShowBalloonTip(2500, "FoxDPI", Strings.Get(Strings.TrayRunningInBackground), System.Windows.Forms.ToolTipIcon.Info);
         }
     }
 
@@ -138,7 +139,7 @@ public sealed class FoxDpiHost
 
         if (message is not null)
         {
-            _notify("FoxDPI durdu", message);
+            _notify(Strings.Get(Strings.DpiStoppedTitle), message);
         }
 
         _ended();

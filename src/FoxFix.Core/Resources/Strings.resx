@@ -283,8 +283,6 @@
   <data name="ReportDnsAutomatic" xml:space="preserve"><value>DNS: {0} (modemden)</value></data>
   <data name="CleanupProgress" xml:space="preserve"><value>{0} / {1} silindi</value></data>
   <data name="FoxDpiNeedsFoxFix" xml:space="preserve"><value>[FX-2012] FoxDPI&apos;yı ilk kez kullanmadan önce FoxFix&apos;i bir kez açman gerekiyor. FoxFix&apos;i aç, ayarını seç, sonra FoxDPI.exe ile istediğin zaman başlatabilirsin.</value></data>
-  <data name="FoxDpiExplainTitle" xml:space="preserve"><value>FoxDPI açıldı</value></data>
-  <data name="FoxDpiExplain" xml:space="preserve"><value>FoxDPI ayrı bir pencerede başlatıldı. Pencereyi simge durumuna küçülttüğünüzde sistem tepsisine gizlenir, kapattığınızda ise DPI hizmeti durdurulur. Sonraki kullanımlarda ana uygulamaya gerek kalmadan doğrudan FoxDPI.exe üzerinden başlatabilirsiniz. Yapılandırma ayarları FoxFix üzerinden yönetilmeye devam edecektir.</value></data>
   <data name="AutoStartTitle" xml:space="preserve"><value>FoxDPI&apos;yı Windows açılınca başlat</value></data>
   <data name="AutoStartAlreadyOn" xml:space="preserve"><value>Windows açılınca başlatma zaten açık.</value></data>
   <data name="AutoStartAlreadyOff" xml:space="preserve"><value>Windows açılınca başlatma zaten kapalı.</value></data>
@@ -340,4 +338,509 @@
   <data name="RestoreFailed" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; geri yüklenemedi, yapılan değişiklik geri alındı: {1}</value></data>
   <data name="RestoreFailedNotRestored" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; geri yüklenemedi ve önceki değerler tamamen geri yazılamadı: {1} &quot;Rapor ve geçmiş&quot; sayfasından Geri Al&apos;ı deneyin.</value></data>
   <data name="RestoreUndoDescription" xml:space="preserve"><value>Kayıtlı ayarların geri yüklenmesi geri alınabilir: {0}</value></data>
+  <data name="UiYoneticiIzniGerekir" xml:space="preserve"><value>  yönetici izni gerekir</value></data>
+  <data name="UiKontrolIlerlemesi" xml:space="preserve"><value>Kontrol ilerlemesi</value></data>
+  <data name="UiBeniDuzelt" xml:space="preserve"><value>Beni Düzelt</value></data>
+  <data name="UiOnceNeyinDegiseceginiSecersinizVeO" xml:space="preserve"><value>Önce neyin değişeceğini seçersiniz ve önizlemede görürsünüz</value></data>
+  <data name="UiYenidenKontrolEt" xml:space="preserve"><value>Yeniden kontrol et</value></data>
+  <data name="UiAyrintilariGoster" xml:space="preserve"><value>Ayrıntıları göster</value></data>
+  <data name="UiBaglantiKontrolununAyrintilariniGo" xml:space="preserve"><value>Bağlantı kontrolünün ayrıntılarını göster</value></data>
+  <data name="UiFoxdpiLogosu" xml:space="preserve"><value>FoxDPI logosu</value></data>
+  <data name="UiFoxdpiYiBaslatYaDaPenceresini" xml:space="preserve"><value>FoxDPI&apos;yı başlat ya da penceresini göster</value></data>
+  <data name="UiDpiAyarlari" xml:space="preserve"><value>DPI ayarları</value></data>
+  <data name="UiBaglantiHizi" xml:space="preserve"><value>Bağlantı hızı</value></data>
+  <data name="UiHizTestiniBaslat" xml:space="preserve"><value>Hız testini başlat</value></data>
+  <data name="UiDurdur" xml:space="preserve"><value>Durdur</value></data>
+  <data name="UiHizTestiniDurdur" xml:space="preserve"><value>Hız testini durdur</value></data>
+  <data name="UiIndirme" xml:space="preserve"><value>İndirme</value></data>
+  <data name="UiYukleme" xml:space="preserve"><value>Yükleme</value></data>
+  <data name="UiPing" xml:space="preserve"><value>Ping</value></data>
+  <data name="UiTitresim" xml:space="preserve"><value>Titreşim</value></data>
+  <data name="UiHizTestiSuruyor" xml:space="preserve"><value>Hız testi sürüyor</value></data>
+  <data name="UiSonucuPaylas" xml:space="preserve"><value>Sonucu paylaş</value></data>
+  <data name="UiHizTestiSonucunuPaylas" xml:space="preserve"><value>Hız testi sonucunu paylaş</value></data>
+  <data name="UiOlcumCloudflareSunuculariylaYapili" xml:space="preserve"><value>Ölçüm Cloudflare sunucularıyla yapılır ve bağlantı hızınıza göre yüzlerce MB veri kullanabilir. Karşı tarafa yalnızca IP adresiniz iletilir.</value></data>
+  <data name="UiAcilistaBaslayanProgramlar" xml:space="preserve"><value>Açılışta başlayan programlar</value></data>
+  <data name="UiIsaretiniKaldirdiginizProgramSilin" xml:space="preserve"><value>İşaretini kaldırdığınız program silinmez, yalnızca Windows açılırken başlamaz. Ne olduğunu bilmediğiniz bir girişi kapatmayın.</value></data>
+  <data name="UiWindowsAcilisindaBaslayanBirProgra" xml:space="preserve"><value>Windows açılışında başlayan bir program bulunamadı.</value></data>
+  <data name="UiDegisiklikleriUygula" xml:space="preserve"><value>Değişiklikleri uygula</value></data>
+  <data name="UiAcilisDegisiklikleriniUygula" xml:space="preserve"><value>Açılış değişikliklerini uygula</value></data>
+  <data name="UiListeyiYenile" xml:space="preserve"><value>Listeyi yenile</value></data>
+  <data name="UiDiskTemizligi" xml:space="preserve"><value>Disk temizliği</value></data>
+  <data name="UiSectiginizGereksizDosyalarSilinirB" xml:space="preserve"><value>Seçtiğiniz gereksiz dosyalar silinir. Bu işlem geri alınamaz: dosyalar Geri Dönüşüm Kutusu&apos;na gitmez.</value></data>
+  <data name="UiSecilenleriTemizle" xml:space="preserve"><value>Seçilenleri temizle</value></data>
+  <data name="UiBoyutlariYenidenHesapla" xml:space="preserve"><value>Boyutları yeniden hesapla</value></data>
+  <data name="UiSecilenlerinToplami" xml:space="preserve"><value>Seçilenlerin toplamı</value></data>
+  <data name="UiWindowsAyarlari" xml:space="preserve"><value>Windows ayarları</value></data>
+  <data name="UiGizlilikOnerilerYapayZekaGorevCubu" xml:space="preserve"><value>Gizlilik, öneriler, yapay zeka, görev çubuğu, Gezgin ve performans. Uygulamadan önce neyin değişeceği listelenir; her değişiklik Geri Al ile geri alınabilir.</value></data>
+  <data name="UiKaynakWin11debloat" xml:space="preserve"><value>Kaynak: Win11Debloat</value></data>
+  <data name="UiAyarListesininAlindigiAcikKaynakPr" xml:space="preserve"><value>Ayar listesinin alındığı açık kaynak proje (MIT)</value></data>
+  <data name="UiWin11debloatGithubSayfasi" xml:space="preserve"><value>Win11Debloat GitHub sayfası</value></data>
+  <data name="UiMevcutWindowsAyarlarinizHenuzKayde" xml:space="preserve"><value>Mevcut Windows ayarlarınız henüz kaydedilmedi</value></data>
+  <data name="UiBirSorunCikarsaOncekiHalineDonebil" xml:space="preserve"><value>Bir sorun çıkarsa önceki hâline dönebilmek için işlem yapmadan önce kaydetmeniz önerilir. Kaydetmek hiçbir ayarı değiştirmez.</value></data>
+  <data name="UiMevcutAyarlariKaydet" xml:space="preserve"><value>Mevcut ayarları kaydet</value></data>
+  <data name="UiHazirAyarlar" xml:space="preserve"><value>Hazır ayarlar</value></data>
+  <data name="UiSecmekHicbirSeyiDegistirmezUygulam" xml:space="preserve"><value>Seçmek hiçbir şeyi değiştirmez; uygulamak için listenin üstündeki &quot;Seçilenleri uygula&quot;ya basın.</value></data>
+  <data name="UiOnerilenAyarlariSec" xml:space="preserve"><value>Önerilen ayarları seç</value></data>
+  <data name="UiCoguKullaniciIcinGuvenliVeYararli" xml:space="preserve"><value>Çoğu kullanıcı için güvenli ve yararlı olanlar</value></data>
+  <data name="UiWindowsVarsayilaninaDondur" xml:space="preserve"><value>Windows varsayılanına döndür</value></data>
+  <data name="UiFoxfixInDegistirdigiAyarlarWindows" xml:space="preserve"><value>FoxFix&apos;in değiştirdiği ayarlar Windows&apos;un kendi değerine döner</value></data>
+  <data name="UiKayitliAyarlarim" xml:space="preserve"><value>Kayıtlı ayarlarım</value></data>
+  <data name="UiHenuzKayitYokKaydettiginizAyarlarB" xml:space="preserve"><value>Henüz kayıt yok. Kaydettiğiniz ayarlar burada listelenir ve tek tıkla geri yüklenebilir.</value></data>
+  <data name="UiGeriYukle" xml:space="preserve"><value>Geri yükle</value></data>
+  <data name="UiBuKayittakiAyarlariGeriYukle" xml:space="preserve"><value>Bu kayıttaki ayarları geri yükle</value></data>
+  <data name="UiSil" xml:space="preserve"><value>Sil</value></data>
+  <data name="UiBuKaydiSil" xml:space="preserve"><value>Bu kaydı sil</value></data>
+  <data name="UiAyarAraOrneginReklamCopilotAnimasy" xml:space="preserve"><value>Ayar ara (örneğin: reklam, Copilot, animasyon)</value></data>
+  <data name="UiAyarAra" xml:space="preserve"><value>Ayar ara</value></data>
+  <data name="UiAramayiTemizle" xml:space="preserve"><value>Aramayı temizle</value></data>
+  <data name="UiSecilenleriUygula" xml:space="preserve"><value>Seçilenleri uygula</value></data>
+  <data name="UiSecilenAyarlariUygula" xml:space="preserve"><value>Seçilen ayarları uygula</value></data>
+  <data name="UiTumunuAc" xml:space="preserve"><value>Tümünü aç</value></data>
+  <data name="UiTumListeleriAc" xml:space="preserve"><value>Tüm listeleri aç</value></data>
+  <data name="UiTumunuKapat" xml:space="preserve"><value>Tümünü kapat</value></data>
+  <data name="UiTumListeleriKapat" xml:space="preserve"><value>Tüm listeleri kapat</value></data>
+  <data name="UiYuzdelerNeKadarFarkYaratacaginaDai" xml:space="preserve"><value>Yüzdeler ne kadar fark yaratacağına dair kabaca bir tahmindir, ölçüm değildir. Kırmızı yüksek, sarı orta, yeşil düşük etki demektir.</value></data>
+  <data name="UiAramanizaUyanAyarYokBaskaBir" xml:space="preserve"><value>Aramanıza uyan ayar yok. Başka bir kelime deneyin.</value></data>
+  <data name="UiBuListedekiOnerilenleriSec" xml:space="preserve"><value>Bu listedeki önerilenleri seç</value></data>
+  <data name="UiOnerilen" xml:space="preserve"><value>Önerilen</value></data>
+  <data name="UiUygulandi" xml:space="preserve"><value>Uygulandı</value></data>
+  <data name="UiGeriAc" xml:space="preserve"><value>Geri aç</value></data>
+  <data name="UiBuAyariWindowsUnKendiDegerine" xml:space="preserve"><value>Bu ayarı Windows&apos;un kendi değerine döndürür; önce önizleme gösterilir</value></data>
+  <data name="UiBuAyariGeriAc" xml:space="preserve"><value>Bu ayarı geri aç</value></data>
+  <data name="UiSuAn" xml:space="preserve"><value>şu an</value></data>
+  <data name="UiErisimEngeliOlanSitelereBaglanmani" xml:space="preserve"><value>Erişim engeli olan sitelere bağlanmanızı sağlar. Açık kaynaklı GoodbyeDPI&apos;a dayanır; ağınızda çalışan ayarı deneyerek bulur.</value></data>
+  <data name="UiDenemekVeKurmakIcinYoneticiIzni" xml:space="preserve"><value>Denemek ve kurmak için yönetici izni gerekir. FoxFix yönetici olarak yeniden açılır ve bu sayfaya döner.</value></data>
+  <data name="UiYoneticiOlarakYenidenAc" xml:space="preserve"><value>Yönetici olarak yeniden aç</value></data>
+  <data name="UiOyunlarVeHileOnlemeSistemleri" xml:space="preserve"><value>Oyunlar ve hile önleme sistemleri</value></data>
+  <data name="UiEasyanticheatVanguardFaceitGibiSis" xml:space="preserve"><value>EasyAntiCheat, Vanguard, FACEIT gibi sistemler FoxDPI&apos;ın kullandığı WinDivert sürücüsünü engelleyebilir. Oyunu açmadan önce FoxDPI penceresini kapatın; sürücü kendiliğinden bellekten kalkar, yeniden başlatma gerekmez.</value></data>
+  <data name="UiEnUygunAyariBul" xml:space="preserve"><value>En uygun ayarı bul</value></data>
+  <data name="UiHerAyarAsagidakiSitelerdeDenenirBi" xml:space="preserve"><value>Her ayar aşağıdaki sitelerde denenir. Birkaç dakika sürebilir; bu sırada bağlantı kısa süre kesilebilir.</value></data>
+  <data name="UiDenenecekSiteler" xml:space="preserve"><value>Denenecek siteler</value></data>
+  <data name="UiSiteleriVirgulleAyirin" xml:space="preserve"><value>Siteleri virgülle ayırın.</value></data>
+  <data name="UiDenemeyiDurdur" xml:space="preserve"><value>Denemeyi durdur</value></data>
+  <data name="UiDenemeIlerlemesi" xml:space="preserve"><value>Deneme ilerlemesi</value></data>
+  <data name="UiFoxdpiHizmetOlarakKuruluOlduguIcin" xml:space="preserve"><value>FoxDPI hizmet olarak kurulu olduğu için ayar değiştirilemez. Değiştirmek için önce hizmeti kaldırın.</value></data>
+  <data name="UiOnerilen2" xml:space="preserve"><value>önerilen</value></data>
+  <data name="UiCalistirma" xml:space="preserve"><value>Çalıştırma</value></data>
+  <data name="UiElleBaslatabilirWindowsAcilincaBas" xml:space="preserve"><value>Elle başlatabilir, Windows açılınca başlatabilir ya da hizmet olarak kurabilirsiniz. Hizmet, Windows her açıldığında arka planda kendiliğinden çalışır.</value></data>
+  <data name="UiFoxdpiYiBaslat" xml:space="preserve"><value>FoxDPI&apos;yı başlat</value></data>
+  <data name="UiFoxdpiDurdur" xml:space="preserve"><value>FoxDPI durdur</value></data>
+  <data name="UiHizmetOlarakKur" xml:space="preserve"><value>Hizmet olarak kur</value></data>
+  <data name="UiHizmetiKaldir" xml:space="preserve"><value>Hizmeti kaldır</value></data>
+  <data name="UiFoxdpiYiWindowsAcilincaBaslat" xml:space="preserve"><value>FoxDPI&apos;yı Windows açılınca başlat</value></data>
+  <data name="UiHizmetKurmadanZamanlanmisGorevOlar" xml:space="preserve"><value>Hizmet kurmadan, zamanlanmış görev olarak çalışır. Her açılışta yönetici izni sorulmaz.</value></data>
+  <data name="UiWindowsDnsAyari" xml:space="preserve"><value>Windows DNS ayarı</value></data>
+  <data name="UiFoxdpiAcikkenHalaBaglanamiyorsaniz" xml:space="preserve"><value>FoxDPI açıkken hâlâ bağlanamıyorsanız DNS&apos;i Cloudflare&apos;e (1.1.1.1 ve 1.0.0.1) alın. Önce önizleme gösterilir; eski ayar kaydedilir ve Geri Al ile döner.</value></data>
+  <data name="UiDnsI1111" xml:space="preserve"><value>DNS&apos;i 1.1.1.1 yap</value></data>
+  <data name="UiDnsI11112" xml:space="preserve"><value>DNS&apos;i 1.1.1.1 ve 1.0.0.1 yap</value></data>
+  <data name="UiDpiSifirlama" xml:space="preserve"><value>DPI sıfırlama</value></data>
+  <data name="UiAgAyarlariniTemizleyipWindowsVarsa" xml:space="preserve"><value>Ağ ayarlarını temizleyip Windows varsayılanlarına döndürür.</value></data>
+  <data name="UiEskiGoodbyedpiWindivertVeZapretKal" xml:space="preserve"><value>Eski GoodbyeDPI, WinDivert ve Zapret kalıntıları, FoxDPI ve elle girilmiş DNS ayarları kaldırılır.</value></data>
+  <data name="UiYapilacaklarOnceListelenirOnaylama" xml:space="preserve"><value>Yapılacaklar önce listelenir; onaylamadan hiçbir şey değişmez.</value></data>
+  <data name="UiDnsAyarlariVeKaldirilanHizmetlerSo" xml:space="preserve"><value>DNS ayarları ve kaldırılan hizmetler sonra Rapor ve geçmiş sayfasındaki Geri Al ile geri getirilebilir.</value></data>
+  <data name="UiSiteleriVirgulleAyirinKarsilastirm" xml:space="preserve"><value>Siteleri virgülle ayırın. Karşılaştırma için engelsiz bir site her zaman eklenir. Bağlantı güvenli (HTTPS) olarak denenir.</value></data>
+  <data name="UiTestiBaslat" xml:space="preserve"><value>Testi başlat</value></data>
+  <data name="UiTestiDurdur" xml:space="preserve"><value>Testi durdur</value></data>
+  <data name="UiKarsilastirmaSitesi" xml:space="preserve"><value>karşılaştırma sitesi</value></data>
+  <data name="UiYapilanDegisiklikler" xml:space="preserve"><value>Yapılan değişiklikler</value></data>
+  <data name="UiFoxfixInYaptigiHerDegisiklikBurada" xml:space="preserve"><value>FoxFix&apos;in yaptığı her değişiklik burada durur ve geri alınabilir. En yenisi en üstte.</value></data>
+  <data name="UiFoxfixHenuzBirDegisiklikYapmadiBen" xml:space="preserve"><value>FoxFix henüz bir değişiklik yapmadı. Beni Düzelt veya bir ayar uyguladığınızda burada görünür.</value></data>
+  <data name="UiGeriAl" xml:space="preserve"><value>Geri Al</value></data>
+  <data name="UiBuDegisikligiGeriAl" xml:space="preserve"><value>Bu değişikliği geri al</value></data>
+  <data name="UiDestekRaporu" xml:space="preserve"><value>Destek raporu</value></data>
+  <data name="UiYardimIsterkenPaylasabileceginizBi" xml:space="preserve"><value>Yardım isterken paylaşabileceğiniz bir sistem raporu. Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri varsayılan olarak gizlenir.</value></data>
+  <data name="UiRaporuKopyala" xml:space="preserve"><value>Raporu kopyala</value></data>
+  <data name="UiRaporuKaydet" xml:space="preserve"><value>Raporu kaydet…</value></data>
+  <data name="UiRaporuKaydet2" xml:space="preserve"><value>Raporu kaydet</value></data>
+  <data name="UiKisiselBilgileriRaporaEkle" xml:space="preserve"><value>Kişisel bilgileri rapora ekle</value></data>
+  <data name="UiKullaniciAdiBilgisayarAdiMacVe" xml:space="preserve"><value>Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri rapora açıkça yazılır.</value></data>
+  <data name="UiGuncellemeler" xml:space="preserve"><value>Güncellemeler</value></data>
+  <data name="UiGuncellemeleriDenetle" xml:space="preserve"><value>Güncellemeleri denetle</value></data>
+  <data name="UiSimdiGuncelle" xml:space="preserve"><value>Şimdi güncelle</value></data>
+  <data name="UiSurumSayfasiniAc" xml:space="preserve"><value>Sürüm sayfasını aç</value></data>
+  <data name="UiGuncellemeleriHerAcilistaOtomatikD" xml:space="preserve"><value>Güncellemeleri her açılışta otomatik denetle</value></data>
+  <data name="UiHerAcilistaGuncellemeleriDenetle" xml:space="preserve"><value>Her açılışta güncellemeleri denetle</value></data>
+  <data name="UiFoxfixAcilincaGithubAEnSon" xml:space="preserve"><value>FoxFix açılınca GitHub&apos;a en son sürümü sorar; yeni sürüm varsa haber verir. Siz &quot;Şimdi güncelle&quot; demeden hiçbir şey indirilmez ve bilgisayarınız hakkında bilgi gönderilmez.</value></data>
+  <data name="UiGorunum" xml:space="preserve"><value>Görünüm</value></data>
+  <data name="UiTema" xml:space="preserve"><value>Tema</value></data>
+  <data name="UiWindowsAUy" xml:space="preserve"><value>Windows&apos;a uy</value></data>
+  <data name="UiTemaWindowsAUy" xml:space="preserve"><value>Tema: Windows&apos;a uy</value></data>
+  <data name="UiAydinlik" xml:space="preserve"><value>Aydınlık</value></data>
+  <data name="UiTemaAydinlik" xml:space="preserve"><value>Tema: Aydınlık</value></data>
+  <data name="UiKaranlik" xml:space="preserve"><value>Karanlık</value></data>
+  <data name="UiTemaKaranlik" xml:space="preserve"><value>Tema: Karanlık</value></data>
+  <data name="UiVurguRengi" xml:space="preserve"><value>Vurgu rengi</value></data>
+  <data name="UiDugmelerSeciliSayfaVeSecimlerBu" xml:space="preserve"><value>Düğmeler, seçili sayfa ve seçimler bu renkte olur. Okunması zor bir renk, okunur olacak kadar açılır ya da koyulaştırılır.</value></data>
+  <data name="UiVurguRengiRrggbb" xml:space="preserve"><value>Vurgu rengi (#RRGGBB)</value></data>
+  <data name="UiRrggbbBicimindeBirRenk" xml:space="preserve"><value>#RRGGBB biçiminde bir renk</value></data>
+  <data name="UiKullanilanRenk" xml:space="preserve"><value>Kullanılan renk</value></data>
+  <data name="UiVarsayilanRenk" xml:space="preserve"><value>Varsayılan renk</value></data>
+  <data name="UiVarsayilanRengeDon" xml:space="preserve"><value>Varsayılan renge dön</value></data>
+  <data name="UiLogoyuVePencereSimgesiniDeBu" xml:space="preserve"><value>Logoyu ve pencere simgesini de bu renge boya</value></data>
+  <data name="UiUygulamadakiLogoIleCalisirkenPence" xml:space="preserve"><value>Uygulamadaki logo ile çalışırken pencere ve görev çubuğu simgesi değişir. Kısayol ve program dosyasının simgesi Windows&apos;ta aynı kalır.</value></data>
+  <data name="UiFoxfixIKaldir" xml:space="preserve"><value>FoxFix&apos;i kaldır</value></data>
+  <data name="UiFoxdpiHizmetZamanlanmisGorevAyarla" xml:space="preserve"><value>FoxDPI, hizmet, zamanlanmış görev, ayarlar ve program silinir. Geri alınamaz; önce silinecekler gösterilir ve onayınız istenir.</value></data>
+  <data name="UiFoxdpiDurumuDnsVeDpiSayfasini" xml:space="preserve"><value>FoxDPI durumu, DNS ve DPI sayfasını aç</value></data>
+  <data name="UiDnsVeDpiSayfasiniAc" xml:space="preserve"><value>DNS ve DPI sayfasını aç</value></data>
+  <data name="UiSurumYapimciVeKullanilanAcikKaynak" xml:space="preserve"><value>Sürüm, yapımcı ve kullanılan açık kaynak projeler</value></data>
+  <data name="UiBilgi" xml:space="preserve"><value>Bilgi</value></data>
+  <data name="UiFoxfixInGithubBaglantisiniKopyala" xml:space="preserve"><value>FoxFix&apos;in GitHub bağlantısını kopyala</value></data>
+  <data name="UiBaglantiyiPaylas" xml:space="preserve"><value>Bağlantıyı paylaş</value></data>
+  <data name="UiPaylas" xml:space="preserve"><value>Paylaş</value></data>
+  <data name="UiFoxfixLogosu" xml:space="preserve"><value>FoxFix logosu</value></data>
+  <data name="UiGenelBakis" xml:space="preserve"><value>Genel bakış</value></data>
+  <data name="UiBaglantiKontrolu" xml:space="preserve"><value>Bağlantı kontrolü</value></data>
+  <data name="UiHizlandirmaVeAyarlar" xml:space="preserve"><value>Hızlandırma ve ayarlar</value></data>
+  <data name="UiDnsVeDpi" xml:space="preserve"><value>DNS ve DPI</value></data>
+  <data name="UiErisimTesti" xml:space="preserve"><value>Erişim testi</value></data>
+  <data name="UiRaporVeGecmis" xml:space="preserve"><value>Rapor ve geçmiş</value></data>
+  <data name="UiAyarlar" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="UiKopyalandi" xml:space="preserve"><value>Kopyalandı</value></data>
+  <data name="UiMenuyuDaralt" xml:space="preserve"><value>Menüyü daralt</value></data>
+  <data name="UiMenuyuDaraltYaDaAc" xml:space="preserve"><value>Menüyü daralt ya da aç</value></data>
+  <data name="UiSuDegisikliklerYapilacak" xml:space="preserve"><value>Şu değişiklikler yapılacak</value></data>
+  <data name="UiYapilanIslemSuruyorLutfenBekleyini" xml:space="preserve"><value>Yapılan işlem sürüyor, lütfen bekleyiniz.</value></data>
+  <data name="UiIslemIlerlemesi" xml:space="preserve"><value>İşlem ilerlemesi</value></data>
+  <data name="UiYenidenBaslatmaGerekiyor" xml:space="preserve"><value>Yeniden başlatma gerekiyor</value></data>
+  <data name="UiSurucununBellektenInmesiIcinBilgis" xml:space="preserve"><value>Sürücünün bellekten inmesi için bilgisayarı yeniden başlat. İstersen buradan başlatabilirsin.</value></data>
+  <data name="UiSimdiYenidenBaslat" xml:space="preserve"><value>Şimdi yeniden başlat</value></data>
+  <data name="UiYenidenBaslatmaPlanlandi" xml:space="preserve"><value>Yeniden başlatma planlandı</value></data>
+  <data name="UiYenidenBaslatmayiIptalEt" xml:space="preserve"><value>Yeniden başlatmayı iptal et</value></data>
+  <data name="UiYukaridakiDegisiklikleriOkudumOnay" xml:space="preserve"><value>Yukarıdaki değişiklikleri okudum, onaylıyorum.</value></data>
+  <data name="UiDegisiklikleriOnayliyorum" xml:space="preserve"><value>Değişiklikleri onaylıyorum</value></data>
+  <data name="UiKendiligindenYenidenBaslatTavsiyeE" xml:space="preserve"><value>Kendiliğinden yeniden başlat (tavsiye edilen)</value></data>
+  <data name="UiIslemlerdenSonraYenidenBaslat" xml:space="preserve"><value>İşlemlerden sonra yeniden başlat</value></data>
+  <data name="UiTavsiyeEdilen" xml:space="preserve"><value> (Tavsiye edilen.)</value></data>
+  <data name="UiKapat" xml:space="preserve"><value>Kapat</value></data>
+  <data name="UiTamam" xml:space="preserve"><value>Tamam</value></data>
+  <data name="UiAyarlariniziKaydetmenizOnerilir" xml:space="preserve"><value>Ayarlarınızı kaydetmeniz önerilir</value></data>
+  <data name="UiBuSayfadakiIslemlerWindowsAyarlari" xml:space="preserve"><value>Bu sayfadaki işlemler Windows ayarlarını değiştirir. Herhangi bir sorun oluşması hâlinde önceki yapılandırmaya dönebilmeniz için, işlem yapmadan önce mevcut ayarlarınızı kaydetmeniz önerilir. Kaydedilen ayarları &quot;Kayıtlı ayarlarım&quot; bölümünden dilediğiniz zaman geri yükleyebilirsiniz.</value></data>
+  <data name="UiKaydetmeIslemiHicbirAyariDegistirm" xml:space="preserve"><value>Kaydetme işlemi hiçbir ayarı değiştirmez. Kayıt yalnızca bu bilgisayarda, FoxFix&apos;in veri klasöründe tutulur.</value></data>
+  <data name="UiSimdiKaydet" xml:space="preserve"><value>Şimdi kaydet</value></data>
+  <data name="UiMevcutAyarlariSimdiKaydet" xml:space="preserve"><value>Mevcut ayarları şimdi kaydet</value></data>
+  <data name="UiDahaSonra" xml:space="preserve"><value>Daha sonra</value></data>
+  <data name="UiSimdiGuncelleYeniSurumuIndirirVe" xml:space="preserve"><value>&quot;Şimdi güncelle&quot; yeni sürümü indirir ve dosyasının SHA-256 özetini doğrular. Ardından FoxFix kapanır, yeni sürüm kurulur ve kendiliğinden açılır. FoxDPI çalışıyorsa durur; verileriniz ve ayarlarınız korunur.</value></data>
+  <data name="UiSurumSayfasiTarayicidaAcilirYeniSu" xml:space="preserve"><value>Sürüm sayfası tarayıcıda açılır. Yeni sürümü oradan indirebilirsiniz; güncellemeden önce FoxFix ve FoxDPI&apos;ı kapatmanız önerilir.</value></data>
+  <data name="UiGuncellemeIlerlemesi" xml:space="preserve"><value>Güncelleme ilerlemesi</value></data>
+  <data name="UiSurumSayfasi" xml:space="preserve"><value>Sürüm sayfası</value></data>
+  <data name="UiSonra" xml:space="preserve"><value>Sonra</value></data>
+  <data name="UiFoxdpiModuluAcikKaynakliGoodbyedpi" xml:space="preserve"><value>FoxDPI modülü, açık kaynaklı GoodbyeDPI projesini temel alır. İlgili çekirdek dosyalar FoxFix ile bütünleşik olarak gelir ve güvenlik amacıyla her başlatmada doğrulanır. Lisans dosyaları FoxDPI klasöründe yer almaktadır. Windows ayarları listesi açık kaynaklı Win11Debloat projesinden alınmıştır (MIT).</value></data>
+  <data name="UiGithubComValdikssGoodbyedpi" xml:space="preserve"><value>github.com/ValdikSS/GoodbyeDPI</value></data>
+  <data name="UiGoodbyedpiGithubSayfasi" xml:space="preserve"><value>GoodbyeDPI GitHub sayfası</value></data>
+  <data name="UiTurkiyeSurumu" xml:space="preserve"><value>Türkiye sürümü</value></data>
+  <data name="UiGoodbyedpiTurkiyeSurumu" xml:space="preserve"><value>GoodbyeDPI Türkiye sürümü</value></data>
+  <data name="UiGoodbyedpiTurkiyeSurumuGithubSayfa" xml:space="preserve"><value>GoodbyeDPI Türkiye sürümü GitHub sayfası</value></data>
+  <data name="UiWindowsAyarlarininAlindigiProje" xml:space="preserve"><value>Windows ayarlarının alındığı proje</value></data>
+  <data name="UiHataKodlari" xml:space="preserve"><value>Hata kodları</value></data>
+  <data name="UiMesajlardakiFxXxxxKodlarininAnlami" xml:space="preserve"><value>Mesajlardaki [FX-xxxx] kodlarının anlamı</value></data>
+  <data name="UiHataKodlariTablosu" xml:space="preserve"><value>Hata kodları tablosu</value></data>
+  <data name="UiGeriBildirimDiscordProfilimeUlas" xml:space="preserve"><value>Geri bildirim: Discord profilime ulaş</value></data>
+  <data name="UiGeriBildirimGonder" xml:space="preserve"><value>Geri bildirim gönder</value></data>
+  <data name="UiGeriBildirim" xml:space="preserve"><value>Geri bildirim</value></data>
+  <data name="UiNeleriDuzeltelim" xml:space="preserve"><value>Neleri düzeltelim?</value></data>
+  <data name="UiIstedikleriniIsaretleOnizlemedeNeD" xml:space="preserve"><value>İstediklerini işaretle. Önizlemede ne değişeceğini görürsün, sen onaylamadan hiçbir şey yapılmaz.</value></data>
+  <data name="UiInternet" xml:space="preserve"><value>İnternet</value></data>
+  <data name="UiEskiDpiAraclariniTemizle" xml:space="preserve"><value>Eski DPI araçlarını temizle</value></data>
+  <data name="UiGoodbyedpiWindivertVeZapretKalinti" xml:space="preserve"><value>GoodbyeDPI, WinDivert ve Zapret kalıntıları. Kendi kullandığın GoodbyeDPI da silinir, önizlemede görürsün.</value></data>
+  <data name="UiDnsAyariniOnar" xml:space="preserve"><value>DNS ayarını onar</value></data>
+  <data name="UiCalismayanDnsIOtomatigeModemdenAli" xml:space="preserve"><value>Çalışmayan DNS&apos;i otomatiğe (modemden) alır. Eski ayar kaydedilir.</value></data>
+  <data name="UiBilgisayar" xml:space="preserve"><value>Bilgisayar</value></data>
+  <data name="UiAcilisProgramiDegisiklikleri" xml:space="preserve"><value>Açılış programı değişiklikleri</value></data>
+  <data name="UiOnizlemeyiGoster" xml:space="preserve"><value>Önizlemeyi göster</value></data>
+  <data name="UiVazgec" xml:space="preserve"><value>Vazgeç</value></data>
+  <data name="UiFoxdpiAktif" xml:space="preserve"><value>FoxDPI aktif</value></data>
+  <data name="UiAyar" xml:space="preserve"><value>Ayar:</value></data>
+  <data name="UiFoxfixIAc" xml:space="preserve"><value>FoxFix&apos;i aç</value></data>
+  <data name="UiDpiAyarlari2" xml:space="preserve"><value>DPI Ayarları</value></data>
+  <data name="UiDpiOffDirect" xml:space="preserve"><value>Kapalı, engelli sitelere doğrudan bağlanılıyor</value></data>
+  <data name="UiDpiOnBypassing" xml:space="preserve"><value>Açık, erişim engellerini aşıyor</value></data>
+  <data name="UiFoxDpiOff" xml:space="preserve"><value>FoxDPI kapalı</value></data>
+  <data name="UiFoxDpiOn" xml:space="preserve"><value>FoxDPI açık</value></data>
+  <data name="AccessNoteDpiOn" xml:space="preserve"><value>Şu anda FoxDPI aktif. Açılmayan bir site varsa FoxDPI&apos;ya rağmen erişilemiyor demektir.</value></data>
+  <data name="AccessNoteDpiOff" xml:space="preserve"><value>Şu anda FoxDPI devre dışı. Kesin bir karşılaştırma için FoxDPI aktifken testi tekrarlayabilirsiniz.</value></data>
+  <data name="AccessNeedHost" xml:space="preserve"><value>Denenecek bir site adı yaz. Örnek: discord.com</value></data>
+  <data name="AccessNoNormal" xml:space="preserve"><value>Normal sitelerin hiçbiri açılmadı. Sorun sitelerde değil, internet bağlantında olabilir. Bağlantı kontrolünü dene.</value></data>
+  <data name="AccessNormalOpen" xml:space="preserve"><value>Normal siteler açılıyor.</value></data>
+  <data name="AccessOneOpens" xml:space="preserve"><value>Site açılıyor.</value></data>
+  <data name="AccessAllOpen" xml:space="preserve"><value>{0} sitenin hepsi açılıyor.</value></data>
+  <data name="AccessSomeOpen" xml:space="preserve"><value>{0} siteden {1} tanesi açılıyor.</value></data>
+  <data name="AccessStopped" xml:space="preserve"><value>Test durduruldu.</value></data>
+  <data name="UiTesting" xml:space="preserve"><value>Deneniyor…</value></data>
+  <data name="AppCrashed" xml:space="preserve"><value>FoxFix beklenmedik bir hata verdi ve kapanacak.
+
+{0}
+
+Ayrıntılar şu dosyada: {1}</value></data>
+  <data name="DpiNotStartedTitle" xml:space="preserve"><value>FoxDPI başlamadı</value></data>
+  <data name="JournalUnreadable" xml:space="preserve"><value>Geri alma kayıtları okunamadı: {0}</value></data>
+  <data name="DpiStarting" xml:space="preserve"><value>FoxDPI başlatılıyor…</value></data>
+  <data name="LinkFailedTitle" xml:space="preserve"><value>Bağlantı açılamadı</value></data>
+  <data name="LinkCopyFailedTitle" xml:space="preserve"><value>Bağlantı kopyalanamadı</value></data>
+  <data name="AdminRequired" xml:space="preserve"><value>[FX-1001] Bu uygulama yönetici yetkileri gerektiriyor. Lütfen sağ tıklayıp &apos;Yönetici Olarak Çalıştır&apos; seçeneğini kullanın. (Hata Kodu: 5)</value></data>
+  <data name="ProgressFewSecondsMore" xml:space="preserve"><value>%{0} · birkaç saniye daha</value></data>
+  <data name="ProgressRemaining" xml:space="preserve"><value>%{0} · yaklaşık {1} kaldı</value></data>
+  <data name="ProgressPercent" xml:space="preserve"><value>%{0}</value></data>
+  <data name="ProgressAbout" xml:space="preserve"><value> · yaklaşık {0} kaldı</value></data>
+  <data name="DurationFewSeconds" xml:space="preserve"><value>birkaç saniye</value></data>
+  <data name="DurationSeconds" xml:space="preserve"><value>{0} saniye</value></data>
+  <data name="DurationMinutes" xml:space="preserve"><value>{0} dakika</value></data>
+  <data name="DurationMinutesSeconds" xml:space="preserve"><value>{0} dakika {1} saniye</value></data>
+  <data name="DpiStoppedUnexpectedly" xml:space="preserve"><value>FoxDPI beklenmedik şekilde durdu. Yeniden başlatabilirsiniz.</value></data>
+  <data name="TrayShow" xml:space="preserve"><value>Göster</value></data>
+  <data name="TrayOpenFoxFix" xml:space="preserve"><value>FoxFix&apos;i aç</value></data>
+  <data name="TrayDpiSettings" xml:space="preserve"><value>DPI Ayarları</value></data>
+  <data name="TrayExit" xml:space="preserve"><value>Çıkış</value></data>
+  <data name="TrayRunningInBackground" xml:space="preserve"><value>FoxDPI arka planda çalışıyor.</value></data>
+  <data name="DpiStoppedTitle" xml:space="preserve"><value>FoxDPI durdu</value></data>
+  <data name="TrialQueued" xml:space="preserve"><value>Sırada</value></data>
+  <data name="TrialAllOpened" xml:space="preserve"><value>Hepsi açıldı ({0}/{1}){2}</value></data>
+  <data name="TrialSomeOpened" xml:space="preserve"><value>Bir kısmı açıldı ({0}/{1}){2}</value></data>
+  <data name="TrialNoneOpened" xml:space="preserve"><value>Hiçbiri açılmadı</value></data>
+  <data name="TrialNotStarted" xml:space="preserve"><value>Başlamadı</value></data>
+  <data name="DpiShowWindow" xml:space="preserve"><value>Pencereyi göster</value></data>
+  <data name="DpiOn" xml:space="preserve"><value>Açık</value></data>
+  <data name="DpiStart" xml:space="preserve"><value>FoxDPI&apos;yı başlat</value></data>
+  <data name="DpiStatusUnreadable" xml:space="preserve"><value>Durum okunamadı: {0}</value></data>
+  <data name="DpiStatusForeign" xml:space="preserve"><value>Başka bir GoodbyeDPI ya da Zapret çalışıyor. FoxDPI onunla aynı anda çalışamaz.</value></data>
+  <data name="DpiStatusService" xml:space="preserve"><value>Hizmet olarak çalışıyor. Ayar: {0}</value></data>
+  <data name="DpiStatusManual" xml:space="preserve"><value>Çalışıyor. Ayar: {0}</value></data>
+  <data name="DpiStatusInstalledStopped" xml:space="preserve"><value>Hizmet kurulu ama durmuş. Ayar: {0}</value></data>
+  <data name="DpiStatusOff" xml:space="preserve"><value>Çalışmıyor.</value></data>
+  <data name="UnknownValue" xml:space="preserve"><value>bilinmiyor</value></data>
+  <data name="AdminPermissionTitle" xml:space="preserve"><value>Yönetici izni</value></data>
+  <data name="AdminPermissionDenied" xml:space="preserve"><value>Yönetici izni verilmedi. Hiçbir şey değişmedi.</value></data>
+  <data name="Starting" xml:space="preserve"><value>Başlıyor…</value></data>
+  <data name="TrialStopped" xml:space="preserve"><value>Deneme durduruldu.</value></data>
+  <data name="TrialFileError" xml:space="preserve"><value>Deneme bir dosya hatasıyla durdu: {0} Bilgisayarı yeniden başlatıp tekrar dene ya da DPI Sıfırlama&apos;yı kullan.</value></data>
+  <data name="DpiStopFailedTitle" xml:space="preserve"><value>FoxDPI durdurulamadı</value></data>
+  <data name="VersionText" xml:space="preserve"><value>Sürüm {0}</value></data>
+  <data name="PageConnection" xml:space="preserve"><value>Bağlantı kontrolü</value></data>
+  <data name="PageTweaks" xml:space="preserve"><value>Hızlandırma ve ayarlar</value></data>
+  <data name="PageDnsDpi" xml:space="preserve"><value>DNS ve DPI</value></data>
+  <data name="PageAccess" xml:space="preserve"><value>Erişim testi</value></data>
+  <data name="PageReport" xml:space="preserve"><value>Rapor ve geçmiş</value></data>
+  <data name="PageSettings" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="PageDevices" xml:space="preserve"><value>Ses ve kamera</value></data>
+  <data name="SubConnection" xml:space="preserve"><value>Bilgisayarınızdan internete kadar her adımın sonucu ve ayrıntısı.</value></data>
+  <data name="SubTweaks" xml:space="preserve"><value>Açılış programları, disk temizliği ve Windows ayarları. Siz onaylamadan hiçbir şey değişmez.</value></data>
+  <data name="SubDnsDpi" xml:space="preserve"><value>Erişim engellerine karşı FoxDPI, DNS ayarı ve ağ ayarlarını sıfırlama.</value></data>
+  <data name="SubAccess" xml:space="preserve"><value>Sitelere ulaşılıp ulaşılamadığını ağ ayarlarına dokunmadan dener.</value></data>
+  <data name="SubReport" xml:space="preserve"><value>FoxFix&apos;in yaptığı değişiklikler, geri alma ve destek raporu.</value></data>
+  <data name="SubSettings" xml:space="preserve"><value>Dil, güncellemeler, görünüm, tanıtım turu ve uygulamayı kaldırma.</value></data>
+  <data name="SubDevices" xml:space="preserve"><value>Hoparlör, mikrofon ve kamerayı adım adım kontrol eder. Hiçbir ayarı değiştirmez, hiçbir şey kaydetmez.</value></data>
+  <data name="MenuPin" xml:space="preserve"><value>Menüyü sabitle</value></data>
+  <data name="MenuCollapse" xml:space="preserve"><value>Menüyü daralt</value></data>
+  <data name="PickerStartupChosen" xml:space="preserve"><value>Açılışta başlayan programlar: {0} değişiklik, Hızlandırma ve ayarlar sayfasında seçtiğin</value></data>
+  <data name="PickerStartupNone" xml:space="preserve"><value>Açılışta başlayan programlar: henüz bir şey seçmedin. Seçmek için Hızlandırma ve ayarlar sayfasına bak.</value></data>
+  <data name="PickerCleanupChosen" xml:space="preserve"><value>Disk temizliği: seçtiklerin {0} yer açar</value></data>
+  <data name="PickerCleanupNone" xml:space="preserve"><value>Disk temizliği: aşağıdan silinecekleri işaretle</value></data>
+  <data name="TextFileFilter" xml:space="preserve"><value>Metin dosyası (*.txt)|*.txt</value></data>
+  <data name="SwatchPurple" xml:space="preserve"><value>Mor</value></data>
+  <data name="SwatchBlue" xml:space="preserve"><value>Mavi</value></data>
+  <data name="SwatchCyan" xml:space="preserve"><value>Camgöbeği</value></data>
+  <data name="SwatchGreen" xml:space="preserve"><value>Yeşil</value></data>
+  <data name="SwatchOrange" xml:space="preserve"><value>Turuncu</value></data>
+  <data name="SwatchRed" xml:space="preserve"><value>Kırmızı</value></data>
+  <data name="SwatchPink" xml:space="preserve"><value>Pembe</value></data>
+  <data name="AccentInvalid" xml:space="preserve"><value>Renk #RRGGBB biçiminde olmalıdır. Örnek: #2F7DF6</value></data>
+  <data name="SettingsSaveFailed" xml:space="preserve"><value>Ayarlar kaydedilemedi. Seçiminiz bu oturumda geçerli olur ama sonraki açılışta kaybolabilir.</value></data>
+  <data name="SpeedCardTitle" xml:space="preserve"><value>Hız testi sonucu</value></data>
+  <data name="SpeedDownload" xml:space="preserve"><value>İndirme</value></data>
+  <data name="SpeedUpload" xml:space="preserve"><value>Yükleme</value></data>
+  <data name="SpeedJitter" xml:space="preserve"><value>Titreşim</value></data>
+  <data name="SpeedPngCopied" xml:space="preserve"><value>PNG kopyalandı</value></data>
+  <data name="CopyFailed" xml:space="preserve"><value>Kopyalanamadı: {0}</value></data>
+  <data name="StartupEnabledHeader" xml:space="preserve"><value>Açık olanlar ({0})</value></data>
+  <data name="StartupDisabledHeader" xml:space="preserve"><value>Kapalı olanlar ({0})</value></data>
+  <data name="StartupListFailed" xml:space="preserve"><value>Liste okunamadı: {0}</value></data>
+  <data name="ImpactHigh" xml:space="preserve"><value>Yüksek etki %{0}</value></data>
+  <data name="ImpactMedium" xml:space="preserve"><value>Orta etki %{0}</value></data>
+  <data name="ImpactLow" xml:space="preserve"><value>Düşük etki %{0}</value></data>
+  <data name="ImpactEstimate" xml:space="preserve"><value>{0} · tahmini etki %{1}</value></data>
+  <data name="TweakDefaultMark" xml:space="preserve"><value>(Varsayılan)</value></data>
+  <data name="TweakKeep" xml:space="preserve"><value>Değiştirme</value></data>
+  <data name="TweaksNoneSelected" xml:space="preserve"><value>Seçili ayar yok</value></data>
+  <data name="TweaksSelected" xml:space="preserve"><value>{0} ayar seçili</value></data>
+  <data name="TweaksSummaryPicked" xml:space="preserve"><value>{0} ayar · {1} seçili</value></data>
+  <data name="TweaksSummary" xml:space="preserve"><value>{0} ayar</value></data>
+  <data name="BackupDeleted" xml:space="preserve"><value>Kayıt silindi.</value></data>
+  <data name="InstalledVersion" xml:space="preserve"><value>Kurulu sürüm: {0}</value></data>
+  <data name="Downloading" xml:space="preserve"><value>İndiriliyor…</value></data>
+  <data name="DownloadingPercent" xml:space="preserve"><value>İndiriliyor… %{0}</value></data>
+  <data name="Preparing" xml:space="preserve"><value>Hazırlanıyor…</value></data>
+  <data name="UpdatePromptTitle" xml:space="preserve"><value>FoxFix {0} yayımlandı</value></data>
+  <data name="Checking" xml:space="preserve"><value>Denetleniyor…</value></data>
+  <data name="AreaSpeed" xml:space="preserve"><value>Hız</value></data>
+  <data name="AreaPrivacy" xml:space="preserve"><value>Gizlilik</value></data>
+  <data name="AreaLook" xml:space="preserve"><value>Görünüm</value></data>
+  <data name="AreaComfort" xml:space="preserve"><value>Kullanım</value></data>
+  <data name="AreaBattery" xml:space="preserve"><value>Pil</value></data>
+  <data name="BackupInvalidId" xml:space="preserve"><value>Geçersiz yedek kimliği.</value></data>
+  <data name="RecycleBinFailed" xml:space="preserve"><value>Çöp kutusu boşaltılamadı (0x{0:X8}).</value></data>
+  <data name="ProcessStartFailed" xml:space="preserve"><value>{0}.exe başlatılamadı.</value></data>
+  <data name="HostNotFound" xml:space="preserve"><value>{0} adresi bulunamadı.</value></data>
+  <data name="ExitCode" xml:space="preserve"><value>çıkış kodu {0}</value></data>
+  <data name="ReportWindowsVersion" xml:space="preserve"><value>{0} (sürüm {1})</value></data>
+  <data name="FileTooLarge" xml:space="preserve"><value>Dosya beklenenden büyük.</value></data>
+  <data name="ReleaseListExpected" xml:space="preserve"><value>Sürüm listesi bekleniyordu.</value></data>
+  <data name="ReleaseTagUnreadable" xml:space="preserve"><value>Sürüm etiketi anlaşılamadı: &apos;{0}&apos;</value></data>
+  <data name="UiLanguage" xml:space="preserve"><value>Dil</value></data>
+  <data name="UiLanguageNote" xml:space="preserve"><value>Dil değişikliği FoxFix yeniden açıldığında uygulanır.</value></data>
+  <data name="LangTurkish" xml:space="preserve"><value>Türkçe</value></data>
+  <data name="LangEnglish" xml:space="preserve"><value>English</value></data>
+  <data name="LangRestartTitle" xml:space="preserve"><value>Dil değiştirildi</value></data>
+  <data name="LangRestartText" xml:space="preserve"><value>Yeni dilin uygulanması için FoxFix&apos;in yeniden açılması gerekir. FoxDPI çalışıyorsa durdurulur. Ayarlarınız ve geri alma kayıtlarınız korunur.</value></data>
+  <data name="UiRestartNow" xml:space="preserve"><value>Şimdi yeniden aç</value></data>
+  <data name="UiRestartLater" xml:space="preserve"><value>Sonra</value></data>
+  <data name="UiTourSection" xml:space="preserve"><value>Tanıtım turu</value></data>
+  <data name="UiTourSectionNote" xml:space="preserve"><value>FoxFix&apos;in ana bölümlerini kısaca tanıtan turu istediğiniz zaman yeniden izleyebilirsiniz.</value></data>
+  <data name="UiStartTour" xml:space="preserve"><value>Tanıtım turunu başlat</value></data>
+  <data name="TourPromptTitle" xml:space="preserve"><value>FoxFix&apos;te kısa bir tur yapmak ister misiniz?</value></data>
+  <data name="TourPromptText" xml:space="preserve"><value>Ana bölümleri bir dakikadan kısa sürede tanıtırız. Turu istediğiniz zaman Ayarlar sayfasından yeniden başlatabilirsiniz.</value></data>
+  <data name="TourStart" xml:space="preserve"><value>Turu başlat</value></data>
+  <data name="TourNotNow" xml:space="preserve"><value>Şimdi değil</value></data>
+  <data name="TourBack" xml:space="preserve"><value>Geri</value></data>
+  <data name="TourNext" xml:space="preserve"><value>İleri</value></data>
+  <data name="TourSkip" xml:space="preserve"><value>Atla</value></data>
+  <data name="TourFinish" xml:space="preserve"><value>Turu bitir</value></data>
+  <data name="TourStepOf" xml:space="preserve"><value>Adım {0} / {1}</value></data>
+  <data name="TourDialogName" xml:space="preserve"><value>Tanıtım turu</value></data>
+  <data name="TourWelcomeTitle" xml:space="preserve"><value>FoxFix&apos;e hoş geldiniz</value></data>
+  <data name="TourWelcomeText" xml:space="preserve"><value>FoxFix internet bağlantısı, DNS ve engelli siteler gibi sorunları bulur ve düzeltir. Bu kısa tur ana bölümleri tanıtır.</value></data>
+  <data name="TourFixTitle" xml:space="preserve"><value>Beni Düzelt</value></data>
+  <data name="TourFixText" xml:space="preserve"><value>Kontrol bir sorun bulursa düzeltmeyi buradan başlatırsınız. Önce neyin değişeceği listelenir; siz onaylamadan hiçbir şey değişmez ve değişiklikler geri alınabilir.</value></data>
+  <data name="TourConnectionTitle" xml:space="preserve"><value>Bağlantı kontrolü</value></data>
+  <data name="TourConnectionText" xml:space="preserve"><value>Bilgisayarınızdan internete kadar her adımı (ağ, modem, DNS, güvenli bağlantı) sırayla kontrol eder ve sonucu sade bir dille açıklar.</value></data>
+  <data name="TourTweaksTitle" xml:space="preserve"><value>Hızlandırma ve ayarlar</value></data>
+  <data name="TourTweaksText" xml:space="preserve"><value>Açılışta başlayan programları, gereksiz dosyaları ve Windows ayarlarını burada yönetirsiniz. Her ayarın etkisi yazılıdır; işlem yapmadan önce mevcut ayarlarınızı kaydetmeniz önerilir.</value></data>
+  <data name="TourDpiTitle" xml:space="preserve"><value>DNS ve DPI</value></data>
+  <data name="TourDpiText" xml:space="preserve"><value>FoxDPI, erişim engeli olan sitelere bağlanmanızı sağlar. &quot;En uygun ayarı bul&quot; ağınıza uyan ayarı bulur, sonra FoxDPI&apos;ı başlatırsınız. FoxDPI ayrı küçük bir pencerede çalışır: simge durumuna küçültürseniz sistem tepsisine gider, kapatırsanız durur. Sonraki seferlerde doğrudan FoxDPI.exe ile de açabilirsiniz. Anti-cheat&apos;li bir oyun açmadan önce FoxDPI penceresini kapatın.</value></data>
+  <data name="TourAccessTitle" xml:space="preserve"><value>Erişim testi</value></data>
+  <data name="TourAccessText" xml:space="preserve"><value>Yazdığınız sitelerin açılıp açılmadığını ağ ayarlarına dokunmadan dener. FoxDPI açıkken ve kapalıyken çalıştırıp karşılaştırabilirsiniz.</value></data>
+  <data name="TourDevicesTitle" xml:space="preserve"><value>Ses ve kamera</value></data>
+  <data name="TourDevicesText" xml:space="preserve"><value>Hoparlör, mikrofon ve kamerayı adım adım kontrol eder: Windows aygıtları görüyor mu, gizlilik ayarı erişime izin veriyor mu, testte çalışıyor mu. Hiçbir ayarı değiştirmez, hiçbir şey kaydetmez.</value></data>
+  <data name="TourReportTitle" xml:space="preserve"><value>Rapor ve geçmiş</value></data>
+  <data name="TourReportText" xml:space="preserve"><value>FoxFix&apos;in yaptığı her değişiklik burada durur ve geri alınabilir. Yardım isterken paylaşabileceğiniz bir destek raporu da buradan hazırlanır.</value></data>
+  <data name="TourSettingsTitle" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="TourSettingsText" xml:space="preserve"><value>Dil, güncellemeler, tema ve vurgu rengi buradadır. Bu turu ve uygulamayı kaldırma düğmesini de burada bulursunuz.</value></data>
+  <data name="TourDoneTitle" xml:space="preserve"><value>Hazırsınız</value></data>
+  <data name="TourDoneText" xml:space="preserve"><value>Turu Ayarlar sayfasından istediğiniz zaman yeniden başlatabilirsiniz. İyi kullanımlar.</value></data>
+  <data name="DpiHintTitle" xml:space="preserve"><value>FoxDPI nasıl kullanılır?</value></data>
+  <data name="DpiHintText" xml:space="preserve"><value>Önce &quot;En uygun ayarı bul&quot; ile ağınıza uyan ayarı bulun, sonra FoxDPI&apos;ı başlatın. FoxDPI ayrı bir pencerede çalışır: pencereyi simge durumuna küçültürseniz sistem tepsisine gizlenir, kapatırsanız FoxDPI durur. Sonraki seferlerde ana uygulamayı açmadan doğrudan FoxDPI.exe ile başlatabilirsiniz. Anti-cheat&apos;li bir oyun açmadan önce FoxDPI penceresini kapatın.</value></data>
+  <data name="DpiHintOk" xml:space="preserve"><value>Anladım</value></data>
+  <data name="KindSpeaker" xml:space="preserve"><value>Hoparlör</value></data>
+  <data name="KindMicrophone" xml:space="preserve"><value>Mikrofon</value></data>
+  <data name="KindCamera" xml:space="preserve"><value>Kamera</value></data>
+  <data name="DevIntro" xml:space="preserve"><value>Aşağıdaki adımlar yalnızca Windows'un gördüğü aygıtlara ve gizlilik iznine bakar. Hiçbir ayar değiştirilmez; mikrofon dinlenmez, kamera açılmaz. Yalnızca hoparlörün test sesini siz başlatır ve istediğiniz an durdurursunuz.</value></data>
+  <data name="DevStepOf" xml:space="preserve"><value>Adım {0} / {1}</value></data>
+  <data name="DevPrevious" xml:space="preserve"><value>Önceki adım</value></data>
+  <data name="DevNextStep" xml:space="preserve"><value>Sonraki adım</value></data>
+  <data name="DevFinish" xml:space="preserve"><value>Bitir</value></data>
+  <data name="DevCheckAgain" xml:space="preserve"><value>Yeniden kontrol et</value></data>
+  <data name="DevChecking" xml:space="preserve"><value>Aygıtlar kontrol ediliyor…</value></data>
+  <data name="DevDevicesHeader" xml:space="preserve"><value>Windows&apos;un gördüğü aygıtlar</value></data>
+  <data name="DevNoDevices" xml:space="preserve"><value>Windows bu türde bir aygıt görmüyor.</value></data>
+  <data name="DevStateActive" xml:space="preserve"><value>Kullanılabilir</value></data>
+  <data name="DevStateDisabled" xml:space="preserve"><value>Devre dışı</value></data>
+  <data name="DevStateUnplugged" xml:space="preserve"><value>Takılı değil</value></data>
+  <data name="DevStateNotPresent" xml:space="preserve"><value>Bulunamıyor</value></data>
+  <data name="DevStateProblem" xml:space="preserve"><value>Sorunlu</value></data>
+  <data name="DevStateUnknown" xml:space="preserve"><value>Durumu okunamadı</value></data>
+  <data name="DevPrivacyHeader" xml:space="preserve"><value>Gizlilik izni</value></data>
+  <data name="DevPrivacyAllowed" xml:space="preserve"><value>Windows bu erişime izin veriyor.</value></data>
+  <data name="DevPrivacyDeniedUser" xml:space="preserve"><value>Windows gizlilik ayarlarında erişim kapalı.</value></data>
+  <data name="DevPrivacyDeniedDesktop" xml:space="preserve"><value>&quot;Masaüstü uygulamalarının erişimi&quot; kapalı. FoxFix ve çoğu masaüstü programı bu aygıtı kullanamaz.</value></data>
+  <data name="DevPrivacyPolicy" xml:space="preserve"><value>Bir sistem ilkesi (grup ilkesi) erişimi engelliyor.</value></data>
+  <data name="DevPrivacyUnknown" xml:space="preserve"><value>Gizlilik ayarı okunamadı. Windows Ayarları&apos;ndan elle bakın.</value></data>
+  <data name="DevVerdictOk" xml:space="preserve"><value>{0}: Windows aygıtı görüyor ve erişime izin veriyor.</value></data>
+  <data name="DevVerdictNoDevice" xml:space="preserve"><value>{0}: Windows bu türde kullanılabilir bir aygıt görmüyor. Aygıtın takılı ve açık olduğundan emin olun.</value></data>
+  <data name="DevVerdictDisabled" xml:space="preserve"><value>{0}: Aygıt var ama Windows&apos;ta devre dışı. Aşağıdan ilgili Windows ayarını açabilirsiniz.</value></data>
+  <data name="DevVerdictPrivacy" xml:space="preserve"><value>{0}: Aygıt var ama gizlilik ayarı erişimi kapatıyor. Aşağıdan ilgili Windows ayarını açabilirsiniz.</value></data>
+  <data name="DevVerdictUnknown" xml:space="preserve"><value>{0}: Kontrol edilemedi. Durum Windows&apos;tan okunamadı, bu yüzden kesin bir şey söylenemiyor.</value></data>
+  <data name="DevCheckFailed" xml:space="preserve"><value>[FX-7001] {0} kontrol edilemedi: {1}</value></data>
+  <data name="DevOpenSound" xml:space="preserve"><value>Ses ayarlarını aç</value></data>
+  <data name="DevOpenMicPrivacy" xml:space="preserve"><value>Mikrofon gizlilik ayarlarını aç</value></data>
+  <data name="DevOpenCameraPrivacy" xml:space="preserve"><value>Kamera gizlilik ayarlarını aç</value></data>
+  <data name="DevOpenCameraSettings" xml:space="preserve"><value>Kamera ayarlarını aç</value></data>
+  <data name="DevOpenFailed" xml:space="preserve"><value>Windows Ayarları açılamadı: {0}</value></data>
+  <data name="DevPlayTone" xml:space="preserve"><value>Test sesini çal</value></data>
+  <data name="DevToneHint" xml:space="preserve"><value>Hoparlörden kısa bir ses duymalısınız. Duymazsanız ses düzeyini, sessize alma düğmesini ve çıkış aygıtını kontrol edin.</value></data>
+  <data name="DevToneRunning" xml:space="preserve"><value>Test sesi çalıyor…</value></data>
+  <data name="DevToneDone" xml:space="preserve"><value>Test sesi bitti. Duydunuz mu? Duymadıysanız ses ayarlarını açıp çıkış aygıtını kontrol edin.</value></data>
+  <data name="DevToneFailed" xml:space="preserve"><value>Test sesi çalınamadı: {0}</value></data>
+  <data name="DevStopped" xml:space="preserve"><value>Durduruldu.</value></data>
+  <data name="DevStop" xml:space="preserve"><value>Durdur</value></data>
+  <data name="PickerRecommendedTag" xml:space="preserve"><value>Önerilen</value></data>
+  <data name="PickerDpiFound" xml:space="preserve"><value>Kontrol sonucu: eski DPI aracı kalıntısı bulundu, temizlenmesi önerilir.</value></data>
+  <data name="PickerDpiClean" xml:space="preserve"><value>Kontrol sonucu: kalıntı bulunmadı. Genellikle işaretlemenize gerek yok.</value></data>
+  <data name="PickerDnsFound" xml:space="preserve"><value>Kontrol sonucu: DNS ile ilgili bir sorun bulundu, onarılması önerilir.</value></data>
+  <data name="PickerDnsOk" xml:space="preserve"><value>Kontrol sonucu: DNS sorunu bulunmadı. Genellikle işaretlemenize gerek yok.</value></data>
+  <data name="PickerNotChecked" xml:space="preserve"><value>Henüz kontrol sonucu yok. Genel bakıştaki kontrol bitince öneriler görünür.</value></data>
+  <data name="PickerSummaryNone" xml:space="preserve"><value>Kontrol sonucuna göre önerilen bir işlem yok. Yine de aşağıdan istediğinizi işaretleyebilirsiniz.</value></data>
+  <data name="PickerSummarySome" xml:space="preserve"><value>Kontrol sonucuna göre {0} işlem önerilir ve işaretlendi.</value></data>
+  <data name="PickerNothingTicked" xml:space="preserve"><value>İşaretli bir işlem yok. Devam etmek için bir işlem işaretleyin.</value></data>
+  <data name="PickerDevicesHint" xml:space="preserve"><value>Mikrofon, kamera ya da ses sorunu mu var? Bunlar sistem değişikliği gerektirmez; ayrı bir kontrol sihirbazı var.</value></data>
+  <data name="UiOpenDevices" xml:space="preserve"><value>Ses ve kamerayı kontrol et</value></data>
+  <data name="UiDevicesNav" xml:space="preserve"><value>Ses ve kamera</value></data>
+  <data name="DevDevicesHeaderCount" xml:space="preserve"><value>Windows&apos;un gördüğü aygıtlar ({0})</value></data>
+  <data name="UiMinimize" xml:space="preserve"><value>Küçült</value></data>
+  <data name="UiMaximize" xml:space="preserve"><value>Büyüt</value></data>
+  <data name="UiRestoreWindow" xml:space="preserve"><value>Önceki boyut</value></data>
+  <data name="UiCloseWindow" xml:space="preserve"><value>Kapat</value></data>
+  <data name="AccentCustom" xml:space="preserve"><value>Özel renk</value></data>
+  <data name="AccentWheelName" xml:space="preserve"><value>Renk çarkı</value></data>
+  <data name="AccentBrightness" xml:space="preserve"><value>Parlaklık</value></data>
+  <data name="AccentHexCode" xml:space="preserve"><value>Hex kodu</value></data>
+  <data name="AccentCancel" xml:space="preserve"><value>Vazgeç</value></data>
+  <data name="AccentApply" xml:space="preserve"><value>Uygula</value></data>
+  <data name="AccentPickNote" xml:space="preserve"><value>Çarktan seçin ya da #RRGGBB yazın, sonra Uygula&apos;ya basın. Okunabilirlik için renk otomatik ayarlanır.</value></data>
+  <data name="CompareTitle" xml:space="preserve"><value>Onarımdan önce ve sonra</value></data>
+  <data name="CompareLine" xml:space="preserve"><value>{0}: {1} → {2}</value></data>
+  <data name="CompareSame" xml:space="preserve"><value>Onarımdan sonra kontrol sonuçları değişmedi.</value></data>
+  <data name="CompareChecking" xml:space="preserve"><value>Onarım bitti, sonuç yeniden kontrol ediliyor…</value></data>
+  <data name="UiTestingBase" xml:space="preserve"><value>Deneniyor</value></data>
+  <data name="ExpTitle" xml:space="preserve"><value>Deneysel ayarlar</value></data>
+  <data name="ExpIntro" xml:space="preserve"><value>Henüz yeterince denenmemiş özellikler. Açarsanız menüde görünürler; kapatırsanız gizlenirler.</value></data>
+  <data name="ExpDevices" xml:space="preserve"><value>Ses ve kamera sayfası</value></data>
+  <data name="ExpDevicesText" xml:space="preserve"><value>Hoparlör, mikrofon ve kamera aygıtlarını ve gizlilik iznini kontrol eder. Mikrofon dinlenmez, kamera açılmaz.</value></data>
+  <data name="DnsRecommendedTag" xml:space="preserve"><value>Yapılması önerilir</value></data>
+  <data name="DnsRecommendedWhy" xml:space="preserve"><value>Birçok bilgisayarda FoxDPI bu ayar yapılmadan çalışmaz. Önce bunu yapın, sonra FoxDPI&apos;ı başlatın. Önizleme gösterilir ve Rapor ve geçmiş sayfasından geri alınabilir; iş yeri ağı ya da VPN kullanıyorsanız ve iç adreslere erişemezseniz geri alın.</value></data>
+  <data name="OverlayNav" xml:space="preserve"><value>Oyun göstergesi</value></data>
+  <data name="PageOverlay" xml:space="preserve"><value>Oyun göstergesi</value></data>
+  <data name="SubOverlay" xml:space="preserve"><value>FPS, kare süresi, ekran kartı ve işlemci yükünü oyunun köşesinde küçük bir şeritle gösterir.</value></data>
+  <data name="OverlayIntro" xml:space="preserve"><value>Oyunlara hiçbir şey yüklenmez ve oyunlar değiştirilmez: yalnızca Windows&apos;un bildirdiği sayılar okunur, kaydedilmez ve hiçbir yere gönderilmez. Gösterge görünmezken hiçbir ölçüm yapılmaz.</value></data>
+  <data name="OverlayEnable" xml:space="preserve"><value>Göstergeyi etkinleştir</value></data>
+  <data name="OverlayEnableText" xml:space="preserve"><value>Açıkken kısayol göstergeyi gösterir ve gizler. Kapatırsanız kısayol Windows&apos;a geri verilir.</value></data>
+  <data name="OverlayShowNow" xml:space="preserve"><value>Şimdi göster</value></data>
+  <data name="OverlayHideNow" xml:space="preserve"><value>Şimdi gizle</value></data>
+  <data name="OverlayHotkey" xml:space="preserve"><value>Kısayol</value></data>
+  <data name="OverlayHotkeyText" xml:space="preserve"><value>Kutuya tıklayıp tuşlara basın. En az bir Ctrl, Alt, Shift ya da Win tuşu gerekir.</value></data>
+  <data name="OverlayHotkeyBoxName" xml:space="preserve"><value>Kısayol kutusu</value></data>
+  <data name="OverlayHotkeyInvalid" xml:space="preserve"><value>Kısayol geçersiz. Örnek: Ctrl+Shift+F10 (en az bir değiştirici tuş ve bir tuş).</value></data>
+  <data name="OverlayHotkeyTaken" xml:space="preserve"><value>{0} kısayolu başka bir program tarafından kullanılıyor. Başka bir kısayol deneyin.</value></data>
+  <data name="OverlayTurnOnFirst" xml:space="preserve"><value>Önce göstergeyi etkinleştirin.</value></data>
+  <data name="OverlayFeedFailed" xml:space="preserve"><value>[{0}] Kare sayısı ölçülemedi, FPS ve kare süresi N/A görünür: {1}</value></data>
+  <data name="OverlayWhat" xml:space="preserve"><value>Neler görünsün</value></data>
+  <data name="OverlayFps" xml:space="preserve"><value>FPS</value></data>
+  <data name="OverlayFrameTime" xml:space="preserve"><value>Kare süresi (ms)</value></data>
+  <data name="OverlayGpu" xml:space="preserve"><value>Ekran kartı (GPU) yükü</value></data>
+  <data name="OverlayCpu" xml:space="preserve"><value>İşlemci (CPU) yükü</value></data>
+  <data name="OverlayNothing" xml:space="preserve"><value>Hiçbir değer seçili değil; gösterge boş görünür.</value></data>
+  <data name="OverlayBackground" xml:space="preserve"><value>Arka plan</value></data>
+  <data name="OverlayBgTranslucent" xml:space="preserve"><value>Saydam</value></data>
+  <data name="OverlayBgThemed" xml:space="preserve"><value>Temaya uygun</value></data>
+  <data name="OverlayBgNone" xml:space="preserve"><value>Arka plansız</value></data>
+  <data name="OverlayCorner" xml:space="preserve"><value>Köşe</value></data>
+  <data name="OverlayTopLeft" xml:space="preserve"><value>Sol üst</value></data>
+  <data name="OverlayTopRight" xml:space="preserve"><value>Sağ üst</value></data>
+  <data name="OverlayBottomLeft" xml:space="preserve"><value>Sol alt</value></data>
+  <data name="OverlayBottomRight" xml:space="preserve"><value>Sağ alt</value></data>
+  <data name="OverlaySize" xml:space="preserve"><value>Boyut</value></data>
+  <data name="OverlayLimits" xml:space="preserve"><value>Tam ekran (exclusive fullscreen) çalışan oyunlarda gösterge görünmez; oyunu pencereli ya da sınırsız pencere (borderless) modunda açın. Kare sayısı için FoxFix yönetici olarak çalışmalıdır; bu, &quot;Windows&apos;ta elle test edilmeli&quot; bir özelliktir.</value></data>
+  <data name="OverlayFree" xml:space="preserve"><value>Serbest</value></data>
+  <data name="OverlayPlace" xml:space="preserve"><value>Yerleştir</value></data>
+  <data name="OverlayPlaceDone" xml:space="preserve"><value>Yerleştirmeyi bitir</value></data>
+  <data name="OverlayFreeHint" xml:space="preserve"><value>&quot;Yerleştir&quot;e basınca şerit örnek değerlerle belirir; fareyle istediğiniz yere sürükleyin, sonra &quot;Yerleştirmeyi bitir&quot;e basın. Konum kaydedilir.</value></data>
+  <data name="OverlayScaleValue" xml:space="preserve"><value>%{0}</value></data>
 </root>

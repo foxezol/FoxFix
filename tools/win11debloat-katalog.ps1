@@ -1,12 +1,13 @@
 # Builds src\FoxFix.Core\Tweaks\Katalog.json from a Win11Debloat release (MIT, https://github.com/Raphire/Win11Debloat).
 #
-# Usage:  powershell -File tools\win11debloat-katalog.ps1 -Zip C:\path\Win11Debloat-2026.10.30.zip
+# Usage:  powershell -File tools\win11debloat-katalog.ps1 -Zip C:\path\Win11Debloat-2026.10.30.zip [-Language tr-TR|en-US]
+#         Run it once per language: tr-TR writes Katalog.json, en-US writes Katalog.en.json.
 #
 # Only plain registry value changes are taken: values set to a number, a text or bytes, and values removed. Everything that
 # cannot be put back exactly (whole keys deleted, the classes root, other users' hives, app removal, PowerShell steps) is
 # left out and listed at the end. The Turkish texts come from Win11Debloat's own tr-TR translation.
 
-param([Parameter(Mandatory = $true)][string]$Zip)
+param([Parameter(Mandatory = $true)][string]$Zip, [ValidateSet('tr-TR', 'en-US')][string]$Language = 'tr-TR')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -17,8 +18,8 @@ $base = (Get-ChildItem $work -Directory | Select-Object -First 1).FullName
 function Read-Json($path) { Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json }
 
 $en = Read-Json "$base\Config\Features.json"
-$trFeatures = Read-Json "$base\Config\Languages\tr-TR\Features.json"
-$trCategories = Read-Json "$base\Config\Languages\tr-TR\Categories.json"
+$trFeatures = Read-Json "$base\Config\Languages\$Language\Features.json"
+$trCategories = Read-Json "$base\Config\Languages\$Language\Categories.json"
 
 $categoryIdByName = @{}
 foreach ($c in $en.Categories) { $categoryIdByName[$c.Name] = $c.CategoryId }
@@ -187,7 +188,8 @@ $catalog = [pscustomobject]@{
     groups = $groups.ToArray()
 }
 
-$out = Join-Path $root 'src\FoxFix.Core\Tweaks\Katalog.json'
+$name = if ($Language -eq 'en-US') { 'Katalog.en.json' } else { 'Katalog.json' }
+$out = Join-Path $root ('src\FoxFix.Core\Tweaks\' + $name)
 New-Item -ItemType Directory -Force (Split-Path $out) | Out-Null
 $json = $catalog | ConvertTo-Json -Depth 8
 [IO.File]::WriteAllText($out, $json, (New-Object Text.UTF8Encoding($false)))

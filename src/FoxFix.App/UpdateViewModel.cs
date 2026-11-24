@@ -70,7 +70,7 @@ public sealed partial class UpdateViewModel : ObservableObject
         _exitApp = exitApp;
     }
 
-    public string CurrentVersionText => "Kurulu sürüm: " + UpdateChecker.FormatVersion(_current);
+    public string CurrentVersionText => Strings.Format(Strings.InstalledVersion, UpdateChecker.FormatVersion(_current));
 
     /// <summary>What the Ayarlar page says about the last check. Empty until a check was asked for.</summary>
     [ObservableProperty]
@@ -130,14 +130,14 @@ public sealed partial class UpdateViewModel : ObservableObject
         IsInstalling = true;
         InstallError = "";
         InstallPercent = 0;
-        InstallText = "İndiriliyor…";
+        InstallText = Strings.Get(Strings.Downloading);
 
         try
         {
             var progress = new InlineProgress(fraction =>
             {
                 InstallPercent = fraction * 100;
-                InstallText = $"İndiriliyor… %{Math.Round(fraction * 100)}";
+                InstallText = Strings.Format(Strings.DownloadingPercent, Math.Round(fraction * 100));
             });
 
             var prepared = await _updater.PrepareAsync(release, progress, CancellationToken.None);
@@ -149,7 +149,7 @@ public sealed partial class UpdateViewModel : ObservableObject
             }
 
             InstallPercent = 100;
-            InstallText = "Hazırlanıyor…";
+            InstallText = Strings.Get(Strings.Preparing);
             if (_stopFoxDpi is not null)
             {
                 await _stopFoxDpi();
@@ -179,7 +179,7 @@ public sealed partial class UpdateViewModel : ObservableObject
     {
         public void Report(double value) => handler(value);
     }
-    public string PromptTitle => Latest is null ? "" : $"FoxFix {UpdateChecker.FormatVersion(Latest.Version)} yayımlandı";
+    public string PromptTitle => Latest is null ? "" : Strings.Format(Strings.UpdatePromptTitle, UpdateChecker.FormatVersion(Latest.Version));
 
     public string PromptNotes => Latest is null ? "" : Shorten(Latest.Notes);
 
@@ -204,7 +204,7 @@ public sealed partial class UpdateViewModel : ObservableObject
         IsChecking = true;
         if (!silent)
         {
-            StatusText = "Denetleniyor…";
+            StatusText = Strings.Get(Strings.Checking);
         }
 
         try

@@ -46,6 +46,10 @@ public partial class FoxDpiWindow : Window
         }
     }
 
+    private void OnMinimize(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void OnCloseWindow(object sender, RoutedEventArgs e) => Close();
+
     /// <summary>Brings the window back from the notification area.</summary>
     public void Restore()
     {

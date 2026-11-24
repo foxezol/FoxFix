@@ -16,6 +16,8 @@ public enum AppPage
     Tweaks,
     DnsDpi,
     Access,
+    Overlay,
+    Devices,
     Report,
     Settings,
 }
@@ -91,11 +93,29 @@ public sealed partial class MainViewModel : ObservableObject
         AccessViewModel? access = null,
         SettingsViewModel? settings = null,
         UpdateViewModel? updates = null,
-        TweaksViewModel? tweaks = null)
+        TweaksViewModel? tweaks = null,
+        DevicesViewModel? devices = null,
+        OnboardingViewModel? onboarding = null,
+        OverlayViewModel? overlay = null)
     {
+        Overlay = overlay;
         Access = access;
+        Devices = devices;
+        Onboarding = onboarding;
         Tweaks = tweaks;
         Settings = settings;
+
+        // Switching the experimental page off while it is open takes the person back to the overview.
+        if (settings is not null)
+        {
+            settings.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(SettingsViewModel.ExperimentalDevices) && !settings.ExperimentalDevices && Page == AppPage.Devices)
+                {
+                    OpenPage(AppPage.Home);
+                }
+            };
+        }
         Updates = updates;
         Notice = notice ?? new NoticeViewModel();
         Info = new InfoViewModel(TryOpenLink);
@@ -106,7 +126,7 @@ public sealed partial class MainViewModel : ObservableObject
         Speed = speed;
         Startup = startup;
         Cleanup = cleanup;
-        RepairPicker = new RepairPickerViewModel(startup, cleanup, fix);
+        RepairPicker = new RepairPickerViewModel(startup, cleanup, fix, () => OpenPage(AppPage.Devices));
 
         // After any change was applied the lists show old data, so read them again.
         fix.PropertyChanged += (_, e) =>
@@ -116,6 +136,7 @@ public sealed partial class MainViewModel : ObservableObject
                 startup.RefreshCommand.Execute(null);
                 cleanup.ScanCommand.Execute(null);
                 tweaks?.Refresh();
+                _ = CheckAfterRepairAsync();
             }
         };
         _reports = reports;
@@ -126,7 +147,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(
-        nameof(IsHome), nameof(IsConnection), nameof(IsTweaks), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsReport), nameof(IsSettings),
+        nameof(IsHome), nameof(IsConnection), nameof(IsTweaks), nameof(IsDnsDpi), nameof(IsAccess), nameof(IsDevices), nameof(IsOverlay), nameof(IsReport), nameof(IsSettings),
         nameof(ShowBack), nameof(PageTitle), nameof(PageSubtitle))]
     private AppPage _page = AppPage.Home;
 
@@ -143,12 +164,25 @@ public sealed partial class MainViewModel : ObservableObject
 
     public bool IsAccess => Page == AppPage.Access;
 
+    public bool IsDevices => Page == AppPage.Devices;
+
+    public bool IsOverlay => Page == AppPage.Overlay;
+
     public bool IsReport => Page == AppPage.Report;
 
     public bool IsSettings => Page == AppPage.Settings;
 
     /// <summary>The access test; null in tests that do not need it.</summary>
     public AccessViewModel? Access { get; }
+
+    /// <summary>The game overlay page; null in tests that do not need it.</summary>
+    public OverlayViewModel? Overlay { get; }
+
+    /// <summary>The sound, microphone and camera wizard; null in tests that do not need it.</summary>
+    public DevicesViewModel? Devices { get; }
+
+    /// <summary>The first-start question, the tour and the FoxDPI hint; null in tests that do not need them.</summary>
+    public OnboardingViewModel? Onboarding { get; }
 
     /// <summary>The Windows settings page (from Win11Debloat); null in tests that do not need it.</summary>
     public TweaksViewModel? Tweaks { get; }
@@ -163,31 +197,54 @@ public sealed partial class MainViewModel : ObservableObject
 
     public string PageTitle => Page switch
     {
-        AppPage.Connection => "Bağlantı kontrolü",
-        AppPage.Tweaks => "Hızlandırma ve ayarlar",
-        AppPage.DnsDpi => "DNS ve DPI",
-        AppPage.Access => "Erişim testi",
-        AppPage.Report => "Rapor ve geçmiş",
-        AppPage.Settings => "Ayarlar",
+        AppPage.Connection => Strings.Get(Strings.PageConnection),
+        AppPage.Tweaks => Strings.Get(Strings.PageTweaks),
+        AppPage.DnsDpi => Strings.Get(Strings.PageDnsDpi),
+        AppPage.Access => Strings.Get(Strings.PageAccess),
+        AppPage.Devices => Strings.Get(Strings.PageDevices),
+        AppPage.Overlay => Strings.Get(Strings.PageOverlay),
+        AppPage.Report => Strings.Get(Strings.PageReport),
+        AppPage.Settings => Strings.Get(Strings.PageSettings),
         _ => "",
     };
 
     /// <summary>One line under the page title: what the page is for, in the person's words.</summary>
     public string PageSubtitle => Page switch
     {
-        AppPage.Connection => "Bilgisayarınızdan internete kadar her adımın sonucu ve ayrıntısı.",
-        AppPage.Tweaks => "Açılış programları, disk temizliği ve Windows ayarları. Siz onaylamadan hiçbir şey değişmez.",
-        AppPage.DnsDpi => "Erişim engellerine karşı FoxDPI, DNS ayarı ve ağ ayarlarını sıfırlama.",
-        AppPage.Access => "Sitelere ulaşılıp ulaşılamadığını ağ ayarlarına dokunmadan dener.",
-        AppPage.Report => "FoxFix'in yaptığı değişiklikler, geri alma ve destek raporu.",
-        AppPage.Settings => "Güncellemeler, görünüm ve uygulamayı kaldırma.",
+        AppPage.Connection => Strings.Get(Strings.SubConnection),
+        AppPage.Tweaks => Strings.Get(Strings.SubTweaks),
+        AppPage.DnsDpi => Strings.Get(Strings.SubDnsDpi),
+        AppPage.Access => Strings.Get(Strings.SubAccess),
+        AppPage.Devices => Strings.Get(Strings.SubDevices),
+        AppPage.Overlay => Strings.Get(Strings.SubOverlay),
+        AppPage.Report => Strings.Get(Strings.SubReport),
+        AppPage.Settings => Strings.Get(Strings.SubSettings),
         _ => "",
     };
 
     [RelayCommand]
     private void OpenPage(AppPage page)
     {
+        var left = Page;
         Page = page;
+
+        // A running microphone, speaker or camera test never outlives the page it was started on.
+        if (left == AppPage.Devices && page != AppPage.Devices && Devices is not null)
+        {
+            _ = Devices.OnLeftAsync();
+        }
+
+        if (page == AppPage.Devices && left != AppPage.Devices && Devices is not null)
+        {
+            _ = Devices.OnEnteredAsync();
+        }
+
+        if (left == AppPage.Overlay && page != AppPage.Overlay)
+        {
+            Overlay?.StopPlacing();
+        }
+
+        Onboarding?.OnPageEntered(page);
 
         // The Windows settings change Windows itself: on arriving, the page reads the saved settings and warns when there are none.
         if (page == AppPage.Tweaks)
@@ -197,7 +254,7 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoHome() => Page = AppPage.Home;
+    private void GoHome() => OpenPage(AppPage.Home);
 
     public FixFlowViewModel Fix { get; }
 
@@ -253,7 +310,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            Notice.Show("Bağlantı kopyalanamadı", ErrorCodes.Tag(ErrorCodes.ClipboardFailed) + ex.Message);
+            Notice.Show(Strings.Get(Strings.LinkCopyFailedTitle), ErrorCodes.Tag(ErrorCodes.ClipboardFailed) + ex.Message);
             return;
         }
 
@@ -267,7 +324,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            Notice.Show("Bağlantı açılamadı", ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
+            Notice.Show(Strings.Get(Strings.LinkFailedTitle), ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
         }
     }
     /// <summary>Off by default: the report hides user name, computer name and MAC addresses.</summary>
@@ -339,7 +396,11 @@ public sealed partial class MainViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RunDiagnosticsCommand))]
+    [NotifyPropertyChangedFor(nameof(IsIdle))]
     private bool _isBusy;
+
+    /// <summary>"Beni Düzelt" waits for a running check: it would be fixing from numbers that are about to change.</summary>
+    public bool IsIdle => !IsBusy;
 
     /// <summary>Short one-off messages (e.g. "Edge açıldı"). The main message is the verdict.</summary>
     [ObservableProperty]
@@ -357,16 +418,58 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _verdictDetail = Strings.Get(Strings.VerdictCheckingDetail);
 
+    /// <summary>"Önce / sonra" under the verdict: which checks changed because of the repair. Gone when the person checks again by hand.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasComparison))]
+    private string _comparisonText = "";
+
+    public bool HasComparison => ComparisonText.Length > 0;
+
+    private bool _checkingAfterRepair;
+
+    /// <summary>
+    /// After a repair the connection check runs again by itself and is set against the one from before it, so the person sees
+    /// what the repair changed instead of having to remember what was wrong.
+    /// </summary>
+    private async Task CheckAfterRepairAsync()
+    {
+        var before = _lastDiagnosis;
+        if (before is null || IsBusy)
+        {
+            return;
+        }
+
+        _checkingAfterRepair = true;
+        ComparisonText = Strings.Get(Strings.CompareChecking);
+        try
+        {
+            await RunDiagnosticsAsync();
+            ComparisonText = _lastDiagnosis is { } after && !ReferenceEquals(after, before)
+                ? RepairComparison.Text(RepairComparison.Changed(before, after))
+                : "";
+        }
+        finally
+        {
+            _checkingAfterRepair = false;
+        }
+    }
+
     [RelayCommand(CanExecute = nameof(CanRun))]
     private async Task RunDiagnosticsAsync()
     {
         IsBusy = true;
         Rows.Clear();
         StatusText = "";
+        if (!_checkingAfterRepair)
+        {
+            ComparisonText = "";
+        }
+
         DiagnosisPercent = 0;
-        DiagnosisProgressText = "Başlıyor…";
+        DiagnosisProgressText = Strings.Get(Strings.Starting);
         var clock = System.Diagnostics.Stopwatch.StartNew();
         SetVerdict(VerdictState.Checking, Strings.Get(Strings.VerdictChecking), Strings.Get(Strings.VerdictCheckingDetail));
+        RepairPicker.UpdateFromDiagnosis(null);
 
         try
         {
@@ -382,6 +485,7 @@ public sealed partial class MainViewModel : ObservableObject
             });
             var report = await _engine.RunAsync(progress, CancellationToken.None);
             _lastDiagnosis = report;
+            RepairPicker.UpdateFromDiagnosis(report);
 
             // A check that itself broke (Error) is worth a note too, it just is not a verdict on the network.
             var notes = report.Reports.Count(r => r.Result.Status is CheckStatus.Warning or CheckStatus.Error);

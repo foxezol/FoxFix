@@ -68,7 +68,7 @@ public sealed class WpfSpeedCardClipboard : ISpeedCardClipboard
 
         var names = new StackPanel { Margin = new Thickness(16, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
         names.Children.Add(Text("FoxFix", 26, FontWeights.SemiBold, Colors.White, display: true));
-        names.Children.Add(Text("Hız testi sonucu", 14, FontWeights.Normal, Muted));
+        names.Children.Add(Text(FoxFix.Core.Strings.Get(FoxFix.Core.Strings.SpeedCardTitle), 14, FontWeights.Normal, Muted));
         Grid.SetColumn(names, 1);
         header.Children.Add(names);
 
@@ -85,10 +85,10 @@ public sealed class WpfSpeedCardClipboard : ISpeedCardClipboard
         grid.ColumnDefinitions.Add(new ColumnDefinition());
         grid.RowDefinitions.Add(new RowDefinition());
         grid.RowDefinitions.Add(new RowDefinition());
-        AddStat(grid, 0, 0, "İndirme", card.Download);
-        AddStat(grid, 0, 1, "Yükleme", card.Upload);
+        AddStat(grid, 0, 0, FoxFix.Core.Strings.Get(FoxFix.Core.Strings.SpeedDownload), card.Download);
+        AddStat(grid, 0, 1, FoxFix.Core.Strings.Get(FoxFix.Core.Strings.SpeedUpload), card.Upload);
         AddStat(grid, 1, 0, "Ping", card.Latency);
-        AddStat(grid, 1, 1, "Titreşim", card.Jitter);
+        AddStat(grid, 1, 1, FoxFix.Core.Strings.Get(FoxFix.Core.Strings.SpeedJitter), card.Jitter);
         stack.Children.Add(grid);
 
         // The advertisement: where the program lives

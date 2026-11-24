@@ -1,8 +1,19 @@
-# FoxFix
+﻿# FoxFix
 
 FoxFix, Windows işletim sistemlerinde internet, DNS ve DPI (Derin Paket İncelemesi) kaynaklı bağlantı sorunlarını teşhis eden ve onaran kapsamlı bir ağ asistanıdır. Tamamen Türkçe bir arayüze sahiptir. Kullanıcı gizliliğini merkeze alır; hiçbir telemetri verisi toplamaz ve dış sunuculara veri aktarmaz.
 
-> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, Windows ayarları sayfası ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Güncelleme denetimi ve uygulama içi güncelleme gerçek bir bilgisayarda denenmiştir (0.10.1'den 0.10.2'ye) ve çalışmaktadır. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
+> **Durum: Deneysel sürüm.** Gömülü DPI atlatma modülü (FoxDPI) test edilmiştir ve sorunsuz çalışmaktadır. Uygulama içindeki diğer tüm özellikler (sistem optimizasyonu, onarım, FoxDPI'ı hizmet olarak kurma, Windows açılınca başlatma, DPI Sıfırlama, otomatik yeniden başlatma, uygulamayı kaldırma, tema ve renk ayarları, DNS'i 1.1.1.1 yapma düğmesi, Windows ayarları sayfası, Ses ve Kamera sihirbazı, İngilizce arayüz, tanıtım turu ve kurulum paketi) henüz gerçek bilgisayarlarda yeterince test edilmemiştir ve **deneysel** kabul edilmelidir. Sistemde kritik bir değişiklik yapmadan önce sunulan önizlemeyi dikkatlice okumanız ve olası sorunlarda "Geri Al" özelliğini kullanmanız önerilir. Uygulama içi güncelleme gerçek bir bilgisayarda denenmiştir (0.10.1'den 0.10.2'ye) ve çalışmaktadır. Bir sorunla karşılaşırsanız [Hata Kodları](docs/HATA-KODLARI.md) tablosuna ([English](docs/ERROR-CODES.md)) bakabilir veya aşağıdaki Discord bağlantısından bildirebilirsiniz.
+
+## Ekran Görüntüleri
+
+| | |
+|---|---|
+| ![Genel bakış](docs/screenshots/genel-bakis.png) | ![Beni Düzelt](docs/screenshots/beni-duzelt.png) |
+| **Genel bakış:** bağlantı hattı, FoxDPI ve hız testi | **Beni Düzelt:** kontrol sonucuna göre önerilen işlemler, önce önizleme |
+| ![Hızlandırma ve ayarlar](docs/screenshots/hizlandirma-ve-ayarlar.png) | ![Ses ve kamera](docs/screenshots/ses-ve-kamera.png) |
+| **Hızlandırma ve ayarlar:** açılış programları, disk temizliği, Windows ayarları | **Ses ve kamera:** hoparlör, mikrofon ve kamera için adım adım kontrol |
+| ![Ayarlar](docs/screenshots/ayarlar.png) | ![Tanıtım turu](docs/screenshots/tanitim-turu.png) |
+| **Ayarlar:** dil (Türkçe / English), güncelleme, tema ve vurgu rengi | **Tanıtım turu:** ilk açılışta sorulur, Ayarlar'dan yeniden başlatılır |
 
 ## Açık Kaynak
 
@@ -27,6 +38,16 @@ Made by foxezol, Claude Code
 
 - **Bağlantı Kontrolü:** Ağ adaptörü, IP yapılandırması, ping, DNS ve HTTPS protokollerini sırasıyla test ederek ağdaki sorunları tespit eder.
 - **DNS ve DPI:** Hazır GoodbyeDPI ayarlarını ağınızda dener (her ayar için google.com ping değeri de gösterilir) ve çalışanı bulur. Sistem hizmeti (Service) olarak veya bağımsız bir pencere üzerinden çalıştırılabilir. Windows açılınca otomatik başlatılabilir. Bazı bağlantılarda FoxDPI'ın çalışması için gereken "DNS'i 1.1.1.1 ve 1.0.0.1 yap" düğmesi de bu sayfadadır; önizleme gösterir ve "Geri Al" ile geri alınabilir.
+- **Ses ve Kamera (deneysel):** Ayarlar > Deneysel ayarlar'dan açılınca menüde görünür. Hoparlör, mikrofon ve kamerayı adım adım kontrol eden sihirbaz. Windows'un gördüğü aygıtları (devre dışı ya da takılı olmayanlar dahil) ve mikrofon/kamera gizlilik izninin durumunu gösterir; sorun varsa ilgili Windows Ayarları sayfasını açar. Hoparlör için kısa bir test sesi vardır; siz başlatır ve durdurursunuz. Mikrofon dinlenmez, kamera açılmaz. Hiçbir ayarı, izni ya da sürücüyü değiştirmez; ses ve görüntü kaydedilmez ve hiçbir yere gönderilmez. Okunamayan bir durum "kontrol edilemedi" olarak gösterilir, tahminle teşhis konmaz.
+- **Oyun göstergesi:** Oyunun köşesinde FPS, kare süresi (ms), ekran kartı (GPU) ve işlemci (CPU) yükünü gösteren küçük şerit. Hangi değerlerin görüneceği, arka plan (saydam, temaya uygun ya da arka plansız), köşe, boyut ve kısayol seçilir. Kısayol, FoxFix'ten kapatılmadığı sürece göstergeyi gösterir ve gizler; gizliyken hiçbir ölçüm yapılmaz. Oyuna hiçbir şey yüklenmez; kare sayısı Windows'un görüntü olaylarından (DXGI Present) sayılır, bu yüzden yönetici hakkı gerekir. Değer okunamazsa "N/A" görünür. Tam ekran (exclusive fullscreen) oyunlarda görünmez; pencereli ya da sınırsız pencere modu gerekir. Hiçbir veri kaydedilmez ya da gönderilmez.
+- **Windows DNS ayarı:** DNS ve DPI sayfasının en üstünde, tema renginde çerçeveyle ve "Yapılması önerilir" etiketiyle durur; birçok bilgisayarda FoxDPI bu ayar olmadan çalışmaz.
+- **Hız testi:** Çubuk artık gerçek ilerlemeyi (yüzde) ve tahmini kalan süreyi gösterir.
+- **Pencereler:** FoxFix'in üst çubuğu yoktur, yalnızca sağ üstte küçült, büyüt ve kapat düğmeleri durur; FoxDPI penceresinde küçült ve kapat. Açılış ekranı yuvarlak köşelidir.
+- **Özel vurgu rengi:** Ayarlar'daki hazır renklerin sonundaki renk çarkı daireden açılır. Çark, parlaklık kaydırıcısı ya da hex kodu yalnızca önizlemeyi değiştirir; renk "Uygula"ya basınca uygulanır, "Vazgeç" hiçbir şeyi değiştirmez. Seçilen renk okunabilirlik kurallarından geçer.
+- **Önce/sonra:** "Beni Düzelt" bitince bağlantı kontrolü kendiliğinden yeniden çalışır ve onarımdan önceki sonuçla karşılaştırılır; yalnızca değişen kontroller listelenir.
+- **Pencere:** Başlık çubuğu uygulamanın kendi temasında çizilir (Windows 11'de köşeler yuvarlak). Kurulum sihirbazı da koyu temadadır.
+- **Beni Düzelt:** Kontrol sonucunu kullanır: bulunan sorunlar önerilir ve işaretli gelir, sorun bulunmayan işlemler işaretsiz gelir ve nedeni yazılır. Her işlem önce önizlenir, onayınızla uygulanır ve "Geri Al" ile geri alınır.
+- **Diller ve Tanıtım Turu:** Türkçe ve İngilizce arayüz; ilk açılışta dil sorulur, Ayarlar'dan değiştirilebilir (FoxFix yeniden açılır). İlk açılışta kısa bir tanıtım turu önerilir; atlanabilir ve Ayarlar'dan istenildiği zaman yeniden başlatılabilir. Turu atlayanlara FoxDPI'ın nasıl kullanıldığı DNS ve DPI sayfasına ilk girişte bir kez anlatılır.
 - **Erişim Testi:** Belirttiğiniz web sitelerinin erişilebilirliğini güvenli bağlantı üzerinden test eder. FoxDPI açıkken ve kapalıyken çalıştırıp karşılaştırma yapabilirsiniz.
 - **Hız Testi:** İndirme, yükleme, ping ve titreşimi ölçer. Sonucu görsel olarak panoya kopyalayıp paylaşabilirsiniz.
 - **Anlaşılır Hatalar:** Bir şey ters giderse mesajın başında `[FX-xxxx]` biçiminde bir kod bulunur. Her kodun anlamı ve çözümü [docs/HATA-KODLARI.md](docs/HATA-KODLARI.md) tablosundadır.
@@ -89,6 +110,16 @@ Birim testleri sistem komutlarını taklit eder. Aşağıdakilerin güvenilirli�
 - "Şimdi güncelle": bir kopyada denenmiş ve çalışmıştır; kurulumlu sürümde sessiz kurulumun (`FoxFixSetup.exe /VERYSILENT /YENIDEN=1`) ve ZIP sürümde iki exe dosyasının değiştirilmesinin ikisinin de ayrı ayrı, yönetici izniyle çalışırken UAC çıkmadan denenmesi gerekir.
 - Windows ayarları: kayıt defteri değişikliklerinin gerçek bir Windows'ta uygulanması ve "Geri Al" ile eski değerlerin (ve FoxFix'in oluşturduğu anahtarların silinmesinin) geri gelmesi. Sanal makine anlık görüntüsüyle denenmesi önerilir.
 - Windows ayarları: "Şu anki ayarları kaydet", ayarları uygulama ve kayıttan "Geri yükle"; "Windows varsayılanına döndür" düğmesinin gerçek Windows varsayılanlarını verdiği.
+- Ses ve Kamera sihirbazı: farklı donanımlarda (USB ve yerleşik mikrofon, birden fazla kamera, kamera yokken, mikrofon/kamera gizlilik anahtarı kapalıyken, grup ilkesiyle engelliyken) bulguların doğruluğu; test sesinin duyulması; Windows Ayarları bağlantılarının açılması. Windows 10 ve 11'de ayrı ayrı.
+- Oyun göstergesi: gerçek bir oyunda FPS ve kare süresi (pencereli/sınırsız pencere), GPU ve CPU yüzdelerinin Görev Yöneticisi ile uyumu, kısayolun oyun açıkken çalışması, tam ekran oyunda görünmemesi (beklenen), arka plan seçenekleri, köşeler, çoklu ekran, yönetici olmadan açılınca N/A ve FX-8001 iletisi, Windows 10 ve 11.
+- Başlık çubuğu olmayan ana pencere ve küçük FoxDPI penceresi: sürükleme, büyütme/küçültme, kapatma, kenara yaslama.
+- Deneysel ayarlar: Ses ve kamera sayfasının menüde açılıp kapanması, turdan çıkması.
+- Başlık çubuğu: küçült/büyüt/kapat düğmeleri, çift tıkla büyütme, pencereyi sürükleme, Windows 11'de yuvarlak köşeler, ekranın kenarına yaslama; yüksek ölçeklemede yazıların keskinliği.
+- Renk çarkı: çarkı fareyle sürükleme, parlaklık kaydırıcısı, hex yazma; çok açık ve çok koyu bir renkte okunurluk; yeniden açılışta rengin korunması.
+- Kurulum sihirbazının koyu görünümü (gerçek bir kurulumda yan ve küçük görsellerin yerinde olması).
+- Turun animasyonları (geçiş, bitiş) ve Windows "animasyon efektleri" kapalıyken animasyonsuz çalışması.
+- Dil seçimi: ilk açılışta dil penceresi, Ayarlar'dan değiştirince yeniden açılma (yönetici izniyle çalışırken UAC sormaması) ve tüm sayfaların İngilizce görünümü; çok yüksek ekran ölçeklemesinde taşma olup olmadığı.
+- Tanıtım turu: farklı pencere boyutlarında ve ekran ölçeklerinde ışık altına alınan öğelerin ve açıklama kartının yerinde durması; ekran okuyucu ve klavye ile kullanım.
 - Güncelleme: eski sürümün üstüne yeni kurulum ya da ZIP çıkartma (hizmet kuruluyken de).
 - Zamanlanmış görev ile Windows başlangıç entegrasyonu: `schtasks` ile oluşturulan görevin gerçekten oturum açılışında çalıştığı.
 - Kurulum paketi (`FoxFixSetup.exe`): kurulum, klasör seçimi, taşınabilir veri seçeneği ve kaldırma.

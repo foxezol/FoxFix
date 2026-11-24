@@ -15,6 +15,7 @@ public static class WindowTheme
             if (handle != IntPtr.Zero)
             {
                 TitleBar.SetDark(handle, dark: !light);
+                TitleBar.SetRounded(handle);
             }
         }
 

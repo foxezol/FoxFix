@@ -48,6 +48,19 @@ public sealed class ErrorCodeTests
     }
 
     [Fact]
+    public void The_English_table_has_every_code_in_the_same_order_and_is_in_its_document()
+    {
+        ErrorCodes.English.Select(e => e.Code).Should().Equal(ErrorCodes.All.Select(e => e.Code));
+        ErrorCodes.English.Should().OnlyContain(e => e.Title.Length > 5 && e.Remedy.Length > 10);
+
+        var table = File.ReadAllText(Path.Combine(RepoRoot(), "docs", "ERROR-CODES.md"));
+        foreach (var error in ErrorCodes.English)
+        {
+            table.Should().Contain($"`{error.Code}`").And.Contain(error.Title, $"{error.Code} is missing from docs/ERROR-CODES.md");
+        }
+    }
+
+    [Fact]
     public void A_message_is_tagged_with_its_code_in_square_brackets()
     {
         ErrorCodes.Tag(ErrorCodes.DpiFilesBroken).Should().Be("[FX-2001] ");

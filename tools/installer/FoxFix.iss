@@ -22,7 +22,12 @@ OutputDir=..\..\dist
 OutputBaseFilename=FoxFixSetup
 Compression=lzma2
 SolidCompression=yes
-WizardStyle=modern
+; Uygulamanin koyu temasi: koyu sihirbaz, ayni zemin rengi, koyu yan ve kucuk gorsel (tools\installer\make-images.ps1 uretir).
+WizardStyle=modern dark
+WizardBackColor=#10131A
+WizardImageFile=wizard-side.bmp,wizard-side-2x.bmp
+WizardSmallImageFile=wizard-small.bmp,wizard-small-2x.bmp
+WizardImageBackColor=#10131A
 UninstallDisplayIcon={app}\FoxFix.exe
 ; Kurulum klasorunu kullanici secer
 DisableDirPage=no

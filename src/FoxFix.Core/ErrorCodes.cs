@@ -6,7 +6,7 @@ public sealed record ErrorInfo(string Code, string Title, string Remedy);
 /// <summary>
 /// The error codes. Every message that says "[FX-xxxx]" is listed here and in docs/HATA-KODLARI.md, so no error is just
 /// an unexplained sentence. 1xxx the app, 2xxx FoxDPI, 3xxx the scheduled task, 4xxx changes to the system, 5xxx reports,
-/// 6xxx measurements, 9xxx the unexpected.
+/// 6xxx measurements, 7xxx sound and camera checks, 9xxx the unexpected.
 /// </summary>
 public static class ErrorCodes
 {
@@ -47,6 +47,8 @@ public static class ErrorCodes
     public const string CheckFailed = "FX-6002";
     public const string UpdateCheckFailed = "FX-6003";
     public const string UpdateInstallFailed = "FX-6004";
+    public const string DeviceCheckFailed = "FX-7001";
+    public const string OverlayMeasureFailed = "FX-8001";
     public const string Unexpected = "FX-9001";
 
     public static IReadOnlyList<ErrorInfo> All { get; } =
@@ -88,8 +90,58 @@ public static class ErrorCodes
         new(CheckFailed, "Alt test işlemi sırasında hata", "Bu durum, devam eden diğer teşhis süreçlerini etkilemez. \"Yeniden kontrol et\" butonuyla taramayı tekrarlayınız."),
         new(UpdateCheckFailed, "Güncelleme denetlenemedi", "İnternet bağlantınızı kontrol ediniz. Denetim yalnızca GitHub'a (api.github.com) bağlanır; erişim engelliyse FoxDPI açıkken tekrar deneyiniz. Yeni sürümleri depodaki Releases sayfasından da görebilirsiniz."),
         new(UpdateInstallFailed, "Güncelleme indirilemedi veya doğrulanamadı", "İnternet bağlantınızı kontrol edip tekrar deneyiniz. İndirilen dosyanın SHA-256 özeti yayımlananla uyuşmazsa hiçbir şey çalıştırılmaz. Sorun sürerse yeni sürümü Releases sayfasından elle indirip kurabilirsiniz."),
+        new(DeviceCheckFailed, "Ses veya kamera aygıtı kontrol edilemedi", "Windows aygıtla ilgili soruya yanıt vermedi. Hiçbir şey değiştirilmedi. Aygıtı yeniden takınız, onu kullanıyor olabilecek uygulamaları kapatınız ve kontrolü tekrar deneyiniz."),
+        new(OverlayMeasureFailed, "Oyun göstergesinde kare sayısı ölçülemedi", "Windows'un görüntü olayları dinlenemedi; FPS ve kare süresi N/A görünür, işlemci ve ekran kartı değerleri çalışır. FoxFix'i yönetici olarak açtığınızdan emin olun, güvenlik yazılımınızın engellemediğini kontrol edin ve göstergeyi kapatıp açın. Hiçbir şey değiştirilmedi."),
         new(Unexpected, "Beklenmeyen kritik hata", "Hata detayları log dizinindeki crash.txt dosyasına kaydedilmiştir. Sorunun tespiti için bu dosyayı Discord üzerinden bana iletebilirsiniz."),
     ];
+
+    /// <summary>The same table in English (docs/ERROR-CODES.md); the codes and their order are the same.</summary>
+    public static IReadOnlyList<ErrorInfo> English { get; } =
+    [
+        new(AdminRequired, "Administrator rights required", "Right-click the shortcut or the program file and choose \"Run as administrator\"."),
+        new(AdminDenied, "Administrator permission refused", "Answer \"Yes\" to the User Account Control (UAC) prompt. Nothing was changed on the system; you can try again any time."),
+        new(LinkFailed, "An external link could not be opened", "Make sure a default web browser is set. You can also copy the link into your browser's address bar yourself."),
+        new(ClipboardFailed, "Copying to the clipboard failed", "Another app may be using the clipboard. Try again in a moment."),
+        new(JournalUnreadable, "The undo records could not be read", "The record file may be damaged. The app starts without them; earlier changes will not be listed on the \"Report and history\" page."),
+        new(DpiFilesBroken, "File integrity could not be verified", "Security software (antivirus etc.) may have deleted or changed a core file. Add the FoxFix folder to its exclusions, run \"DPI reset\" and try again."),
+        new(DpiStartFailed, "The FoxDPI module could not start", "Make sure the app runs with administrator rights and is not blocked by antivirus. The error text in the message names the technical cause."),
+        new(DpiNotRunning, "The FoxDPI process ended", "Antivirus or another DPI tool running in the background may conflict with it. Run DPI reset and try again."),
+        new(DpiStoppedUnexpectedly, "FoxDPI stopped unexpectedly", "Start FoxDPI again. If it happens again, restart the computer and run DPI reset."),
+        new(DpiOtherRunning, "A conflicting DPI tool was found", "End other GoodbyeDPI, Zapret or WinDivert processes in Task Manager, or remove them with DPI reset."),
+        new(DpiAlreadyRunning, "FoxDPI is already running", "Close the FoxDPI window running in the background or stop the system service, then try again."),
+        new(DpiServiceFailed, "The system service could not be installed or started", "What was done has been undone automatically. Check your antivirus, or run FoxDPI in its own window instead."),
+        new(TrialFileError, "The trial stopped with a file error", "The network driver may be stuck in memory. Restart the computer or run DPI reset and try again."),
+        new(TrialCouldNotStart, "The trial could not start", "If the first step cannot start, the cause is usually missing rights or antivirus. See the steps for FX-2002."),
+        new(StatusUnreadable, "The status could not be read", "The Windows service list could not be read. Restart the app with administrator rights."),
+        new(DpiStopFailed, "FoxDPI could not be stopped", "End goodbyedpi.exe or the related process in Task Manager, or use DPI reset."),
+        new(NeedsFirstRun, "First set-up needed", "Before FoxDPI can run on its own, FoxFix.exe has to be opened at least once to set things up."),
+        new(TaskFailed, "The scheduled task could not be created", "Make sure the app runs with administrator rights and that the Windows Task Scheduler service is running."),
+        new(TaskNoPath, "The program folder could not be found", "Run FoxFix.exe from a fixed folder (for example the install folder) and tick the option again."),
+        new(PreviewFailed, "The preview could not be prepared", "Nothing was changed on the system. Try again; if it keeps happening, save the report and send it to the developer."),
+        new(ApplyFailed, "An error occurred while applying changes", "Read the error details. Only part of the changes may have been made; undo them on the \"Report and history\" page."),
+        new(UndoFailed, "Undo failed", "Try again with administrator rights. If needed, set the old service or network/DNS settings back by hand."),
+        new(DnsChangeFailed, "The DNS setting could not be changed", "The adapter name may have changed or the connection dropped. Check your active connection and try again."),
+        new(ServiceChangeFailed, "The service could not be managed", "The service may be in use (locked) by another process. Restart the computer and try again."),
+        new(StartupChangeFailed, "The start-up entry could not be changed", "The registry entry may be protected. Start the app with administrator rights and try again."),
+        new(CleanupFailed, "File cleanup failed", "The files may be in use by another process. Close the related apps and try again."),
+        new(RebootFailed, "The restart command could not be processed", "Restart the computer yourself. To cancel a pending restart, type shutdown /a at the command prompt."),
+        new(TweakFailed, "A Windows setting could not be applied", "Make sure you run with administrator rights. The registry key may be protected by a policy (group policy) or security software. If a change stops half way, FoxFix writes the old values back; if it cannot, the message says so and you can try Undo on the \"Report and history\" page."),
+        new(BackupSaveFailed, "Windows settings could not be saved", "Records are written to the ayar-yedekleri folder in FoxFix's data folder. Make sure there is disk space and you can write to the folder; security software may be blocking it."),
+        new(BackupRestoreFailed, "Saved Windows settings could not be restored", "Make sure you run with administrator rights. If a restore stops half way, FoxFix writes the previous values back; if it cannot, the message says so and you can try Undo on the \"Report and history\" page."),
+        new(BackupUnreadable, "A saved Windows setting could not be read", "The record file may have been deleted, changed or damaged. Delete it from the ayar-yedekleri folder and save your settings again."),
+        new(ReportBuildFailed, "The report could not be created", "Try again. If it keeps happening, close the app completely and start it again."),
+        new(ReportSaveFailed, "The report file could not be saved", "Choose another folder, or make sure the file name uses only valid characters."),
+        new(SpeedFailed, "The speed test failed", "Make sure your internet connection works and Cloudflare servers are not blocked, then try again."),
+        new(CheckFailed, "A check failed while running", "This does not affect the other checks. Run the scan again with \"Check again\"."),
+        new(UpdateCheckFailed, "The update check failed", "Check your internet connection. The check only connects to GitHub (api.github.com); if it is blocked, try again with FoxDPI on. New versions are also listed on the repository's Releases page."),
+        new(UpdateInstallFailed, "The update could not be downloaded or verified", "Check your internet connection and try again. If the SHA-256 hash of the downloaded file does not match the published one, nothing is run. If it keeps happening, download and install the new version from the Releases page."),
+        new(DeviceCheckFailed, "A sound or camera device could not be checked", "Windows did not answer the question about the device. Nothing was changed. Reconnect the device, close apps that may be using it, and try the check again."),
+        new(OverlayMeasureFailed, "The overlay could not count frames", "Windows' display events could not be listened to; FPS and frame time show N/A while the processor and graphics card numbers keep working. Make sure FoxFix runs as administrator, check that security software does not block it, and turn the overlay off and on. Nothing was changed."),
+        new(Unexpected, "Unexpected critical error", "The details were written to crash.txt in the log folder. You can send this file to me on Discord to find the cause."),
+    ];
+
+    /// <summary>The table in the language the program shows.</summary>
+    public static IReadOnlyList<ErrorInfo> Current => Strings.IsEnglish ? English : All;
 
     public static ErrorInfo? Find(string code) => All.FirstOrDefault(e => e.Code == code);
 

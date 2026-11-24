@@ -49,7 +49,7 @@ public sealed class HttpPackageDownloader : IPackageDownloader
             // A server that keeps sending past the limit is not a FoxFix package.
             if (done > SelfUpdater.MaxPackageBytes)
             {
-                throw new InvalidDataException("Dosya beklenenden büyük.");
+                throw new InvalidDataException(Strings.Get(Strings.FileTooLarge));
             }
 
             if (total is > 0)

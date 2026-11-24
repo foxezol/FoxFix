@@ -65,7 +65,7 @@ public sealed class CloudflareSpeedTransport : ISpeedTestTransport, IDisposable
         var addresses = await Dns.GetHostAddressesAsync(Host, ct);
         return addresses.FirstOrDefault(a => a.AddressFamily == AddressFamily.InterNetwork)
             ?? addresses.FirstOrDefault()
-            ?? throw new InvalidOperationException($"{Host} adresi bulunamadı.");
+            ?? throw new InvalidOperationException(Strings.Format(Strings.HostNotFound, Host));
     }
 
     /// <summary>Random-looking payload written in blocks, reporting every block as it is handed to the socket.</summary>

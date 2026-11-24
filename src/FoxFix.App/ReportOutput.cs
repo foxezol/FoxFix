@@ -50,7 +50,7 @@ public sealed class WindowsReportFileSaver : IReportFileSaver
         {
             FileName = suggestedFileName,
             DefaultExt = ".txt",
-            Filter = "Metin dosyası (*.txt)|*.txt",
+            Filter = FoxFix.Core.Strings.Get(FoxFix.Core.Strings.TextFileFilter),
             InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             OverwritePrompt = true,
         };

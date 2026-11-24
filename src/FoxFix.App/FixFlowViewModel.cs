@@ -311,8 +311,8 @@ public sealed partial class FixFlowViewModel : ObservableObject
 
             var remaining = TimeSpan.FromSeconds(Math.Max(0, 1 - overall) * _count * _perStep);
             _vm.ProgressText = _step.Elapsed.TotalSeconds > _perStep
-                ? $"%{(int)(overall * 100)} · birkaç saniye daha"
-                : $"%{(int)(overall * 100)} · yaklaşık {ProgressEstimate.Duration(remaining)} kaldı";
+                ? Strings.Format(Strings.ProgressFewSecondsMore, (int)(overall * 100))
+                : Strings.Format(Strings.ProgressRemaining, (int)(overall * 100), ProgressEstimate.Duration(remaining));
         }
 
         private async Task TickAsync()

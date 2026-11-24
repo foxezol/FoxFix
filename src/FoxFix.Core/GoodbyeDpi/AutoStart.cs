@@ -113,7 +113,7 @@ public sealed class FoxDpiAutoStart
     private static string FirstLine(CommandResult result)
     {
         var text = string.IsNullOrWhiteSpace(result.StdErr) ? result.StdOut : result.StdErr;
-        return text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault() ?? $"çıkış kodu {result.ExitCode}";
+        return text.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault() ?? Strings.Format(Strings.ExitCode, result.ExitCode);
     }
 }
 

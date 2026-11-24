@@ -104,6 +104,31 @@ public class SpeedTestViewModelTests
     }
 
     [Fact]
+    public async Task The_bar_follows_the_reported_fraction_and_never_steps_back()
+    {
+        SynchronizationContext.SetSynchronizationContext(null);
+
+        var test = new FakeSpeedTest();
+        test.Steps.Add(new SpeedTestProgress(SpeedTestPhase.Download, 10, null, 0.4));
+        test.Steps.Add(new SpeedTestProgress(SpeedTestPhase.Download, 12, null, 0.3));
+        var vm = new SpeedTestViewModel(test);
+        var seen = new List<double>();
+        vm.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(SpeedTestViewModel.Percent))
+            {
+                seen.Add(vm.Percent);
+            }
+        };
+
+        await vm.StartCommand.ExecuteAsync(null);
+
+        seen.Should().Contain(40);
+        seen.Should().NotContain(30, "an older report must not move the bar back");
+        vm.Percent.Should().Be(100, "a finished test fills the bar");
+    }
+
+    [Fact]
     public async Task Progress_that_arrives_after_the_run_ended_never_overwrites_the_final_numbers()
     {
         var queue = new List<SendOrPostCallback>();

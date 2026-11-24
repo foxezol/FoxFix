@@ -111,6 +111,7 @@ public sealed class MainViewModelTests : IDisposable
     [InlineData(AppPage.Connection, "Bağlantı kontrolü")]
     [InlineData(AppPage.DnsDpi, "DNS ve DPI")]
     [InlineData(AppPage.Access, "Erişim testi")]
+    [InlineData(AppPage.Devices, "Ses ve kamera")]
     [InlineData(AppPage.Report, "Rapor ve geçmiş")]
     [InlineData(AppPage.Settings, "Ayarlar")]
     [InlineData(AppPage.Tweaks, "Hızlandırma ve ayarlar")]
@@ -163,7 +164,7 @@ public sealed class MainViewModelTests : IDisposable
         {
             vm.OpenPageCommand.Execute(page);
 
-            new[] { vm.IsHome, vm.IsConnection, vm.IsDnsDpi, vm.IsAccess, vm.IsReport, vm.IsSettings, vm.IsTweaks }
+            new[] { vm.IsHome, vm.IsConnection, vm.IsDnsDpi, vm.IsAccess, vm.IsDevices, vm.IsOverlay, vm.IsReport, vm.IsSettings, vm.IsTweaks }
                 .Count(shown => shown).Should().Be(1, $"only {page} is shown");
         }
     }

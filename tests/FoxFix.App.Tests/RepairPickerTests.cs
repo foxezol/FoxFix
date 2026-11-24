@@ -1,6 +1,9 @@
 ﻿using FluentAssertions;
 using FoxFix.App;
+using FluentAssertions.Execution;
+using FoxFix.Core;
 using FoxFix.Core.Cleanup;
+using FoxFix.Core.Diagnostics;
 using FoxFix.Core.Fixes;
 using FoxFix.Core.Safety;
 using FoxFix.Core.Startup;
@@ -155,6 +158,103 @@ public sealed class RepairPickerTests : IDisposable
 
         picker.IsOpen.Should().BeFalse();
         flow.Stage.Should().Be(FlowStage.Idle);
+    }
+
+    // ---------------------------------------------------------------- what the check found drives the ticks
+
+    private static DiagnosticsReport Report(CheckStatus dpi, CheckStatus dns) => new(
+    [
+        new CheckReport("dns", "DNS", new CheckResult(dns, "x")),
+        new CheckReport("dpi-residue", "Kalıntı", new CheckResult(dpi, "x")),
+    ]);
+
+    [Fact]
+    public void A_problem_the_check_found_is_ticked_recommended_and_explained()
+    {
+        var (picker, _, _, _, _, _) = Create();
+
+        picker.UpdateFromDiagnosis(Report(CheckStatus.Warning, CheckStatus.Passed));
+        picker.OpenCommand.Execute(null);
+
+        picker.IncludeDpi.Should().BeTrue();
+        picker.IncludeDns.Should().BeFalse("the check found DNS fine, so it is not ticked by itself");
+        picker.DpiRecommended.Should().BeTrue();
+        picker.DnsRecommended.Should().BeFalse();
+        picker.DpiNote.Should().Be(Strings.Get(Strings.PickerDpiFound));
+        picker.DnsNote.Should().Be(Strings.Get(Strings.PickerDnsOk));
+        picker.SummaryText.Should().Be(Strings.Format(Strings.PickerSummarySome, 1));
+    }
+
+    [Fact]
+    public void When_the_check_found_nothing_nothing_is_ticked_and_the_button_says_why_it_is_off()
+    {
+        var (picker, _, _, _, _, _) = Create();
+
+        picker.UpdateFromDiagnosis(Report(CheckStatus.Passed, CheckStatus.Passed));
+        picker.OpenCommand.Execute(null);
+
+        picker.IncludeDpi.Should().BeFalse();
+        picker.IncludeDns.Should().BeFalse();
+        picker.SummaryText.Should().Be(Strings.Get(Strings.PickerSummaryNone));
+        picker.CanContinue.Should().BeFalse();
+        picker.ShowNothingTicked.Should().BeTrue();
+        picker.ContinueCommand.CanExecute(null).Should().BeFalse();
+    }
+
+    [Fact]
+    public void Ticking_something_by_hand_is_still_possible_when_the_check_found_nothing()
+    {
+        var (picker, _, _, _, _, _) = Create();
+        picker.UpdateFromDiagnosis(Report(CheckStatus.Passed, CheckStatus.Passed));
+        picker.OpenCommand.Execute(null);
+
+        picker.IncludeDns = true;
+
+        picker.CanContinue.Should().BeTrue();
+        picker.ShowNothingTicked.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Without_a_check_result_the_old_defaults_stay_and_the_text_says_no_result_yet()
+    {
+        var (picker, _, _, _, _, _) = Create();
+
+        picker.UpdateFromDiagnosis(null);
+        picker.OpenCommand.Execute(null);
+
+        picker.IncludeDpi.Should().BeTrue();
+        picker.IncludeDns.Should().BeTrue();
+        picker.SummaryText.Should().Be(Strings.Get(Strings.PickerNotChecked));
+        picker.DpiNote.Should().Be(Strings.Get(Strings.PickerNotChecked));
+    }
+
+    [Theory]
+    [InlineData(CheckStatus.Skipped)]
+    [InlineData(CheckStatus.Error)]
+    public void A_check_that_could_not_say_is_not_taken_for_clean(CheckStatus status)
+    {
+        var (picker, _, _, _, _, _) = Create();
+
+        picker.UpdateFromDiagnosis(Report(status, status));
+        picker.OpenCommand.Execute(null);
+
+        picker.DpiFinding.Should().Be(CheckFinding.Unknown);
+        picker.IncludeDpi.Should().BeTrue("unknown keeps the old default");
+    }
+
+    [Fact]
+    public void Sound_and_camera_help_is_a_link_to_the_wizard_page_and_not_a_job_in_the_repair_list()
+    {
+        var opened = 0;
+        var (_, flow, startup, cleanup, _, _) = Create();
+        var picker = new RepairPickerViewModel(startup, cleanup, flow, () => opened++);
+        picker.OpenCommand.Execute(null);
+
+        picker.OpenDevicesCommand.Execute(null);
+
+        picker.IsOpen.Should().BeFalse("the picker closes as the page opens");
+        opened.Should().Be(1);
+        flow.PreviewLines.Should().BeEmpty("nothing was queued: the wizard only looks");
     }
 }
 

@@ -1,0 +1,846 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <!-- English texts. Same keys as Strings.resx (Turkish, the default). Tone: "you", short sentences, say what is wrong and what to do. -->
+
+  <data name="AdapterTitle" xml:space="preserve"><value>Network connection</value></data>
+  <data name="AdapterNoneFound" xml:space="preserve"><value>No wired or wireless network adapter was found on this computer.</value></data>
+  <data name="AdapterNoneUp" xml:space="preserve"><value>No network connection is up. Wi-Fi may be off or the cable unplugged.</value></data>
+  <data name="AdapterOk" xml:space="preserve"><value>Active connection found: {0}</value></data>
+
+  <data name="IpConfigTitle" xml:space="preserve"><value>Getting an address from the modem</value></data>
+  <data name="IpConfigSkipped" xml:space="preserve"><value>Skipped because no network connection is up.</value></data>
+  <data name="IpConfigApipa" xml:space="preserve"><value>The modem did not give this computer an address (169.254.x.x). Check the modem or the Wi-Fi connection.</value></data>
+  <data name="IpConfigNoAddress" xml:space="preserve"><value>The active connection has no valid IP address.</value></data>
+  <data name="IpConfigNoGateway" xml:space="preserve"><value>There is an IP address, but the modem&apos;s address (gateway) was not found.</value></data>
+  <data name="IpConfigOk" xml:space="preserve"><value>Local IP and modem address obtained. (Address: {0}, modem: {1})</value></data>
+
+  <data name="PingTitle" xml:space="preserve"><value>Modem and internet line</value></data>
+  <data name="PingOk" xml:space="preserve"><value>Internet access works.</value></data>
+  <data name="PingGatewaySilent" xml:space="preserve"><value>The modem does not answer pings. Most modems do not; this is not a problem.</value></data>
+  <data name="PingGatewayOnly" xml:space="preserve"><value>The modem can be reached, but the internet cannot.</value></data>
+  <data name="PingNone" xml:space="preserve"><value>Neither the modem nor the internet can be reached.</value></data>
+
+  <data name="DnsTitle" xml:space="preserve"><value>Finding site names (DNS)</value></data>
+  <data name="DnsOk" xml:space="preserve"><value>DNS resolution works fine.</value></data>
+  <data name="DnsLocalConfig" xml:space="preserve"><value>The DNS server answers when asked directly, but Windows cannot find sites. This computer&apos;s DNS setting is broken.</value></data>
+  <data name="DnsUdpIntercepted" xml:space="preserve"><value>DNS questions (UDP) are blocked by something in between and only work over TCP. This is usually a DPI tool, a filter driver or security software.</value></data>
+  <data name="DnsUnreachable" xml:space="preserve"><value>The DNS servers cannot be reached any way at all. Check the firewall and the internet line.</value></data>
+  <data name="DnsDetail" xml:space="preserve"><value>Windows DNS: {0}, direct UDP: {1}, direct TCP: {2}</value></data>
+  <data name="DnsRedirected" xml:space="preserve"><value>Your DNS queries are redirected to another server. This is usually done by GoodbyeDPI&apos;s DNS redirect setting. The internet works, but all your DNS queries go to that server.</value></data>
+  <data name="Yes" xml:space="preserve"><value>works</value></data>
+  <data name="No" xml:space="preserve"><value>does not work</value></data>
+
+  <data name="HttpsTitle" xml:space="preserve"><value>Secure connection (HTTPS)</value></data>
+  <data name="HttpsOk" xml:space="preserve"><value>HTTPS (secure connection) is working.</value></data>
+  <data name="HttpsSiteBlocked" xml:space="preserve"><value>The internet line works, but sites cannot make a secure connection. A DPI tool, a firewall or an access block may be the cause.</value></data>
+  <data name="HttpsCertificate" xml:space="preserve"><value>Security certificates cannot be verified. This happens if the computer&apos;s date and time are wrong or antivirus software interferes with the connection.</value></data>
+  <data name="HttpsBroken" xml:space="preserve"><value>No secure (HTTPS) connection can be made. A firewall, proxy or DPI tool may be blocking it.</value></data>
+  <data name="HttpsDetail" xml:space="preserve"><value>Direct IP (1.1.1.1): {0}. Sites: {1}</value></data>
+  <data name="HttpsOutcomeOk" xml:space="preserve"><value>opened</value></data>
+  <data name="HttpsOutcomeTimeout" xml:space="preserve"><value>timed out</value></data>
+  <data name="HttpsOutcomeTls" xml:space="preserve"><value>secure connection was cut</value></data>
+  <data name="HttpsOutcomeCertificate" xml:space="preserve"><value>certificate error</value></data>
+  <data name="HttpsOutcomeDns" xml:space="preserve"><value>address not found</value></data>
+  <data name="HttpsOutcomeOther" xml:space="preserve"><value>could not connect</value></data>
+
+  <data name="RebootComment" xml:space="preserve"><value>FoxFix is restarting the computer to finish the cleanup.</value></data>
+  <data name="RebootScheduled" xml:space="preserve"><value>The computer will restart in {0} seconds. To cancel, press &quot;Cancel restart&quot;.</value></data>
+  <data name="RebootScheduleFailed" xml:space="preserve"><value>[FX-4008] The restart could not be scheduled. Restart the computer yourself.</value></data>
+  <data name="RebootCancelled" xml:space="preserve"><value>The restart was cancelled. The cleanup will finish when you restart the computer.</value></data>
+  <data name="RebootCancelFailed" xml:space="preserve"><value>[FX-4008] The restart could not be cancelled. It may have already started.</value></data>
+
+  <data name="ResidueTitle" xml:space="preserve"><value>Leftovers from old tools</value></data>
+  <data name="ResidueNone" xml:space="preserve"><value>The system is clean of old DPI leftovers.</value></data>
+  <data name="ResidueFound" xml:space="preserve"><value>{0} found. Parts of an old internet tool may be running in the background.</value></data>
+  <data name="ResidueDnsPoisoned" xml:space="preserve"><value>DNS points to this computer, but no DNS program is running to answer. That is why site names cannot be resolved.</value></data>
+
+  <data name="ToolGoodbyeDpi" xml:space="preserve"><value>GoodbyeDPI</value></data>
+  <data name="ToolWinDivert" xml:space="preserve"><value>WinDivert driver</value></data>
+  <data name="ToolZapret" xml:space="preserve"><value>Zapret</value></data>
+  <data name="ToolByeDpi" xml:space="preserve"><value>ByeDPI</value></data>
+  <data name="ToolProxiFyre" xml:space="preserve"><value>ProxiFyre</value></data>
+  <data name="ToolDnsCrypt" xml:space="preserve"><value>DnsCrypt-Proxy</value></data>
+
+  <data name="FindingActive" xml:space="preserve"><value>{0} is running: {1}</value></data>
+  <data name="FindingLeftover" xml:space="preserve"><value>Leftover of {0}: {1}</value></data>
+  <data name="FindingPossibleSuffix" xml:space="preserve"><value> (not certain, only the name matched)</value></data>
+  <data name="FindingSplitWire" xml:space="preserve"><value>SplitWire-Turkey is installed: {0}. FoxFix does not remove it. Use SplitWire&apos;s own uninstaller to remove it.</value></data>
+  <data name="FindingDnsOrphan" xml:space="preserve"><value>The DNS of the {0} connection is set to this computer (127.0.0.1) but DnsCrypt-Proxy is not running.</value></data>
+  <data name="FindingDnsProxy" xml:space="preserve"><value>The DNS of the {0} connection goes to DnsCrypt-Proxy on this computer. It may be intentional; FoxFix leaves it alone.</value></data>
+  <data name="FindingDnsRedirect" xml:space="preserve"><value>GoodbyeDPI is redirecting DNS queries. All DNS requests leaving the computer go to {0} (port {1}). DPI Reset removes this.</value></data>
+  <data name="FindingConflict" xml:space="preserve"><value>GoodbyeDPI and Zapret are running at the same time. They use the same driver and can break each other.</value></data>
+
+  <data name="CleanupTitle" xml:space="preserve"><value>Clean up old DPI tools</value></data>
+  <data name="PreviewNothing" xml:space="preserve"><value>There is nothing to clean up.</value></data>
+  <data name="PreviewRemoveService" xml:space="preserve"><value>Will be stopped and deleted: {0} ({1})</value></data>
+  <data name="PreviewKillProcess" xml:space="preserve"><value>Process to be closed: {0}</value></data>
+  <data name="PreviewSkipNotSure" xml:space="preserve"><value>Will be skipped, it may belong to another program: {0}</value></data>
+  <data name="PreviewSkipSplitWire" xml:space="preserve"><value>Will be skipped, it belongs to SplitWire-Turkey. Use its uninstaller: {0}</value></data>
+  <data name="PreviewSkipOutOfScope" xml:space="preserve"><value>Will be skipped, this cleanup does not touch it: {0}</value></data>
+  <data name="PreviewSkipUnsafe" xml:space="preserve"><value>Will be skipped, the name is not safe: {0}</value></data>
+  <data name="PreviewUndoNote" xml:space="preserve"><value>Deleted services come back with Undo. Closed processes do not come back.</value></data>
+  <data name="PreviewReboot" xml:space="preserve"><value>The computer will need to restart after the cleanup so the driver can unload from memory.</value></data>
+  <data name="ResultNothing" xml:space="preserve"><value>There was nothing to clean up.</value></data>
+  <data name="ResultDone" xml:space="preserve"><value>{0} items cleaned up.</value></data>
+  <data name="ResultPartial" xml:space="preserve"><value>{0} items cleaned up, {1} had problems.</value></data>
+  <data name="ResultReboot" xml:space="preserve"><value> Restart the computer to finish.</value></data>
+  <data name="FailStop" xml:space="preserve"><value>[FX-4005] {0} could not be stopped, so it was not deleted.</value></data>
+  <data name="FailDelete" xml:space="preserve"><value>{0} could not be deleted.</value></data>
+  <data name="FailKill" xml:space="preserve"><value>The {0} process could not be closed.</value></data>
+  <data name="UndoDescription" xml:space="preserve"><value>The {0} service can be restored</value></data>
+  <data name="UndoCreateFailed" xml:space="preserve"><value>[FX-4005] The {0} service could not be restored.</value></data>
+  <data name="UndoStartFailed" xml:space="preserve"><value>[FX-4005] The {0} service was restored but could not be started.</value></data>
+  <data name="UndoRecordBroken" xml:space="preserve"><value>The undo record is damaged, this field is missing: {0}</value></data>
+
+  <data name="DnsRepairTitle" xml:space="preserve"><value>Repair the DNS setting</value></data>
+  <data name="DnsRepairNothing" xml:space="preserve"><value>There is nothing to fix in the DNS setting.</value></data>
+  <data name="DnsRepairProxyRunning" xml:space="preserve"><value>DNS is set to DnsCrypt-Proxy on this computer and it is running. It may be intentional, so it will not be touched.</value></data>
+  <data name="DnsRepairPreviewAdapter" xml:space="preserve"><value>{0}: DNS will be set to automatic (from the modem). Now: {1}</value></data>
+  <data name="DnsRepairPreviewFlush" xml:space="preserve"><value>The DNS cache will be cleared.</value></data>
+  <data name="DnsRepairPreviewUndo" xml:space="preserve"><value>The old DNS setting is saved and comes back with &quot;Undo&quot;.</value></data>
+  <data name="DnsRepairResultNothing" xml:space="preserve"><value>There was nothing to fix in the DNS setting.</value></data>
+  <data name="DnsRepairResultDone" xml:space="preserve"><value>DNS of {0} connection(s) was set to automatic.</value></data>
+  <data name="DnsRepairResultPartial" xml:space="preserve"><value>DNS of {0} connection(s) was set to automatic, {1} had problems.</value></data>
+  <data name="DnsRepairNoBackup" xml:space="preserve"><value>[FX-4004] The old DNS setting of {0} could not be read, so it was not changed.</value></data>
+  <data name="DnsRepairSetFailed" xml:space="preserve"><value>[FX-4004] The DNS setting of {0} could not be changed.</value></data>
+  <data name="DnsRepairFlushFailed" xml:space="preserve"><value>[FX-4004] The DNS cache could not be cleared.</value></data>
+  <data name="DnsRepairUndoDescription" xml:space="preserve"><value>The old DNS setting of the {0} connection can be restored</value></data>
+  <data name="DnsRepairUndoFailed" xml:space="preserve"><value>[FX-4004] The old DNS setting of the {0} connection could not be restored.</value></data>
+
+
+  <data name="ReportTitle" xml:space="preserve"><value>FoxFix Diagnostic Report</value></data>
+  <data name="ReportCreated" xml:space="preserve"><value>Date: {0}</value></data>
+  <data name="ReportVersion" xml:space="preserve"><value>FoxFix version: {0}</value></data>
+  <data name="ReportWindows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="ReportUser" xml:space="preserve"><value>User: {0}</value></data>
+  <data name="ReportMachine" xml:space="preserve"><value>Computer: {0}</value></data>
+  <data name="ReportMasked" xml:space="preserve"><value>Personal information is hidden: user name, computer name, MAC and IP addresses. Well-known public DNS addresses and 127.0.0.1 are kept for diagnosis.</value></data>
+  <data name="ReportUnmasked" xml:space="preserve"><value>Warning, personal information is not hidden. Read the report before sharing it.</value></data>
+  <data name="ReportMaskUser" xml:space="preserve"><value>&lt;user&gt;</value></data>
+  <data name="ReportMaskAddress" xml:space="preserve"><value>&lt;ip&gt;</value></data>
+  <data name="ReportMaskMachine" xml:space="preserve"><value>&lt;computer&gt;</value></data>
+  <data name="ReportSectionSummary" xml:space="preserve"><value>Summary</value></data>
+  <data name="ReportSectionChecks" xml:space="preserve"><value>Checks</value></data>
+  <data name="ReportSectionAdapters" xml:space="preserve"><value>Network adapters (physical)</value></data>
+  <data name="ReportSectionFindings" xml:space="preserve"><value>Old tool findings</value></data>
+  <data name="ReportSectionChanges" xml:space="preserve"><value>Changes made by FoxFix</value></data>
+  <data name="ReportNoChecks" xml:space="preserve"><value>No checks have been run yet. Press &quot;Check again&quot; first.</value></data>
+  <data name="ReportNoFindings" xml:space="preserve"><value>No findings.</value></data>
+  <data name="ReportNoChanges" xml:space="preserve"><value>FoxFix has not made any changes yet.</value></data>
+  <data name="ReportNoAdapters" xml:space="preserve"><value>No physical network adapter was found.</value></data>
+  <data name="ReportSummaryOk" xml:space="preserve"><value>No problems.</value></data>
+  <data name="ReportSummaryNotes" xml:space="preserve"><value>The connection works, {0} thing(s) need a look.</value></data>
+  <data name="ReportSummaryProblem" xml:space="preserve"><value>There is a problem: {0}.</value></data>
+  <data name="ReportAdapterUp" xml:space="preserve"><value>up</value></data>
+  <data name="ReportAdapterDown" xml:space="preserve"><value>not connected</value></data>
+  <data name="ReportMac" xml:space="preserve"><value>MAC: {0}</value></data>
+  <data name="ReportIPv4" xml:space="preserve"><value>IPv4: {0}</value></data>
+  <data name="ReportGateway" xml:space="preserve"><value>Gateway: {0}</value></data>
+  <data name="ReportDns" xml:space="preserve"><value>DNS: {0}</value></data>
+  <data name="ReportNone" xml:space="preserve"><value>none</value></data>
+  <data name="ReportFindingConfident" xml:space="preserve"><value>certain</value></data>
+  <data name="ReportFindingPossible" xml:space="preserve"><value>possible</value></data>
+  <data name="ReportFindingRemovable" xml:space="preserve"><value>can be cleaned up</value></data>
+  <data name="ReportFindingReportOnly" xml:space="preserve"><value>notice only</value></data>
+  <data name="ReportFindingActive" xml:space="preserve"><value>running</value></data>
+  <data name="ReportFindingInactive" xml:space="preserve"><value>stopped</value></data>
+  <data name="ReportCopied" xml:space="preserve"><value>Report copied.</value></data>
+  <data name="ReportCopyFailed" xml:space="preserve"><value>[FX-1004] The report could not be copied: {0}</value></data>
+  <data name="ReportSaved" xml:space="preserve"><value>Report saved: {0}</value></data>
+  <data name="ReportSaveFailed" xml:space="preserve"><value>[FX-5002] The report could not be saved: {0}</value></data>
+  <data name="ReportBuildFailed" xml:space="preserve"><value>[FX-5001] The report could not be prepared: {0}</value></data>
+
+  <data name="StartupTitle" xml:space="preserve"><value>Programs that start at boot</value></data>
+  <data name="StartupNoChanges" xml:space="preserve"><value>No changes were selected.</value></data>
+  <data name="StartupPreviewDisable" xml:space="preserve"><value>Will not start at boot: {0}</value></data>
+  <data name="StartupPreviewEnable" xml:space="preserve"><value>Will start at boot: {0}</value></data>
+  <data name="StartupPreviewNote" xml:space="preserve"><value>No program is deleted. You can turn it back on here or bring it back with Undo.</value></data>
+  <data name="StartupResultDone" xml:space="preserve"><value>The start-up setting of {0} program(s) was changed.</value></data>
+  <data name="StartupResultPartial" xml:space="preserve"><value>The start-up setting of {0} program(s) was changed, {1} had problems.</value></data>
+  <data name="StartupFailed" xml:space="preserve"><value>[FX-4006] The start-up setting of {0} could not be changed: {1}</value></data>
+  <data name="StartupUndoDescription" xml:space="preserve"><value>The start-up setting of {0} can be restored</value></data>
+  <data name="StartupNothingToDo" xml:space="preserve"><value>There was nothing to change.</value></data>
+
+  <data name="CleanupDiskTitle" xml:space="preserve"><value>Disk cleanup</value></data>
+  <data name="CleanupNothingSelected" xml:space="preserve"><value>Nothing was selected to clean up.</value></data>
+  <data name="CleanupPreviewItem" xml:space="preserve"><value>Will be cleaned: {0}, about {1}</value></data>
+  <data name="CleanupPreviewTotal" xml:space="preserve"><value>About {0} in total will be freed.</value></data>
+  <data name="CleanupPreviewIrreversible" xml:space="preserve"><value>Deleted files cannot be restored and do not go to the Recycle Bin. Files in use are skipped.</value></data>
+  <data name="CleanupResultDone" xml:space="preserve"><value>{0} freed.</value></data>
+  <data name="CleanupResultSkipped" xml:space="preserve"><value> {0} file(s) were skipped because they are in use.</value></data>
+  <data name="CleanupFailed" xml:space="preserve"><value>[FX-4007] {0} could not be cleaned: {1}</value></data>
+  <data name="CleanupUndoUnsupported" xml:space="preserve"><value>Disk cleanup cannot be undone.</value></data>
+
+  <data name="TargetUserTemp" xml:space="preserve"><value>User temporary files</value></data>
+  <data name="TargetUserTempInfo" xml:space="preserve"><value>Temporary files created by apps.</value></data>
+  <data name="TargetWindowsTemp" xml:space="preserve"><value>Windows temporary files</value></data>
+  <data name="TargetWindowsTempInfo" xml:space="preserve"><value>Leftovers of Windows and setup files (needs administrator rights).</value></data>
+  <data name="TargetUpdateCache" xml:space="preserve"><value>Windows Update cache</value></data>
+  <data name="TargetUpdateCacheInfo" xml:space="preserve"><value>Downloaded Windows update cache (needs administrator rights).</value></data>
+  <data name="TargetBrowserCache" xml:space="preserve"><value>Browser caches (Chrome, Edge)</value></data>
+  <data name="TargetBrowserCacheInfo" xml:space="preserve"><value>Browser cache (your passwords and cookies are kept, but the first visit to sites may take a little longer).</value></data>
+  <data name="TargetRecycleBin" xml:space="preserve"><value>Recycle Bin</value></data>
+  <data name="TargetRecycleBinInfo" xml:space="preserve"><value>Files in the Recycle Bin are deleted permanently.</value></data>
+
+  <data name="SpeedIdle" xml:space="preserve"><value>Not measured yet.</value></data>
+  <data name="SpeedLatencyPhase" xml:space="preserve"><value>Measuring latency…</value></data>
+  <data name="SpeedDownloadPhase" xml:space="preserve"><value>Measuring download speed…</value></data>
+  <data name="SpeedUploadPhase" xml:space="preserve"><value>Measuring upload speed…</value></data>
+  <data name="SpeedLive" xml:space="preserve"><value>{0}: {1} Mbps right now</value></data>
+  <data name="SpeedDone" xml:space="preserve"><value>Measurement finished. Values are approximate and change with the network at that moment.</value></data>
+  <data name="SpeedCancelled" xml:space="preserve"><value>The measurement was stopped.</value></data>
+  <data name="SpeedFailed" xml:space="preserve"><value>[FX-6001] The speed could not be measured: {0}</value></data>
+  <data name="SpeedMbps" xml:space="preserve"><value>{0} Mbps</value></data>
+  <data name="SpeedMs" xml:space="preserve"><value>{0} ms</value></data>
+
+  <data name="StatusOkLabel" xml:space="preserve"><value>No problem</value></data>
+  <data name="StatusWarnLabel" xml:space="preserve"><value>Attention</value></data>
+  <data name="StatusBadLabel" xml:space="preserve"><value>Problem</value></data>
+  <data name="StatusSkippedLabel" xml:space="preserve"><value>Skipped</value></data>
+
+  <data name="VerdictChecking" xml:space="preserve"><value>Checking your connection…</value></data>
+  <data name="VerdictCheckingDetail" xml:space="preserve"><value>Only looking, nothing is changed.</value></data>
+  <data name="VerdictOk" xml:space="preserve"><value>System status is normal</value></data>
+  <data name="VerdictOkDetail" xml:space="preserve"><value>Your internet connection works fine. No repair is needed.</value></data>
+  <data name="VerdictAttention" xml:space="preserve"><value>Your connection works, but {0} thing(s) need a look</value></data>
+  <data name="VerdictAttentionDetail" xml:space="preserve"><value>What they are is written below. &quot;Fix me&quot; first shows what it will change.</value></data>
+  <data name="VerdictProblem" xml:space="preserve"><value>There is a problem</value></data>
+  <data name="VerdictProblemDetail" xml:space="preserve"><value>The problem is here: {0}. &quot;Fix me&quot; first shows what it will change; nothing changes without your approval.</value></data>
+  <data name="VerdictFailed" xml:space="preserve"><value>The check could not be completed</value></data>
+
+  <data name="FlowApplyLabel" xml:space="preserve"><value>Apply</value></data>
+  <data name="FlowApplyElevatedLabel" xml:space="preserve"><value>Apply as administrator</value></data>
+  <data name="FlowRestarting" xml:space="preserve"><value>Reopening as administrator. When it opens, press &quot;Fix me&quot; again.</value></data>
+  <data name="FlowElevationDenied" xml:space="preserve"><value>Administrator permission was not granted. Nothing was changed.</value></data>
+  <data name="FlowPreviewFailed" xml:space="preserve"><value>[FX-4001] The preview could not be prepared: {0}</value></data>
+  <data name="FlowApplyFailed" xml:space="preserve"><value>[FX-4002] An error occurred while applying: {0}</value></data>
+  <data name="FlowUndone" xml:space="preserve"><value>Undone: {0}</value></data>
+  <data name="FlowUndoFailed" xml:space="preserve"><value>[FX-4003] Could not undo: {0}</value></data>
+  <data name="FlowUndoUnknownFix" xml:space="preserve"><value>No undo action was found for this record.</value></data>
+  <data name="FlowNeedsAdmin" xml:space="preserve"><value>These changes need administrator rights.</value></data>
+
+  <data name="EngineError" xml:space="preserve"><value>[FX-6002] An error occurred while this check was running: {0}</value></data>
+  <data name="UninstallTitle" xml:space="preserve"><value>Uninstall FoxFix</value></data>
+  <data name="UninstallPreviewDpi" xml:space="preserve"><value>FoxDPI is closed if it is running. Its service, the WinDivert driver and its files are removed.</value></data>
+  <data name="UninstallPreviewTask" xml:space="preserve"><value>The &quot;start with Windows&quot; task is deleted if there is one.</value></data>
+  <data name="UninstallPreviewData" xml:space="preserve"><value>FoxFix&apos;s user data is deleted (logs, undo records): {0}</value></data>
+  <data name="UninstallPreviewInstalled" xml:space="preserve"><value>FoxFix closes and the uninstaller runs in the background to delete the program files.</value></data>
+  <data name="UninstallPreviewPortable" xml:space="preserve"><value>FoxFix closes, then the program files and its folder are deleted. Only FoxFix&apos;s own files are deleted.</value></data>
+  <data name="UninstallPreviewManual" xml:space="preserve"><value>Program files are not deleted because their location is unknown. You can delete the folder yourself.</value></data>
+  <data name="UninstallIrreversible" xml:space="preserve"><value>This cannot be undone.</value></data>
+  <data name="UninstallResultInstalled" xml:space="preserve"><value>Uninstall started. FoxFix will close in a few seconds and the program files will be deleted in the background.</value></data>
+  <data name="UninstallResultClosing" xml:space="preserve"><value>Uninstall started. FoxFix will close in a few seconds and its files will be deleted in the background.</value></data>
+  <data name="UninstallResultManual" xml:space="preserve"><value>FoxDPI and its data were removed. To delete the program files, delete the FoxFix folder yourself.</value></data>
+  <data name="FlowResultOk" xml:space="preserve"><value>The operation succeeded</value></data>
+  <data name="FlowResultFailed" xml:space="preserve"><value>The operation could not be completed</value></data>
+  <data name="FlowBusyText" xml:space="preserve"><value>The operation is in progress, please wait.</value></data>
+  <data name="DpiProfile1" xml:space="preserve"><value>Standard (-5, TTL 5, DNS redirect)</value></data>
+  <data name="DpiProfile2" xml:space="preserve"><value>-5 only, no DNS redirect</value></data>
+  <data name="DpiProfile3" xml:space="preserve"><value>TTL 3 and DNS redirect</value></data>
+  <data name="DpiProfile4" xml:space="preserve"><value>-5 and DNS redirect</value></data>
+  <data name="DpiProfile5" xml:space="preserve"><value>-9 and DNS redirect</value></data>
+  <data name="DpiProfile6" xml:space="preserve"><value>-9 only, no DNS redirect</value></data>
+  <data name="DpiProfile7" xml:space="preserve"><value>TTL 3 only, no DNS redirect</value></data>
+  <data name="GdpiInstallTitle" xml:space="preserve"><value>FoxDPI setup</value></data>
+  <data name="GdpiPickFirst" xml:space="preserve"><value>Pick a setting first.</value></data>
+  <data name="GdpiBlockedForeign" xml:space="preserve"><value>[FX-2005] Another GoodbyeDPI or Zapret is running. The two cannot run at the same time. Use DPI Reset first or close it yourself.</value></data>
+  <data name="GdpiBlockedManaged" xml:space="preserve"><value>[FX-2006] FoxDPI is running right now. Close the FoxDPI window or stop the service before trying.</value></data>
+  <data name="GdpiPreviewProfile" xml:space="preserve"><value>Setting: {0}</value></data>
+  <data name="GdpiPreviewFiles" xml:space="preserve"><value>FoxDPI files are copied to the {0} folder. Their SHA-256 hashes are checked to make sure they are not damaged.</value></data>
+  <data name="GdpiPreviewService" xml:space="preserve"><value>A Windows service is installed and started. It starts by itself when the computer boots.</value></data>
+  <data name="GdpiPreviewDns" xml:space="preserve"><value>This setting redirects DNS requests to Yandex DNS (77.88.8.8, port 1253). It does not touch the DNS setting in Windows.</value></data>
+  <data name="GdpiPreviewReplace" xml:space="preserve"><value>A FoxDPI installed earlier by FoxFix is removed first.</value></data>
+  <data name="GdpiPreviewDriver" xml:space="preserve"><value>FoxDPI loads the WinDivert driver to read network packets. Antivirus software may warn you.</value></data>
+  <data name="GdpiFilesBroken" xml:space="preserve"><value>[FX-2001] The files could not be verified ({0}). Setup was stopped, nothing was changed.</value></data>
+  <data name="GdpiServiceFailed" xml:space="preserve"><value>[FX-2007] The service could not be installed or did not start. Everything done was undone.</value></data>
+  <data name="GdpiServiceDisplayName" xml:space="preserve"><value>FoxDPI</value></data>
+  <data name="GdpiResultService" xml:space="preserve"><value>FoxDPI was installed as a service and is running. Setting: {0}</value></data>
+  <data name="GdpiUndoDescription" xml:space="preserve"><value>FoxDPI setup ({0})</value></data>
+  <data name="TrialNotNeeded" xml:space="preserve"><value>All the target sites already open right now. FoxDPI is not needed.</value></data>
+  <data name="TrialFound" xml:space="preserve"><value>Best setting: {0}. {1} of {2} sites opened.</value></data>
+  <data name="TrialNothingHelped" xml:space="preserve"><value>None of the settings tried opened the sites. A different method may be needed.</value></data>
+  <data name="TrialCouldNotStart" xml:space="preserve"><value>[FX-2009] FoxDPI could not start. Antivirus or Secure Boot may be blocking it. If Kaspersky is installed, you need to remove it.</value></data>
+  <data name="DnsOkManagedRedirect" xml:space="preserve"><value>DNS works. FoxDPI is redirecting DNS requests.</value></data>
+  <data name="DnsResetTitle" xml:space="preserve"><value>Set DNS to the Windows default</value></data>
+  <data name="DnsResetNothing" xml:space="preserve"><value>There is no manually entered DNS; DNS is already at the Windows default.</value></data>
+  <data name="DnsResetPreviewAdapter" xml:space="preserve"><value>{0}: the manually entered DNS ({1}) will be removed and set to automatic (from the modem).</value></data>
+  <data name="GdpiRemoveTitle" xml:space="preserve"><value>Remove FoxDPI</value></data>
+  <data name="GdpiRemovePreview" xml:space="preserve"><value>FoxDPI is stopped and deleted: the service, the running window, the driver registration and the files.</value></data>
+  <data name="GdpiRemoveNothing" xml:space="preserve"><value>FoxDPI is not installed.</value></data>
+  <data name="GdpiRemoveDone" xml:space="preserve"><value>FoxDPI was removed.</value></data>
+  <data name="GdpiRemovePartial" xml:space="preserve"><value>FoxDPI was removed. A few files may stay until a restart.</value></data>
+  <data name="GdpiRemoveUndoUnsupported" xml:space="preserve"><value>This cannot be undone. You can install it again from the FoxDPI section.</value></data>
+  <data name="FoxDpiAlreadyRunning" xml:space="preserve"><value>[FX-2006] FoxDPI is already running.</value></data>
+  <data name="FoxDpiStartFailed" xml:space="preserve"><value>[FX-2002] FoxDPI could not be started: {0}</value></data>
+  <data name="FoxDpiStarted" xml:space="preserve"><value>FoxDPI is active.</value></data>
+  <data name="FoxDpiNotRunning" xml:space="preserve"><value>[FX-2003] FoxDPI did not start. Antivirus software may be blocking it.</value></data>
+  <data name="ReportDnsStatic" xml:space="preserve"><value>DNS: {0} (entered manually)</value></data>
+  <data name="ReportDnsAutomatic" xml:space="preserve"><value>DNS: {0} (from the modem)</value></data>
+  <data name="CleanupProgress" xml:space="preserve"><value>{0} / {1} deleted</value></data>
+  <data name="FoxDpiNeedsFoxFix" xml:space="preserve"><value>[FX-2012] Before using FoxDPI for the first time you need to open FoxFix once. Open FoxFix, pick your setting, then you can start it any time with FoxDPI.exe.</value></data>
+  <data name="AutoStartTitle" xml:space="preserve"><value>Start FoxDPI when Windows starts</value></data>
+  <data name="AutoStartAlreadyOn" xml:space="preserve"><value>Starting with Windows is already on.</value></data>
+  <data name="AutoStartAlreadyOff" xml:space="preserve"><value>Starting with Windows is already off.</value></data>
+  <data name="AutoStartNoPath" xml:space="preserve"><value>[FX-3002] FoxFix&apos;s location was not found, so the task could not be created.</value></data>
+  <data name="AutoStartPreviewOn" xml:space="preserve"><value>FoxDPI will start by itself when you sign in to Windows. A scheduled task named &quot;{0}&quot; is added for this. It runs with administrator rights and does not ask UAC at every sign-in.</value></data>
+  <data name="AutoStartPreviewPath" xml:space="preserve"><value>FoxFix&apos;s current location is used: {0}. If you move the folder, you need to set this up again.</value></data>
+  <data name="AutoStartPreviewOff" xml:space="preserve"><value>FoxDPI will not start when Windows starts. The &quot;{0}&quot; scheduled task is deleted.</value></data>
+  <data name="AutoStartResultOn" xml:space="preserve"><value>FoxDPI will start when Windows starts.</value></data>
+  <data name="AutoStartResultOff" xml:space="preserve"><value>FoxDPI will no longer start when Windows starts.</value></data>
+  <data name="AutoStartFailed" xml:space="preserve"><value>[FX-3001] The scheduled task could not be set up: {0}</value></data>
+  <data name="AutoStartUndoOn" xml:space="preserve"><value>FoxDPI starting with Windows can be undone</value></data>
+  <data name="AutoStartUndoOff" xml:space="preserve"><value>FoxDPI not starting with Windows can be undone</value></data>
+  <data name="DnsCloudflareTitle" xml:space="preserve"><value>Set DNS to 1.1.1.1 and 1.0.0.1</value></data>
+  <data name="DnsCloudflareNothing" xml:space="preserve"><value>DNS is already 1.1.1.1 and 1.0.0.1.</value></data>
+  <data name="DnsCloudflarePreviewAdapter" xml:space="preserve"><value>{0}: 1.1.1.1 and 1.0.0.1 will be used instead of the DNS ({1}).</value></data>
+  <data name="DnsCloudflareAutomatic" xml:space="preserve"><value>automatic, from the modem</value></data>
+  <data name="DnsCloudflareResultDone" xml:space="preserve"><value>DNS of {0} connection(s) was set to 1.1.1.1 and 1.0.0.1.</value></data>
+  <data name="DnsCloudflareUndoDescription" xml:space="preserve"><value>The previous DNS setting of the {0} connection can be undone</value></data>
+  <data name="UpdateUpToDate" xml:space="preserve"><value>FoxFix is up to date.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>A new version was released: {0}</value></data>
+  <data name="UpdateFailed" xml:space="preserve"><value>The update check failed: {0}</value></data>
+  <data name="UpdateManualOnly" xml:space="preserve"><value>This copy cannot be updated here (it was not recognised as an installed or ZIP copy). You can download the new version from the release page.</value></data>
+  <data name="UpdateNoDigest" xml:space="preserve"><value>[FX-6004] There is no verifiable SHA-256 hash for this version&apos;s file; for safety no automatic update was done. You can download the new version from the release page.</value></data>
+  <data name="UpdateHashMismatch" xml:space="preserve"><value>[FX-6004] The SHA-256 hash of the downloaded file does not match the published one. The file was deleted and not run. Try again later or download it from the release page.</value></data>
+  <data name="UpdateDownloadFailed" xml:space="preserve"><value>[FX-6004] The update could not be downloaded or prepared: {0}</value></data>
+  <data name="UpdatePathUnsafe" xml:space="preserve"><value>[FX-6004] The path of FoxFix&apos;s folder has a special character that could break the update command (% ^ &quot; !). You can download the new version from the release page and install it yourself.</value></data>
+  <data name="UpdateRestarting" xml:space="preserve"><value>The update is ready. FoxFix will close, the new version will be installed and opened automatically.</value></data>
+  <data name="UpdateStartFailed" xml:space="preserve"><value>[FX-6004] The update could not be started. You can download the new version from the release page and install it yourself.</value></data>
+  <data name="TweaksTitle" xml:space="preserve"><value>Windows settings</value></data>
+  <data name="TweaksNothing" xml:space="preserve"><value>The selected settings are already applied, or no setting was selected.</value></data>
+  <data name="TweaksRestartNote" xml:space="preserve"><value>Some changes show up after you sign out and in, or restart the computer.</value></data>
+  <data name="TweaksUndoNote" xml:space="preserve"><value>Changes can be restored with &quot;Undo&quot;.</value></data>
+  <data name="TweaksUndoDescription" xml:space="preserve"><value>Windows setting can be undone: {0}</value></data>
+  <data name="TweaksResultDone" xml:space="preserve"><value>{0} setting(s) applied.</value></data>
+  <data name="TweaksResultPartial" xml:space="preserve"><value>{0} setting(s) applied, {1} setting(s) had errors.</value></data>
+  <data name="TweaksFailed" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot; could not be applied, the change made was undone: {1}</value></data>
+  <data name="TweaksFailedNotRestored" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot; could not be applied and the old values could not be fully written back: {1} Try Undo on the &quot;Report and history&quot; page.</value></data>
+  <data name="TweaksUnsupportedValue" xml:space="preserve"><value>[FX-4009] &quot;{0}&quot;: the current registry value is of a type FoxFix cannot write back, so it was left alone.</value></data>
+  <data name="TweaksUndoFailed" xml:space="preserve"><value>[FX-4009] Could not undo: {0}</value></data>
+  <data name="TweaksPreviewReset" xml:space="preserve"><value>Will return to the Windows default: {0}</value></data>
+  <data name="BackupDefaultName" xml:space="preserve"><value>My settings {0:MM/dd/yyyy HH:mm}</value></data>
+  <data name="BackupSaved" xml:space="preserve"><value>Your current Windows settings were saved: {0}</value></data>
+  <data name="BackupSaveFailed" xml:space="preserve"><value>[FX-4010] The settings could not be saved: {0}</value></data>
+  <data name="BackupUnsupportedValue" xml:space="preserve"><value>Some registry values are of a type FoxFix cannot write back.</value></data>
+  <data name="BackupNotFound" xml:space="preserve"><value>[FX-4012] The saved settings were not found or could not be read. The file may have been deleted or damaged.</value></data>
+  <data name="BackupDeleteFailed" xml:space="preserve"><value>[FX-4010] The record could not be deleted: {0}</value></data>
+  <data name="BackupListProblem" xml:space="preserve"><value>[FX-4012] {0} saved file(s) could not be read: {1}</value></data>
+  <data name="RestoreTitle" xml:space="preserve"><value>Restore saved Windows settings</value></data>
+  <data name="RestoreNothing" xml:space="preserve"><value>The current settings are already the same as this record; there is nothing to change.</value></data>
+  <data name="RestorePreviewMain" xml:space="preserve"><value>The Windows settings in the record &quot;{0}&quot; ({1:MM/dd/yyyy HH:mm}) will be restored.</value></data>
+  <data name="RestorePreviewCount" xml:space="preserve"><value>{0} recorded value(s) differ from the current state and will be set back to what is in the record.</value></data>
+  <data name="RestoreResultDone" xml:space="preserve"><value>The settings in the record &quot;{0}&quot; were restored.</value></data>
+  <data name="RestoreFailed" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; could not be restored, the change made was undone: {1}</value></data>
+  <data name="RestoreFailedNotRestored" xml:space="preserve"><value>[FX-4011] &quot;{0}&quot; could not be restored and the previous values could not be fully written back: {1} Try Undo on the &quot;Report and history&quot; page.</value></data>
+  <data name="RestoreUndoDescription" xml:space="preserve"><value>Restoring the saved settings can be undone: {0}</value></data>
+  <data name="UiYoneticiIzniGerekir" xml:space="preserve"><value>  needs administrator rights</value></data>
+  <data name="UiKontrolIlerlemesi" xml:space="preserve"><value>Check progress</value></data>
+  <data name="UiBeniDuzelt" xml:space="preserve"><value>Fix me</value></data>
+  <data name="UiOnceNeyinDegiseceginiSecersinizVeO" xml:space="preserve"><value>First you choose what changes and see it in a preview</value></data>
+  <data name="UiYenidenKontrolEt" xml:space="preserve"><value>Check again</value></data>
+  <data name="UiAyrintilariGoster" xml:space="preserve"><value>Show details</value></data>
+  <data name="UiBaglantiKontrolununAyrintilariniGo" xml:space="preserve"><value>Show the details of the connection check</value></data>
+  <data name="UiFoxdpiLogosu" xml:space="preserve"><value>FoxDPI logo</value></data>
+  <data name="UiFoxdpiYiBaslatYaDaPenceresini" xml:space="preserve"><value>Start FoxDPI or show its window</value></data>
+  <data name="UiDpiAyarlari" xml:space="preserve"><value>DPI settings</value></data>
+  <data name="UiBaglantiHizi" xml:space="preserve"><value>Connection speed</value></data>
+  <data name="UiHizTestiniBaslat" xml:space="preserve"><value>Start speed test</value></data>
+  <data name="UiDurdur" xml:space="preserve"><value>Stop</value></data>
+  <data name="UiHizTestiniDurdur" xml:space="preserve"><value>Stop the speed test</value></data>
+  <data name="UiIndirme" xml:space="preserve"><value>Download</value></data>
+  <data name="UiYukleme" xml:space="preserve"><value>Upload</value></data>
+  <data name="UiPing" xml:space="preserve"><value>Ping</value></data>
+  <data name="UiTitresim" xml:space="preserve"><value>Jitter</value></data>
+  <data name="UiHizTestiSuruyor" xml:space="preserve"><value>Speed test running</value></data>
+  <data name="UiSonucuPaylas" xml:space="preserve"><value>Share result</value></data>
+  <data name="UiHizTestiSonucunuPaylas" xml:space="preserve"><value>Share the speed test result</value></data>
+  <data name="UiOlcumCloudflareSunuculariylaYapili" xml:space="preserve"><value>The test uses Cloudflare servers and can use hundreds of MB of data depending on your speed. Only your IP address is sent to the other side.</value></data>
+  <data name="UiAcilistaBaslayanProgramlar" xml:space="preserve"><value>Programs that start at boot</value></data>
+  <data name="UiIsaretiniKaldirdiginizProgramSilin" xml:space="preserve"><value>A program you untick is not deleted; it just does not start with Windows. Do not turn off an entry you do not recognise.</value></data>
+  <data name="UiWindowsAcilisindaBaslayanBirProgra" xml:space="preserve"><value>No program that starts with Windows was found.</value></data>
+  <data name="UiDegisiklikleriUygula" xml:space="preserve"><value>Apply changes</value></data>
+  <data name="UiAcilisDegisiklikleriniUygula" xml:space="preserve"><value>Apply start-up changes</value></data>
+  <data name="UiListeyiYenile" xml:space="preserve"><value>Refresh list</value></data>
+  <data name="UiDiskTemizligi" xml:space="preserve"><value>Disk cleanup</value></data>
+  <data name="UiSectiginizGereksizDosyalarSilinirB" xml:space="preserve"><value>The unneeded files you select are deleted. This cannot be undone: the files do not go to the Recycle Bin.</value></data>
+  <data name="UiSecilenleriTemizle" xml:space="preserve"><value>Clean selected</value></data>
+  <data name="UiBoyutlariYenidenHesapla" xml:space="preserve"><value>Recalculate sizes</value></data>
+  <data name="UiSecilenlerinToplami" xml:space="preserve"><value>Selected total</value></data>
+  <data name="UiWindowsAyarlari" xml:space="preserve"><value>Windows settings</value></data>
+  <data name="UiGizlilikOnerilerYapayZekaGorevCubu" xml:space="preserve"><value>Privacy, suggestions, AI, taskbar, Explorer and performance. What will change is listed before applying; every change can be reverted with Undo.</value></data>
+  <data name="UiKaynakWin11debloat" xml:space="preserve"><value>Source: Win11Debloat</value></data>
+  <data name="UiAyarListesininAlindigiAcikKaynakPr" xml:space="preserve"><value>The open source project the setting list comes from (MIT)</value></data>
+  <data name="UiWin11debloatGithubSayfasi" xml:space="preserve"><value>Win11Debloat GitHub page</value></data>
+  <data name="UiMevcutWindowsAyarlarinizHenuzKayde" xml:space="preserve"><value>Your current Windows settings have not been saved yet</value></data>
+  <data name="UiBirSorunCikarsaOncekiHalineDonebil" xml:space="preserve"><value>Saving before you change anything is recommended, so you can go back if something goes wrong. Saving does not change any setting.</value></data>
+  <data name="UiMevcutAyarlariKaydet" xml:space="preserve"><value>Save current settings</value></data>
+  <data name="UiHazirAyarlar" xml:space="preserve"><value>Presets</value></data>
+  <data name="UiSecmekHicbirSeyiDegistirmezUygulam" xml:space="preserve"><value>Selecting changes nothing; to apply, press &quot;Apply selected&quot; above the list.</value></data>
+  <data name="UiOnerilenAyarlariSec" xml:space="preserve"><value>Select recommended settings</value></data>
+  <data name="UiCoguKullaniciIcinGuvenliVeYararli" xml:space="preserve"><value>The ones that are safe and useful for most people</value></data>
+  <data name="UiWindowsVarsayilaninaDondur" xml:space="preserve"><value>Restore Windows defaults</value></data>
+  <data name="UiFoxfixInDegistirdigiAyarlarWindows" xml:space="preserve"><value>Settings changed by FoxFix go back to Windows&apos; own values</value></data>
+  <data name="UiKayitliAyarlarim" xml:space="preserve"><value>My saved settings</value></data>
+  <data name="UiHenuzKayitYokKaydettiginizAyarlarB" xml:space="preserve"><value>Nothing saved yet. Settings you save are listed here and can be restored with one click.</value></data>
+  <data name="UiGeriYukle" xml:space="preserve"><value>Restore</value></data>
+  <data name="UiBuKayittakiAyarlariGeriYukle" xml:space="preserve"><value>Restore the settings in this record</value></data>
+  <data name="UiSil" xml:space="preserve"><value>Delete</value></data>
+  <data name="UiBuKaydiSil" xml:space="preserve"><value>Delete this record</value></data>
+  <data name="UiAyarAraOrneginReklamCopilotAnimasy" xml:space="preserve"><value>Search settings (for example: ads, Copilot, animation)</value></data>
+  <data name="UiAyarAra" xml:space="preserve"><value>Search settings</value></data>
+  <data name="UiAramayiTemizle" xml:space="preserve"><value>Clear search</value></data>
+  <data name="UiSecilenleriUygula" xml:space="preserve"><value>Apply selected</value></data>
+  <data name="UiSecilenAyarlariUygula" xml:space="preserve"><value>Apply the selected settings</value></data>
+  <data name="UiTumunuAc" xml:space="preserve"><value>Expand all</value></data>
+  <data name="UiTumListeleriAc" xml:space="preserve"><value>Expand all lists</value></data>
+  <data name="UiTumunuKapat" xml:space="preserve"><value>Collapse all</value></data>
+  <data name="UiTumListeleriKapat" xml:space="preserve"><value>Collapse all lists</value></data>
+  <data name="UiYuzdelerNeKadarFarkYaratacaginaDai" xml:space="preserve"><value>The percentages are a rough estimate of how much difference a setting makes, not a measurement. Red means high, yellow medium, green low impact.</value></data>
+  <data name="UiAramanizaUyanAyarYokBaskaBir" xml:space="preserve"><value>No setting matches your search. Try another word.</value></data>
+  <data name="UiBuListedekiOnerilenleriSec" xml:space="preserve"><value>Select recommended in this list</value></data>
+  <data name="UiOnerilen" xml:space="preserve"><value>Recommended</value></data>
+  <data name="UiUygulandi" xml:space="preserve"><value>Applied</value></data>
+  <data name="UiGeriAc" xml:space="preserve"><value>Turn back on</value></data>
+  <data name="UiBuAyariWindowsUnKendiDegerine" xml:space="preserve"><value>Returns this setting to Windows&apos; own value; a preview is shown first</value></data>
+  <data name="UiBuAyariGeriAc" xml:space="preserve"><value>Turn this setting back</value></data>
+  <data name="UiSuAn" xml:space="preserve"><value>current</value></data>
+  <data name="UiErisimEngeliOlanSitelereBaglanmani" xml:space="preserve"><value>Lets you reach sites that are blocked. Based on the open source GoodbyeDPI; it finds the setting that works on your network by trying them.</value></data>
+  <data name="UiDenemekVeKurmakIcinYoneticiIzni" xml:space="preserve"><value>Trying and installing need administrator rights. FoxFix reopens as administrator and comes back to this page.</value></data>
+  <data name="UiYoneticiOlarakYenidenAc" xml:space="preserve"><value>Reopen as administrator</value></data>
+  <data name="UiOyunlarVeHileOnlemeSistemleri" xml:space="preserve"><value>Games and anti-cheat systems</value></data>
+  <data name="UiEasyanticheatVanguardFaceitGibiSis" xml:space="preserve"><value>Systems like EasyAntiCheat, Vanguard and FACEIT can block the WinDivert driver FoxDPI uses. Close the FoxDPI window before starting the game; the driver unloads by itself, no restart needed.</value></data>
+  <data name="UiEnUygunAyariBul" xml:space="preserve"><value>Find the best setting</value></data>
+  <data name="UiHerAyarAsagidakiSitelerdeDenenirBi" xml:space="preserve"><value>Each setting is tried on the sites below. It can take a few minutes; the connection may drop briefly meanwhile.</value></data>
+  <data name="UiDenenecekSiteler" xml:space="preserve"><value>Sites to try</value></data>
+  <data name="UiSiteleriVirgulleAyirin" xml:space="preserve"><value>Separate sites with commas.</value></data>
+  <data name="UiDenemeyiDurdur" xml:space="preserve"><value>Stop trying</value></data>
+  <data name="UiDenemeIlerlemesi" xml:space="preserve"><value>Trial progress</value></data>
+  <data name="UiFoxdpiHizmetOlarakKuruluOlduguIcin" xml:space="preserve"><value>The setting cannot be changed because FoxDPI is installed as a service. Remove the service first to change it.</value></data>
+  <data name="UiOnerilen2" xml:space="preserve"><value>recommended</value></data>
+  <data name="UiCalistirma" xml:space="preserve"><value>Running</value></data>
+  <data name="UiElleBaslatabilirWindowsAcilincaBas" xml:space="preserve"><value>You can start it by hand, start it with Windows, or install it as a service. The service runs in the background every time Windows starts.</value></data>
+  <data name="UiFoxdpiYiBaslat" xml:space="preserve"><value>Start FoxDPI</value></data>
+  <data name="UiFoxdpiDurdur" xml:space="preserve"><value>Stop FoxDPI</value></data>
+  <data name="UiHizmetOlarakKur" xml:space="preserve"><value>Install as service</value></data>
+  <data name="UiHizmetiKaldir" xml:space="preserve"><value>Remove service</value></data>
+  <data name="UiFoxdpiYiWindowsAcilincaBaslat" xml:space="preserve"><value>Start FoxDPI when Windows starts</value></data>
+  <data name="UiHizmetKurmadanZamanlanmisGorevOlar" xml:space="preserve"><value>Runs as a scheduled task, without installing a service. Administrator permission is not asked at every start.</value></data>
+  <data name="UiWindowsDnsAyari" xml:space="preserve"><value>Windows DNS setting</value></data>
+  <data name="UiFoxdpiAcikkenHalaBaglanamiyorsaniz" xml:space="preserve"><value>If you still cannot connect while FoxDPI is on, switch DNS to Cloudflare (1.1.1.1 and 1.0.0.1). A preview is shown first; the old setting is saved and comes back with Undo.</value></data>
+  <data name="UiDnsI1111" xml:space="preserve"><value>Set DNS to 1.1.1.1</value></data>
+  <data name="UiDnsI11112" xml:space="preserve"><value>Set DNS to 1.1.1.1 and 1.0.0.1</value></data>
+  <data name="UiDpiSifirlama" xml:space="preserve"><value>DPI reset</value></data>
+  <data name="UiAgAyarlariniTemizleyipWindowsVarsa" xml:space="preserve"><value>Cleans up network settings and returns them to the Windows defaults.</value></data>
+  <data name="UiEskiGoodbyedpiWindivertVeZapretKal" xml:space="preserve"><value>Leftovers of old GoodbyeDPI, WinDivert and Zapret, FoxDPI and manually entered DNS settings are removed.</value></data>
+  <data name="UiYapilacaklarOnceListelenirOnaylama" xml:space="preserve"><value>What will be done is listed first; nothing changes without your approval.</value></data>
+  <data name="UiDnsAyarlariVeKaldirilanHizmetlerSo" xml:space="preserve"><value>DNS settings and removed services can be brought back later with Undo on the Report and history page.</value></data>
+  <data name="UiSiteleriVirgulleAyirinKarsilastirm" xml:space="preserve"><value>Separate sites with commas. An unblocked site is always added for comparison. The connection is tried as secure (HTTPS).</value></data>
+  <data name="UiTestiBaslat" xml:space="preserve"><value>Start test</value></data>
+  <data name="UiTestiDurdur" xml:space="preserve"><value>Stop the test</value></data>
+  <data name="UiKarsilastirmaSitesi" xml:space="preserve"><value>comparison site</value></data>
+  <data name="UiYapilanDegisiklikler" xml:space="preserve"><value>Changes made</value></data>
+  <data name="UiFoxfixInYaptigiHerDegisiklikBurada" xml:space="preserve"><value>Every change FoxFix makes stays here and can be undone. The newest is at the top.</value></data>
+  <data name="UiFoxfixHenuzBirDegisiklikYapmadiBen" xml:space="preserve"><value>FoxFix has not made any changes yet. They show up here when you use Fix me or apply a setting.</value></data>
+  <data name="UiGeriAl" xml:space="preserve"><value>Undo</value></data>
+  <data name="UiBuDegisikligiGeriAl" xml:space="preserve"><value>Undo this change</value></data>
+  <data name="UiDestekRaporu" xml:space="preserve"><value>Support report</value></data>
+  <data name="UiYardimIsterkenPaylasabileceginizBi" xml:space="preserve"><value>A system report you can share when asking for help. User name, computer name, MAC and IP addresses are hidden by default.</value></data>
+  <data name="UiRaporuKopyala" xml:space="preserve"><value>Copy report</value></data>
+  <data name="UiRaporuKaydet" xml:space="preserve"><value>Save report…</value></data>
+  <data name="UiRaporuKaydet2" xml:space="preserve"><value>Save report</value></data>
+  <data name="UiKisiselBilgileriRaporaEkle" xml:space="preserve"><value>Include personal information in the report</value></data>
+  <data name="UiKullaniciAdiBilgisayarAdiMacVe" xml:space="preserve"><value>User name, computer name, MAC and IP addresses are written into the report as they are.</value></data>
+  <data name="UiGuncellemeler" xml:space="preserve"><value>Updates</value></data>
+  <data name="UiGuncellemeleriDenetle" xml:space="preserve"><value>Check for updates</value></data>
+  <data name="UiSimdiGuncelle" xml:space="preserve"><value>Update now</value></data>
+  <data name="UiSurumSayfasiniAc" xml:space="preserve"><value>Open release page</value></data>
+  <data name="UiGuncellemeleriHerAcilistaOtomatikD" xml:space="preserve"><value>Check for updates automatically at every start</value></data>
+  <data name="UiHerAcilistaGuncellemeleriDenetle" xml:space="preserve"><value>Check for updates at every start</value></data>
+  <data name="UiFoxfixAcilincaGithubAEnSon" xml:space="preserve"><value>When FoxFix opens it asks GitHub for the latest version and tells you if there is a new one. Nothing is downloaded until you press &quot;Update now&quot;, and no information about your computer is sent.</value></data>
+  <data name="UiGorunum" xml:space="preserve"><value>Appearance</value></data>
+  <data name="UiTema" xml:space="preserve"><value>Theme</value></data>
+  <data name="UiWindowsAUy" xml:space="preserve"><value>Follow Windows</value></data>
+  <data name="UiTemaWindowsAUy" xml:space="preserve"><value>Theme: follow Windows</value></data>
+  <data name="UiAydinlik" xml:space="preserve"><value>Light</value></data>
+  <data name="UiTemaAydinlik" xml:space="preserve"><value>Theme: light</value></data>
+  <data name="UiKaranlik" xml:space="preserve"><value>Dark</value></data>
+  <data name="UiTemaKaranlik" xml:space="preserve"><value>Theme: dark</value></data>
+  <data name="UiVurguRengi" xml:space="preserve"><value>Accent colour</value></data>
+  <data name="UiDugmelerSeciliSayfaVeSecimlerBu" xml:space="preserve"><value>Buttons, the current page and selections use this colour. A colour that is hard to read is made lighter or darker until it is readable.</value></data>
+  <data name="UiVurguRengiRrggbb" xml:space="preserve"><value>Accent colour (#RRGGBB)</value></data>
+  <data name="UiRrggbbBicimindeBirRenk" xml:space="preserve"><value>A colour in #RRGGBB form</value></data>
+  <data name="UiKullanilanRenk" xml:space="preserve"><value>Colour in use</value></data>
+  <data name="UiVarsayilanRenk" xml:space="preserve"><value>Default colour</value></data>
+  <data name="UiVarsayilanRengeDon" xml:space="preserve"><value>Back to the default colour</value></data>
+  <data name="UiLogoyuVePencereSimgesiniDeBu" xml:space="preserve"><value>Paint the logo and window icon in this colour too</value></data>
+  <data name="UiUygulamadakiLogoIleCalisirkenPence" xml:space="preserve"><value>The logo in the app and the window and taskbar icon while it runs change. Shortcut and program file icons stay the same in Windows.</value></data>
+  <data name="UiFoxfixIKaldir" xml:space="preserve"><value>Uninstall FoxFix</value></data>
+  <data name="UiFoxdpiHizmetZamanlanmisGorevAyarla" xml:space="preserve"><value>FoxDPI, its service, the scheduled task, settings and the program are deleted. This cannot be undone; what will be deleted is shown first and your approval is asked.</value></data>
+  <data name="UiFoxdpiDurumuDnsVeDpiSayfasini" xml:space="preserve"><value>FoxDPI status, open the DNS and DPI page</value></data>
+  <data name="UiDnsVeDpiSayfasiniAc" xml:space="preserve"><value>Open the DNS and DPI page</value></data>
+  <data name="UiSurumYapimciVeKullanilanAcikKaynak" xml:space="preserve"><value>Version, author and the open source projects used</value></data>
+  <data name="UiBilgi" xml:space="preserve"><value>About</value></data>
+  <data name="UiFoxfixInGithubBaglantisiniKopyala" xml:space="preserve"><value>Copy FoxFix&apos;s GitHub link</value></data>
+  <data name="UiBaglantiyiPaylas" xml:space="preserve"><value>Share link</value></data>
+  <data name="UiPaylas" xml:space="preserve"><value>Share</value></data>
+  <data name="UiFoxfixLogosu" xml:space="preserve"><value>FoxFix logo</value></data>
+  <data name="UiGenelBakis" xml:space="preserve"><value>Overview</value></data>
+  <data name="UiBaglantiKontrolu" xml:space="preserve"><value>Connection check</value></data>
+  <data name="UiHizlandirmaVeAyarlar" xml:space="preserve"><value>Speed-up and settings</value></data>
+  <data name="UiDnsVeDpi" xml:space="preserve"><value>DNS and DPI</value></data>
+  <data name="UiErisimTesti" xml:space="preserve"><value>Access test</value></data>
+  <data name="UiRaporVeGecmis" xml:space="preserve"><value>Report and history</value></data>
+  <data name="UiAyarlar" xml:space="preserve"><value>Settings</value></data>
+  <data name="UiKopyalandi" xml:space="preserve"><value>Copied</value></data>
+  <data name="UiMenuyuDaralt" xml:space="preserve"><value>Collapse menu</value></data>
+  <data name="UiMenuyuDaraltYaDaAc" xml:space="preserve"><value>Collapse or open the menu</value></data>
+  <data name="UiSuDegisikliklerYapilacak" xml:space="preserve"><value>These changes will be made</value></data>
+  <data name="UiYapilanIslemSuruyorLutfenBekleyini" xml:space="preserve"><value>The operation is in progress, please wait.</value></data>
+  <data name="UiIslemIlerlemesi" xml:space="preserve"><value>Progress</value></data>
+  <data name="UiYenidenBaslatmaGerekiyor" xml:space="preserve"><value>Restart needed</value></data>
+  <data name="UiSurucununBellektenInmesiIcinBilgis" xml:space="preserve"><value>Restart the computer so the driver unloads from memory. You can start it from here if you like.</value></data>
+  <data name="UiSimdiYenidenBaslat" xml:space="preserve"><value>Restart now</value></data>
+  <data name="UiYenidenBaslatmaPlanlandi" xml:space="preserve"><value>Restart scheduled</value></data>
+  <data name="UiYenidenBaslatmayiIptalEt" xml:space="preserve"><value>Cancel restart</value></data>
+  <data name="UiYukaridakiDegisiklikleriOkudumOnay" xml:space="preserve"><value>I have read the changes above and I approve them.</value></data>
+  <data name="UiDegisiklikleriOnayliyorum" xml:space="preserve"><value>I approve the changes</value></data>
+  <data name="UiKendiligindenYenidenBaslatTavsiyeE" xml:space="preserve"><value>Restart automatically (recommended)</value></data>
+  <data name="UiIslemlerdenSonraYenidenBaslat" xml:space="preserve"><value>Restart after the operations</value></data>
+  <data name="UiTavsiyeEdilen" xml:space="preserve"><value> (Recommended.)</value></data>
+  <data name="UiKapat" xml:space="preserve"><value>Close</value></data>
+  <data name="UiTamam" xml:space="preserve"><value>OK</value></data>
+  <data name="UiAyarlariniziKaydetmenizOnerilir" xml:space="preserve"><value>Saving your settings is recommended</value></data>
+  <data name="UiBuSayfadakiIslemlerWindowsAyarlari" xml:space="preserve"><value>The actions on this page change Windows settings. So that you can go back to the previous configuration if anything goes wrong, saving your current settings before you change anything is recommended. You can restore saved settings any time from &quot;My saved settings&quot;.</value></data>
+  <data name="UiKaydetmeIslemiHicbirAyariDegistirm" xml:space="preserve"><value>Saving does not change any setting. The record is kept only on this computer, in FoxFix&apos;s data folder.</value></data>
+  <data name="UiSimdiKaydet" xml:space="preserve"><value>Save now</value></data>
+  <data name="UiMevcutAyarlariSimdiKaydet" xml:space="preserve"><value>Save the current settings now</value></data>
+  <data name="UiDahaSonra" xml:space="preserve"><value>Later</value></data>
+  <data name="UiSimdiGuncelleYeniSurumuIndirirVe" xml:space="preserve"><value>&quot;Update now&quot; downloads the new version and checks the SHA-256 hash of its file. Then FoxFix closes, the new version is installed and opens by itself. FoxDPI stops if it is running; your data and settings are kept.</value></data>
+  <data name="UiSurumSayfasiTarayicidaAcilirYeniSu" xml:space="preserve"><value>The release page opens in your browser. You can download the new version there; closing FoxFix and FoxDPI before updating is recommended.</value></data>
+  <data name="UiGuncellemeIlerlemesi" xml:space="preserve"><value>Update progress</value></data>
+  <data name="UiSurumSayfasi" xml:space="preserve"><value>Release page</value></data>
+  <data name="UiSonra" xml:space="preserve"><value>Later</value></data>
+  <data name="UiFoxdpiModuluAcikKaynakliGoodbyedpi" xml:space="preserve"><value>The FoxDPI module is based on the open source GoodbyeDPI project. Its core files come built into FoxFix and are verified at every start for safety. The licence files are in the FoxDPI folder. The Windows settings list is taken from the open source Win11Debloat project (MIT).</value></data>
+  <data name="UiGithubComValdikssGoodbyedpi" xml:space="preserve"><value>github.com/ValdikSS/GoodbyeDPI</value></data>
+  <data name="UiGoodbyedpiGithubSayfasi" xml:space="preserve"><value>GoodbyeDPI GitHub page</value></data>
+  <data name="UiTurkiyeSurumu" xml:space="preserve"><value>Turkey edition</value></data>
+  <data name="UiGoodbyedpiTurkiyeSurumu" xml:space="preserve"><value>GoodbyeDPI Turkey edition</value></data>
+  <data name="UiGoodbyedpiTurkiyeSurumuGithubSayfa" xml:space="preserve"><value>GoodbyeDPI Turkey edition GitHub page</value></data>
+  <data name="UiWindowsAyarlarininAlindigiProje" xml:space="preserve"><value>The project the Windows settings come from</value></data>
+  <data name="UiHataKodlari" xml:space="preserve"><value>Error codes</value></data>
+  <data name="UiMesajlardakiFxXxxxKodlarininAnlami" xml:space="preserve"><value>What the [FX-xxxx] codes in messages mean</value></data>
+  <data name="UiHataKodlariTablosu" xml:space="preserve"><value>Error code table</value></data>
+  <data name="UiGeriBildirimDiscordProfilimeUlas" xml:space="preserve"><value>Feedback: reach my Discord profile</value></data>
+  <data name="UiGeriBildirimGonder" xml:space="preserve"><value>Send feedback</value></data>
+  <data name="UiGeriBildirim" xml:space="preserve"><value>Feedback</value></data>
+  <data name="UiNeleriDuzeltelim" xml:space="preserve"><value>What should we fix?</value></data>
+  <data name="UiIstedikleriniIsaretleOnizlemedeNeD" xml:space="preserve"><value>Tick what you want. The preview shows what will change; nothing is done until you approve.</value></data>
+  <data name="UiInternet" xml:space="preserve"><value>Internet</value></data>
+  <data name="UiEskiDpiAraclariniTemizle" xml:space="preserve"><value>Clean up old DPI tools</value></data>
+  <data name="UiGoodbyedpiWindivertVeZapretKalinti" xml:space="preserve"><value>GoodbyeDPI, WinDivert and Zapret leftovers. A GoodbyeDPI you use yourself is deleted too; you will see it in the preview.</value></data>
+  <data name="UiDnsAyariniOnar" xml:space="preserve"><value>Repair the DNS setting</value></data>
+  <data name="UiCalismayanDnsIOtomatigeModemdenAli" xml:space="preserve"><value>Sets a DNS that does not work to automatic (from the modem). The old setting is saved.</value></data>
+  <data name="UiBilgisayar" xml:space="preserve"><value>Computer</value></data>
+  <data name="UiAcilisProgramiDegisiklikleri" xml:space="preserve"><value>Start-up program changes</value></data>
+  <data name="UiOnizlemeyiGoster" xml:space="preserve"><value>Show preview</value></data>
+  <data name="UiVazgec" xml:space="preserve"><value>Cancel</value></data>
+  <data name="UiFoxdpiAktif" xml:space="preserve"><value>FoxDPI active</value></data>
+  <data name="UiAyar" xml:space="preserve"><value>Setting:</value></data>
+  <data name="UiFoxfixIAc" xml:space="preserve"><value>Open FoxFix</value></data>
+  <data name="UiDpiAyarlari2" xml:space="preserve"><value>DPI settings</value></data>
+  <data name="UiDpiOffDirect" xml:space="preserve"><value>Off, blocked sites are reached directly</value></data>
+  <data name="UiDpiOnBypassing" xml:space="preserve"><value>On, getting past access blocks</value></data>
+  <data name="UiFoxDpiOff" xml:space="preserve"><value>FoxDPI off</value></data>
+  <data name="UiFoxDpiOn" xml:space="preserve"><value>FoxDPI on</value></data>
+  <data name="AccessNoteDpiOn" xml:space="preserve"><value>FoxDPI is on right now. A site that does not open cannot be reached even with FoxDPI.</value></data>
+  <data name="AccessNoteDpiOff" xml:space="preserve"><value>FoxDPI is off right now. For a clear comparison, run the test again with FoxDPI on.</value></data>
+  <data name="AccessNeedHost" xml:space="preserve"><value>Type a site name to try. Example: discord.com</value></data>
+  <data name="AccessNoNormal" xml:space="preserve"><value>None of the normal sites opened. The problem may be your internet connection, not the sites. Try the connection check.</value></data>
+  <data name="AccessNormalOpen" xml:space="preserve"><value>Normal sites open.</value></data>
+  <data name="AccessOneOpens" xml:space="preserve"><value>The site opens.</value></data>
+  <data name="AccessAllOpen" xml:space="preserve"><value>All {0} sites open.</value></data>
+  <data name="AccessSomeOpen" xml:space="preserve"><value>{1} of {0} sites open.</value></data>
+  <data name="AccessStopped" xml:space="preserve"><value>The test was stopped.</value></data>
+  <data name="UiTesting" xml:space="preserve"><value>Trying…</value></data>
+  <data name="AppCrashed" xml:space="preserve"><value>FoxFix hit an unexpected error and will close.
+
+{0}
+
+Details are in this file: {1}</value></data>
+  <data name="DpiNotStartedTitle" xml:space="preserve"><value>FoxDPI did not start</value></data>
+  <data name="JournalUnreadable" xml:space="preserve"><value>The undo records could not be read: {0}</value></data>
+  <data name="DpiStarting" xml:space="preserve"><value>Starting FoxDPI…</value></data>
+  <data name="LinkFailedTitle" xml:space="preserve"><value>The link could not be opened</value></data>
+  <data name="LinkCopyFailedTitle" xml:space="preserve"><value>The link could not be copied</value></data>
+  <data name="AdminRequired" xml:space="preserve"><value>[FX-1001] This app needs administrator rights. Right-click it and choose &apos;Run as administrator&apos;. (Error code: 5)</value></data>
+  <data name="ProgressFewSecondsMore" xml:space="preserve"><value>{0}% · a few more seconds</value></data>
+  <data name="ProgressRemaining" xml:space="preserve"><value>{0}% · about {1} left</value></data>
+  <data name="ProgressPercent" xml:space="preserve"><value>{0}%</value></data>
+  <data name="ProgressAbout" xml:space="preserve"><value> · about {0} left</value></data>
+  <data name="DurationFewSeconds" xml:space="preserve"><value>a few seconds</value></data>
+  <data name="DurationSeconds" xml:space="preserve"><value>{0} seconds</value></data>
+  <data name="DurationMinutes" xml:space="preserve"><value>{0} minutes</value></data>
+  <data name="DurationMinutesSeconds" xml:space="preserve"><value>{0} minutes {1} seconds</value></data>
+  <data name="DpiStoppedUnexpectedly" xml:space="preserve"><value>FoxDPI stopped unexpectedly. You can start it again.</value></data>
+  <data name="TrayShow" xml:space="preserve"><value>Show</value></data>
+  <data name="TrayOpenFoxFix" xml:space="preserve"><value>Open FoxFix</value></data>
+  <data name="TrayDpiSettings" xml:space="preserve"><value>DPI settings</value></data>
+  <data name="TrayExit" xml:space="preserve"><value>Exit</value></data>
+  <data name="TrayRunningInBackground" xml:space="preserve"><value>FoxDPI is running in the background.</value></data>
+  <data name="DpiStoppedTitle" xml:space="preserve"><value>FoxDPI stopped</value></data>
+  <data name="TrialQueued" xml:space="preserve"><value>Waiting</value></data>
+  <data name="TrialAllOpened" xml:space="preserve"><value>All opened ({0}/{1}){2}</value></data>
+  <data name="TrialSomeOpened" xml:space="preserve"><value>Some opened ({0}/{1}){2}</value></data>
+  <data name="TrialNoneOpened" xml:space="preserve"><value>None opened</value></data>
+  <data name="TrialNotStarted" xml:space="preserve"><value>Did not start</value></data>
+  <data name="DpiShowWindow" xml:space="preserve"><value>Show window</value></data>
+  <data name="DpiOn" xml:space="preserve"><value>On</value></data>
+  <data name="DpiStart" xml:space="preserve"><value>Start FoxDPI</value></data>
+  <data name="DpiStatusUnreadable" xml:space="preserve"><value>The status could not be read: {0}</value></data>
+  <data name="DpiStatusForeign" xml:space="preserve"><value>Another GoodbyeDPI or Zapret is running. FoxDPI cannot run at the same time.</value></data>
+  <data name="DpiStatusService" xml:space="preserve"><value>Running as a service. Setting: {0}</value></data>
+  <data name="DpiStatusManual" xml:space="preserve"><value>Running. Setting: {0}</value></data>
+  <data name="DpiStatusInstalledStopped" xml:space="preserve"><value>The service is installed but stopped. Setting: {0}</value></data>
+  <data name="DpiStatusOff" xml:space="preserve"><value>Not running.</value></data>
+  <data name="UnknownValue" xml:space="preserve"><value>unknown</value></data>
+  <data name="AdminPermissionTitle" xml:space="preserve"><value>Administrator permission</value></data>
+  <data name="AdminPermissionDenied" xml:space="preserve"><value>Administrator permission was not granted. Nothing was changed.</value></data>
+  <data name="Starting" xml:space="preserve"><value>Starting…</value></data>
+  <data name="TrialStopped" xml:space="preserve"><value>The trial was stopped.</value></data>
+  <data name="TrialFileError" xml:space="preserve"><value>The trial stopped with a file error: {0} Restart the computer and try again, or use DPI Reset.</value></data>
+  <data name="DpiStopFailedTitle" xml:space="preserve"><value>FoxDPI could not be stopped</value></data>
+  <data name="VersionText" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="PageConnection" xml:space="preserve"><value>Connection check</value></data>
+  <data name="PageTweaks" xml:space="preserve"><value>Speed-up and settings</value></data>
+  <data name="PageDnsDpi" xml:space="preserve"><value>DNS and DPI</value></data>
+  <data name="PageAccess" xml:space="preserve"><value>Access test</value></data>
+  <data name="PageReport" xml:space="preserve"><value>Report and history</value></data>
+  <data name="PageSettings" xml:space="preserve"><value>Settings</value></data>
+  <data name="PageDevices" xml:space="preserve"><value>Sound and camera</value></data>
+  <data name="SubConnection" xml:space="preserve"><value>The result and details of every step from your computer to the internet.</value></data>
+  <data name="SubTweaks" xml:space="preserve"><value>Start-up programs, disk cleanup and Windows settings. Nothing changes without your approval.</value></data>
+  <data name="SubDnsDpi" xml:space="preserve"><value>FoxDPI against access blocks, the DNS setting and resetting network settings.</value></data>
+  <data name="SubAccess" xml:space="preserve"><value>Tries whether sites can be reached, without touching network settings.</value></data>
+  <data name="SubReport" xml:space="preserve"><value>Changes made by FoxFix, undo and the support report.</value></data>
+  <data name="SubSettings" xml:space="preserve"><value>Language, updates, appearance, the tour and uninstalling the app.</value></data>
+  <data name="SubDevices" xml:space="preserve"><value>Checks your speakers, microphone and camera step by step. It changes no setting and records nothing.</value></data>
+  <data name="MenuPin" xml:space="preserve"><value>Pin the menu</value></data>
+  <data name="MenuCollapse" xml:space="preserve"><value>Collapse menu</value></data>
+  <data name="PickerStartupChosen" xml:space="preserve"><value>Start-up programs: {0} change(s) you picked on the Speed-up and settings page</value></data>
+  <data name="PickerStartupNone" xml:space="preserve"><value>Start-up programs: you have not picked anything yet. Use the Speed-up and settings page to pick.</value></data>
+  <data name="PickerCleanupChosen" xml:space="preserve"><value>Disk cleanup: what you picked frees {0}</value></data>
+  <data name="PickerCleanupNone" xml:space="preserve"><value>Disk cleanup: tick what to delete below</value></data>
+  <data name="TextFileFilter" xml:space="preserve"><value>Text file (*.txt)|*.txt</value></data>
+  <data name="SwatchPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="SwatchBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="SwatchCyan" xml:space="preserve"><value>Cyan</value></data>
+  <data name="SwatchGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="SwatchOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="SwatchRed" xml:space="preserve"><value>Red</value></data>
+  <data name="SwatchPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="AccentInvalid" xml:space="preserve"><value>The colour must be in #RRGGBB form. Example: #2F7DF6</value></data>
+  <data name="SettingsSaveFailed" xml:space="preserve"><value>The settings could not be saved. Your choice applies to this session but may be lost at the next start.</value></data>
+  <data name="SpeedCardTitle" xml:space="preserve"><value>Speed test result</value></data>
+  <data name="SpeedDownload" xml:space="preserve"><value>Download</value></data>
+  <data name="SpeedUpload" xml:space="preserve"><value>Upload</value></data>
+  <data name="SpeedJitter" xml:space="preserve"><value>Jitter</value></data>
+  <data name="SpeedPngCopied" xml:space="preserve"><value>PNG copied</value></data>
+  <data name="CopyFailed" xml:space="preserve"><value>Could not copy: {0}</value></data>
+  <data name="StartupEnabledHeader" xml:space="preserve"><value>On ({0})</value></data>
+  <data name="StartupDisabledHeader" xml:space="preserve"><value>Off ({0})</value></data>
+  <data name="StartupListFailed" xml:space="preserve"><value>The list could not be read: {0}</value></data>
+  <data name="ImpactHigh" xml:space="preserve"><value>High impact {0}%</value></data>
+  <data name="ImpactMedium" xml:space="preserve"><value>Medium impact {0}%</value></data>
+  <data name="ImpactLow" xml:space="preserve"><value>Low impact {0}%</value></data>
+  <data name="ImpactEstimate" xml:space="preserve"><value>{0} · estimated impact {1}%</value></data>
+  <data name="TweakDefaultMark" xml:space="preserve"><value>(Default)</value></data>
+  <data name="TweakKeep" xml:space="preserve"><value>Leave as is</value></data>
+  <data name="TweaksNoneSelected" xml:space="preserve"><value>No setting selected</value></data>
+  <data name="TweaksSelected" xml:space="preserve"><value>{0} setting(s) selected</value></data>
+  <data name="TweaksSummaryPicked" xml:space="preserve"><value>{0} settings · {1} selected</value></data>
+  <data name="TweaksSummary" xml:space="preserve"><value>{0} settings</value></data>
+  <data name="BackupDeleted" xml:space="preserve"><value>Record deleted.</value></data>
+  <data name="InstalledVersion" xml:space="preserve"><value>Installed version: {0}</value></data>
+  <data name="Downloading" xml:space="preserve"><value>Downloading…</value></data>
+  <data name="DownloadingPercent" xml:space="preserve"><value>Downloading… {0}%</value></data>
+  <data name="Preparing" xml:space="preserve"><value>Preparing…</value></data>
+  <data name="UpdatePromptTitle" xml:space="preserve"><value>FoxFix {0} is out</value></data>
+  <data name="Checking" xml:space="preserve"><value>Checking…</value></data>
+  <data name="AreaSpeed" xml:space="preserve"><value>Speed</value></data>
+  <data name="AreaPrivacy" xml:space="preserve"><value>Privacy</value></data>
+  <data name="AreaLook" xml:space="preserve"><value>Look</value></data>
+  <data name="AreaComfort" xml:space="preserve"><value>Ease of use</value></data>
+  <data name="AreaBattery" xml:space="preserve"><value>Battery</value></data>
+  <data name="BackupInvalidId" xml:space="preserve"><value>Invalid backup id.</value></data>
+  <data name="RecycleBinFailed" xml:space="preserve"><value>The Recycle Bin could not be emptied (0x{0:X8}).</value></data>
+  <data name="ProcessStartFailed" xml:space="preserve"><value>{0}.exe could not be started.</value></data>
+  <data name="HostNotFound" xml:space="preserve"><value>{0} could not be found.</value></data>
+  <data name="ExitCode" xml:space="preserve"><value>exit code {0}</value></data>
+  <data name="ReportWindowsVersion" xml:space="preserve"><value>{0} (version {1})</value></data>
+  <data name="FileTooLarge" xml:space="preserve"><value>The file is larger than expected.</value></data>
+  <data name="ReleaseListExpected" xml:space="preserve"><value>A list of releases was expected.</value></data>
+  <data name="ReleaseTagUnreadable" xml:space="preserve"><value>The release tag could not be understood: &apos;{0}&apos;</value></data>
+  <data name="UiLanguage" xml:space="preserve"><value>Language</value></data>
+  <data name="UiLanguageNote" xml:space="preserve"><value>The language change applies when FoxFix reopens.</value></data>
+  <data name="LangTurkish" xml:space="preserve"><value>Türkçe</value></data>
+  <data name="LangEnglish" xml:space="preserve"><value>English</value></data>
+  <data name="LangRestartTitle" xml:space="preserve"><value>Language changed</value></data>
+  <data name="LangRestartText" xml:space="preserve"><value>FoxFix has to reopen to use the new language. FoxDPI is stopped if it is running. Your settings and undo records are kept.</value></data>
+  <data name="UiRestartNow" xml:space="preserve"><value>Reopen now</value></data>
+  <data name="UiRestartLater" xml:space="preserve"><value>Later</value></data>
+  <data name="UiTourSection" xml:space="preserve"><value>Introduction tour</value></data>
+  <data name="UiTourSectionNote" xml:space="preserve"><value>You can watch the short tour of FoxFix&apos;s main parts again at any time.</value></data>
+  <data name="UiStartTour" xml:space="preserve"><value>Start the introduction tour</value></data>
+  <data name="TourPromptTitle" xml:space="preserve"><value>Would you like a short tour of FoxFix?</value></data>
+  <data name="TourPromptText" xml:space="preserve"><value>We show the main parts in under a minute. You can start the tour again any time from the Settings page.</value></data>
+  <data name="TourStart" xml:space="preserve"><value>Start the tour</value></data>
+  <data name="TourNotNow" xml:space="preserve"><value>Not now</value></data>
+  <data name="TourBack" xml:space="preserve"><value>Back</value></data>
+  <data name="TourNext" xml:space="preserve"><value>Next</value></data>
+  <data name="TourSkip" xml:space="preserve"><value>Skip</value></data>
+  <data name="TourFinish" xml:space="preserve"><value>Finish the tour</value></data>
+  <data name="TourStepOf" xml:space="preserve"><value>Step {0} of {1}</value></data>
+  <data name="TourDialogName" xml:space="preserve"><value>Introduction tour</value></data>
+  <data name="TourWelcomeTitle" xml:space="preserve"><value>Welcome to FoxFix</value></data>
+  <data name="TourWelcomeText" xml:space="preserve"><value>FoxFix finds and fixes problems with your internet connection, DNS and blocked sites. This short tour introduces the main parts.</value></data>
+  <data name="TourFixTitle" xml:space="preserve"><value>Fix me</value></data>
+  <data name="TourFixText" xml:space="preserve"><value>If the check finds a problem, you start the fix here. What will change is listed first; nothing changes without your approval and changes can be undone.</value></data>
+  <data name="TourConnectionTitle" xml:space="preserve"><value>Connection check</value></data>
+  <data name="TourConnectionText" xml:space="preserve"><value>Checks every step from your computer to the internet (network, modem, DNS, secure connection) in order and explains the result in plain words.</value></data>
+  <data name="TourTweaksTitle" xml:space="preserve"><value>Speed-up and settings</value></data>
+  <data name="TourTweaksText" xml:space="preserve"><value>Manage start-up programs, unneeded files and Windows settings here. The effect of each setting is written next to it; saving your current settings before you change anything is recommended.</value></data>
+  <data name="TourDpiTitle" xml:space="preserve"><value>DNS and DPI</value></data>
+  <data name="TourDpiText" xml:space="preserve"><value>FoxDPI lets you reach sites that are blocked. &quot;Find the best setting&quot; finds the one that suits your network, then you start FoxDPI. It runs in its own small window: minimise it and it goes to the notification area, close it and it stops. Next time you can also open it directly with FoxDPI.exe. Close the FoxDPI window before starting a game with anti-cheat.</value></data>
+  <data name="TourAccessTitle" xml:space="preserve"><value>Access test</value></data>
+  <data name="TourAccessText" xml:space="preserve"><value>Tries whether the sites you type open, without touching network settings. Run it with FoxDPI on and off to compare.</value></data>
+  <data name="TourDevicesTitle" xml:space="preserve"><value>Sound and camera</value></data>
+  <data name="TourDevicesText" xml:space="preserve"><value>Checks your speakers, microphone and camera step by step: does Windows see them, does the privacy setting allow access, do they work in a test. It changes no setting and records nothing.</value></data>
+  <data name="TourReportTitle" xml:space="preserve"><value>Report and history</value></data>
+  <data name="TourReportText" xml:space="preserve"><value>Every change FoxFix makes stays here and can be undone. The support report you can share when asking for help is also made here.</value></data>
+  <data name="TourSettingsTitle" xml:space="preserve"><value>Settings</value></data>
+  <data name="TourSettingsText" xml:space="preserve"><value>Language, updates, theme and accent colour are here. You also find this tour and the uninstall button here.</value></data>
+  <data name="TourDoneTitle" xml:space="preserve"><value>You are ready</value></data>
+  <data name="TourDoneText" xml:space="preserve"><value>You can start the tour again from the Settings page at any time. Enjoy FoxFix.</value></data>
+  <data name="DpiHintTitle" xml:space="preserve"><value>How to use FoxDPI</value></data>
+  <data name="DpiHintText" xml:space="preserve"><value>First use &quot;Find the best setting&quot; to find the one that suits your network, then start FoxDPI. It runs in its own window: minimise it and it hides in the notification area, close it and FoxDPI stops. Next time you can start it directly with FoxDPI.exe without opening the main app. Close the FoxDPI window before starting a game with anti-cheat.</value></data>
+  <data name="DpiHintOk" xml:space="preserve"><value>Got it</value></data>
+  <data name="KindSpeaker" xml:space="preserve"><value>Speakers</value></data>
+  <data name="KindMicrophone" xml:space="preserve"><value>Microphone</value></data>
+  <data name="KindCamera" xml:space="preserve"><value>Camera</value></data>
+  <data name="DevIntro" xml:space="preserve"><value>The steps below only look at the devices Windows sees and at the privacy permission. No setting is changed; the microphone is not listened to and the camera is not turned on. Only the speaker test sound is started by you, and you can stop it at any moment.</value></data>
+  <data name="DevStepOf" xml:space="preserve"><value>Step {0} of {1}</value></data>
+  <data name="DevPrevious" xml:space="preserve"><value>Previous step</value></data>
+  <data name="DevNextStep" xml:space="preserve"><value>Next step</value></data>
+  <data name="DevFinish" xml:space="preserve"><value>Finish</value></data>
+  <data name="DevCheckAgain" xml:space="preserve"><value>Check again</value></data>
+  <data name="DevChecking" xml:space="preserve"><value>Checking devices…</value></data>
+  <data name="DevDevicesHeader" xml:space="preserve"><value>Devices Windows can see</value></data>
+  <data name="DevNoDevices" xml:space="preserve"><value>Windows does not see a device of this kind.</value></data>
+  <data name="DevStateActive" xml:space="preserve"><value>Available</value></data>
+  <data name="DevStateDisabled" xml:space="preserve"><value>Disabled</value></data>
+  <data name="DevStateUnplugged" xml:space="preserve"><value>Not plugged in</value></data>
+  <data name="DevStateNotPresent" xml:space="preserve"><value>Not found</value></data>
+  <data name="DevStateProblem" xml:space="preserve"><value>Has a problem</value></data>
+  <data name="DevStateUnknown" xml:space="preserve"><value>Status could not be read</value></data>
+  <data name="DevPrivacyHeader" xml:space="preserve"><value>Privacy permission</value></data>
+  <data name="DevPrivacyAllowed" xml:space="preserve"><value>Windows allows this access.</value></data>
+  <data name="DevPrivacyDeniedUser" xml:space="preserve"><value>Access is off in the Windows privacy settings.</value></data>
+  <data name="DevPrivacyDeniedDesktop" xml:space="preserve"><value>&quot;Let desktop apps access&quot; is off. FoxFix and most desktop programs cannot use this device.</value></data>
+  <data name="DevPrivacyPolicy" xml:space="preserve"><value>A system policy (group policy) blocks access.</value></data>
+  <data name="DevPrivacyUnknown" xml:space="preserve"><value>The privacy setting could not be read. Check Windows Settings by hand.</value></data>
+  <data name="DevVerdictOk" xml:space="preserve"><value>{0}: Windows sees the device and allows access.</value></data>
+  <data name="DevVerdictNoDevice" xml:space="preserve"><value>{0}: Windows sees no usable device of this kind. Make sure it is plugged in and turned on.</value></data>
+  <data name="DevVerdictDisabled" xml:space="preserve"><value>{0}: The device exists but is disabled in Windows. You can open the Windows setting below.</value></data>
+  <data name="DevVerdictPrivacy" xml:space="preserve"><value>{0}: The device exists but the privacy setting blocks access. You can open the Windows setting below.</value></data>
+  <data name="DevVerdictUnknown" xml:space="preserve"><value>{0}: Could not be checked. The status could not be read from Windows, so nothing can be said for sure.</value></data>
+  <data name="DevCheckFailed" xml:space="preserve"><value>[FX-7001] {0} could not be checked: {1}</value></data>
+  <data name="DevOpenSound" xml:space="preserve"><value>Open sound settings</value></data>
+  <data name="DevOpenMicPrivacy" xml:space="preserve"><value>Open microphone privacy settings</value></data>
+  <data name="DevOpenCameraPrivacy" xml:space="preserve"><value>Open camera privacy settings</value></data>
+  <data name="DevOpenCameraSettings" xml:space="preserve"><value>Open camera settings</value></data>
+  <data name="DevOpenFailed" xml:space="preserve"><value>Windows Settings could not be opened: {0}</value></data>
+  <data name="DevPlayTone" xml:space="preserve"><value>Play test sound</value></data>
+  <data name="DevToneHint" xml:space="preserve"><value>You should hear a short sound from the speakers. If you do not, check the volume, the mute button and the output device.</value></data>
+  <data name="DevToneRunning" xml:space="preserve"><value>Playing the test sound…</value></data>
+  <data name="DevToneDone" xml:space="preserve"><value>The test sound has finished. Did you hear it? If not, open the sound settings and check the output device.</value></data>
+  <data name="DevToneFailed" xml:space="preserve"><value>The test sound could not be played: {0}</value></data>
+  <data name="DevStopped" xml:space="preserve"><value>Stopped.</value></data>
+  <data name="DevStop" xml:space="preserve"><value>Stop</value></data>
+  <data name="PickerRecommendedTag" xml:space="preserve"><value>Recommended</value></data>
+  <data name="PickerDpiFound" xml:space="preserve"><value>Check result: leftovers of an old DPI tool were found; cleaning them up is recommended.</value></data>
+  <data name="PickerDpiClean" xml:space="preserve"><value>Check result: no leftovers found. You usually do not need to tick this.</value></data>
+  <data name="PickerDnsFound" xml:space="preserve"><value>Check result: a DNS problem was found; repairing it is recommended.</value></data>
+  <data name="PickerDnsOk" xml:space="preserve"><value>Check result: no DNS problem found. You usually do not need to tick this.</value></data>
+  <data name="PickerNotChecked" xml:space="preserve"><value>No check result yet. Suggestions appear when the check on the overview finishes.</value></data>
+  <data name="PickerSummaryNone" xml:space="preserve"><value>According to the check there is nothing to recommend. You can still tick what you want below.</value></data>
+  <data name="PickerSummarySome" xml:space="preserve"><value>According to the check {0} action(s) are recommended and ticked.</value></data>
+  <data name="PickerNothingTicked" xml:space="preserve"><value>Nothing is ticked. Tick an action to go on.</value></data>
+  <data name="PickerDevicesHint" xml:space="preserve"><value>A microphone, camera or sound problem? These need no system change; there is a separate check wizard.</value></data>
+  <data name="UiOpenDevices" xml:space="preserve"><value>Check sound and camera</value></data>
+  <data name="UiDevicesNav" xml:space="preserve"><value>Sound and camera</value></data>
+  <data name="DevDevicesHeaderCount" xml:space="preserve"><value>Devices Windows can see ({0})</value></data>
+  <data name="UiMinimize" xml:space="preserve"><value>Minimize</value></data>
+  <data name="UiMaximize" xml:space="preserve"><value>Maximize</value></data>
+  <data name="UiRestoreWindow" xml:space="preserve"><value>Restore down</value></data>
+  <data name="UiCloseWindow" xml:space="preserve"><value>Close</value></data>
+  <data name="AccentCustom" xml:space="preserve"><value>Custom colour</value></data>
+  <data name="AccentWheelName" xml:space="preserve"><value>Colour wheel</value></data>
+  <data name="AccentBrightness" xml:space="preserve"><value>Brightness</value></data>
+  <data name="AccentHexCode" xml:space="preserve"><value>Hex code</value></data>
+  <data name="AccentCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="AccentApply" xml:space="preserve"><value>Apply</value></data>
+  <data name="AccentPickNote" xml:space="preserve"><value>Pick on the wheel or type #RRGGBB, then press Apply. The colour is adjusted automatically so it stays readable.</value></data>
+  <data name="CompareTitle" xml:space="preserve"><value>Before and after the repair</value></data>
+  <data name="CompareLine" xml:space="preserve"><value>{0}: {1} → {2}</value></data>
+  <data name="CompareSame" xml:space="preserve"><value>The check results did not change after the repair.</value></data>
+  <data name="CompareChecking" xml:space="preserve"><value>The repair is done; checking the result again…</value></data>
+  <data name="UiTestingBase" xml:space="preserve"><value>Trying</value></data>
+  <data name="ExpTitle" xml:space="preserve"><value>Experimental settings</value></data>
+  <data name="ExpIntro" xml:space="preserve"><value>Features that are not tested enough yet. Turn one on and it appears in the menu; turn it off and it is hidden.</value></data>
+  <data name="ExpDevices" xml:space="preserve"><value>Sound and camera page</value></data>
+  <data name="ExpDevicesText" xml:space="preserve"><value>Checks the speaker, microphone and camera devices and the privacy permission. The microphone is not listened to and the camera is not turned on.</value></data>
+  <data name="DnsRecommendedTag" xml:space="preserve"><value>Recommended</value></data>
+  <data name="DnsRecommendedWhy" xml:space="preserve"><value>On many computers FoxDPI does not work without this setting. Do it first, then start FoxDPI. A preview is shown and it can be undone from the Report and history page; if you use a work network or a VPN and can no longer reach internal addresses, undo it.</value></data>
+  <data name="OverlayNav" xml:space="preserve"><value>Game overlay</value></data>
+  <data name="PageOverlay" xml:space="preserve"><value>Game overlay</value></data>
+  <data name="SubOverlay" xml:space="preserve"><value>Shows FPS, frame time and graphics card and processor load in a small strip in the corner of a game.</value></data>
+  <data name="OverlayIntro" xml:space="preserve"><value>Nothing is loaded into games and games are not changed: only the numbers Windows reports are read, and they are not saved or sent anywhere. While the overlay is hidden nothing is measured.</value></data>
+  <data name="OverlayEnable" xml:space="preserve"><value>Turn the overlay on</value></data>
+  <data name="OverlayEnableText" xml:space="preserve"><value>While it is on, the shortcut shows and hides the overlay. Turn it off and the shortcut goes back to Windows.</value></data>
+  <data name="OverlayShowNow" xml:space="preserve"><value>Show now</value></data>
+  <data name="OverlayHideNow" xml:space="preserve"><value>Hide now</value></data>
+  <data name="OverlayHotkey" xml:space="preserve"><value>Shortcut</value></data>
+  <data name="OverlayHotkeyText" xml:space="preserve"><value>Click the box and press the keys. At least one of Ctrl, Alt, Shift or Win is needed.</value></data>
+  <data name="OverlayHotkeyBoxName" xml:space="preserve"><value>Shortcut box</value></data>
+  <data name="OverlayHotkeyInvalid" xml:space="preserve"><value>The shortcut is not valid. Example: Ctrl+Shift+F10 (at least one modifier key and one key).</value></data>
+  <data name="OverlayHotkeyTaken" xml:space="preserve"><value>The shortcut {0} is used by another program. Try a different one.</value></data>
+  <data name="OverlayTurnOnFirst" xml:space="preserve"><value>Turn the overlay on first.</value></data>
+  <data name="OverlayFeedFailed" xml:space="preserve"><value>[{0}] Frames could not be counted, so FPS and frame time show N/A: {1}</value></data>
+  <data name="OverlayWhat" xml:space="preserve"><value>What to show</value></data>
+  <data name="OverlayFps" xml:space="preserve"><value>FPS</value></data>
+  <data name="OverlayFrameTime" xml:space="preserve"><value>Frame time (ms)</value></data>
+  <data name="OverlayGpu" xml:space="preserve"><value>Graphics card (GPU) load</value></data>
+  <data name="OverlayCpu" xml:space="preserve"><value>Processor (CPU) load</value></data>
+  <data name="OverlayNothing" xml:space="preserve"><value>No value is chosen; the overlay will be empty.</value></data>
+  <data name="OverlayBackground" xml:space="preserve"><value>Background</value></data>
+  <data name="OverlayBgTranslucent" xml:space="preserve"><value>See-through</value></data>
+  <data name="OverlayBgThemed" xml:space="preserve"><value>Matches the theme</value></data>
+  <data name="OverlayBgNone" xml:space="preserve"><value>No background</value></data>
+  <data name="OverlayCorner" xml:space="preserve"><value>Corner</value></data>
+  <data name="OverlayTopLeft" xml:space="preserve"><value>Top left</value></data>
+  <data name="OverlayTopRight" xml:space="preserve"><value>Top right</value></data>
+  <data name="OverlayBottomLeft" xml:space="preserve"><value>Bottom left</value></data>
+  <data name="OverlayBottomRight" xml:space="preserve"><value>Bottom right</value></data>
+  <data name="OverlaySize" xml:space="preserve"><value>Size</value></data>
+  <data name="OverlayLimits" xml:space="preserve"><value>The overlay is not visible in games running in exclusive fullscreen; run the game in windowed or borderless mode. Counting frames needs FoxFix to run as administrator; this feature has to be tested by hand on Windows.</value></data>
+  <data name="OverlayFree" xml:space="preserve"><value>Free</value></data>
+  <data name="OverlayPlace" xml:space="preserve"><value>Place it</value></data>
+  <data name="OverlayPlaceDone" xml:space="preserve"><value>Done placing</value></data>
+  <data name="OverlayFreeHint" xml:space="preserve"><value>Press &quot;Place it&quot; and the strip appears with sample numbers; drag it where you want it with the mouse, then press &quot;Done placing&quot;. The position is saved.</value></data>
+  <data name="OverlayScaleValue" xml:space="preserve"><value>{0} %</value></data>
+</root>

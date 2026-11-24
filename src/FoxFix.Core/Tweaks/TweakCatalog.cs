@@ -40,6 +40,8 @@ public sealed class TweakCatalog
 {
     public const string ResourceName = "Tweaks.Katalog.json";
 
+    public const string EnglishResourceName = "Tweaks.Katalog.en.json";
+
     private static readonly JsonSerializerOptions Options = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -72,10 +74,14 @@ public sealed class TweakCatalog
 
     public WindowsTweak? Find(string id) => _byId.GetValueOrDefault(id);
 
-    public static TweakCatalog Load()
+    /// <summary>The catalog in the language the program shows now (Win11Debloat's own tr-TR or en-US texts).</summary>
+    public static TweakCatalog Load() => Load(Strings.IsEnglish ? Strings.English : Strings.Turkish);
+
+    public static TweakCatalog Load(string language)
     {
-        using var stream = typeof(TweakCatalog).Assembly.GetManifestResourceStream(ResourceName)
-            ?? throw new InvalidOperationException($"Eksik kaynak: {ResourceName}");
+        var name = language == Strings.English ? EnglishResourceName : ResourceName;
+        using var stream = typeof(TweakCatalog).Assembly.GetManifestResourceStream(name)
+            ?? throw new InvalidOperationException($"Eksik kaynak / Missing resource: {name}");
         using var reader = new StreamReader(stream);
         return Parse(reader.ReadToEnd());
     }

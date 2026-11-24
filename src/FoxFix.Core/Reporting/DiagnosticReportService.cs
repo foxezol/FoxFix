@@ -33,7 +33,7 @@ public sealed class SystemInfo : ISystemInfo
             return null;
         }
 
-        return $"{(version.Build >= 22000 ? "Windows 11" : "Windows 10")} (sürüm {version})";
+        return Strings.Format(Strings.ReportWindowsVersion, version.Build >= 22000 ? "Windows 11" : "Windows 10", version);
     }
 
     public string UserName => Environment.UserName;

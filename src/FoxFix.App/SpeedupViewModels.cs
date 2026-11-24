@@ -1,3 +1,4 @@
+using FoxFix.Core;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Media;
@@ -67,9 +68,9 @@ public sealed partial class StartupViewModel : ObservableObject
 
     public ObservableCollection<StartupItem> DisabledItems { get; } = [];
 
-    public string EnabledHeader => $"Açık olanlar ({EnabledItems.Count})";
+    public string EnabledHeader => Strings.Format(Strings.StartupEnabledHeader, EnabledItems.Count);
 
-    public string DisabledHeader => $"Kapalı olanlar ({DisabledItems.Count})";
+    public string DisabledHeader => Strings.Format(Strings.StartupDisabledHeader, DisabledItems.Count);
 
     public bool IsEmpty => Items.Count == 0;
 
@@ -112,7 +113,7 @@ public sealed partial class StartupViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            LoadError = $"Liste okunamadı: {ex.Message}";
+            LoadError = Strings.Format(Strings.StartupListFailed, ex.Message);
         }
 
         NotifyChanged();

@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using FluentAssertions;
 using FoxFix.Core.Safety;
 using FoxFix.Core.Tweaks;
@@ -79,6 +79,27 @@ internal sealed class FakeRegistry : IRegistryStore
 
 public sealed class TweakCatalogTests
 {
+    [Fact]
+    public void The_English_catalog_is_inside_the_program_and_matches_the_Turkish_one_setting_for_setting()
+    {
+        var turkish = TweakCatalog.Load(Strings.Turkish);
+        var english = TweakCatalog.Load(Strings.English);
+
+        english.Tweaks.Select(t => t.Id).Should().Equal(turkish.Tweaks.Select(t => t.Id));
+        english.Groups.Select(g => g.Id).Should().Equal(turkish.Groups.Select(g => g.Id));
+        english.Categories.Select(c => c.Id).Should().Equal(turkish.Categories.Select(c => c.Id));
+
+        // Only the words differ: what a setting writes into the registry is the same in both languages.
+        foreach (var tweak in turkish.Tweaks)
+        {
+            english.Find(tweak.Id)!.Entries.Should().BeEquivalentTo(tweak.Entries, tweak.Id);
+            english.Find(tweak.Id)!.Defaults.Should().BeEquivalentTo(tweak.Defaults, tweak.Id);
+            english.Find(tweak.Id)!.Title.Should().NotBeNullOrWhiteSpace();
+        }
+
+        english.Tweaks.First().Title.Should().NotBe(turkish.Tweaks.First().Title);
+    }
+
     private static readonly TweakCatalog Catalog = TweakCatalog.Load();
 
     [Fact]

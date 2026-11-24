@@ -11,7 +11,8 @@ public enum SpeedTestPhase
 
 /// <param name="CurrentMbps">Live speed while a transfer phase runs, null during the latency phase.</param>
 /// <param name="LatencyMs">Latest latency sample during the latency phase.</param>
-public sealed record SpeedTestProgress(SpeedTestPhase Phase, double? CurrentMbps, double? LatencyMs);
+/// <param name="Fraction">How far the whole test is, 0 to 1 (latency is the first tenth, then download and upload by their length); null when not known.</param>
+public sealed record SpeedTestProgress(SpeedTestPhase Phase, double? CurrentMbps, double? LatencyMs, double? Fraction = null);
 
 public sealed record SpeedTestResult(double LatencyMs, double JitterMs, double DownloadMbps, double UploadMbps);
 
@@ -99,6 +100,9 @@ public sealed class SpeedTestService : ISpeedTest
 {
     private static readonly TimeSpan ReportEvery = TimeSpan.FromMilliseconds(250);
 
+    /// <summary>The latency samples take about this much of the whole test.</summary>
+    public const double LatencyShare = 0.10;
+
     private readonly ISpeedTestTransport _transport;
     private readonly IClock _clock;
     private readonly SpeedTestOptions _options;
@@ -125,6 +129,19 @@ public sealed class SpeedTestService : ISpeedTest
         return new SpeedTestResult(latency, jitter, download, upload);
     }
 
+    /// <summary>Where in the whole test a point inside the download or upload phase is: the two phases share what the latency does not take, by length.</summary>
+    private double OverallFraction(SpeedTestPhase phase, double within)
+    {
+        var download = _options.DownloadDuration.TotalSeconds;
+        var upload = _options.UploadDuration.TotalSeconds;
+        var transfer = Math.Max(0.001, download + upload);
+        var room = 1 - LatencyShare;
+
+        return phase == SpeedTestPhase.Download
+            ? LatencyShare + room * (download / transfer) * within
+            : LatencyShare + room * (download / transfer) + room * (upload / transfer) * within;
+    }
+
     private async Task<(double Median, double Jitter)> MeasureLatencyAsync(IProgress<SpeedTestProgress>? progress, CancellationToken ct)
     {
         var samples = new List<double>();
@@ -141,7 +158,8 @@ public sealed class SpeedTestService : ISpeedTest
             }
 
             samples.Add(sample);
-            progress?.Report(new SpeedTestProgress(SpeedTestPhase.Latency, null, sample));
+            var done = (double)i / Math.Max(1, _options.LatencySamples);
+            progress?.Report(new SpeedTestProgress(SpeedTestPhase.Latency, null, sample, LatencyShare * done));
         }
 
         return (SpeedMath.Median(samples), SpeedMath.Jitter(samples));
@@ -185,7 +203,8 @@ public sealed class SpeedTestService : ISpeedTest
                 if (now - lastReport >= ReportEvery)
                 {
                     lastReport = now;
-                    progress?.Report(new SpeedTestProgress(phase, SpeedMath.Mbps(total, (now - start).TotalSeconds), null));
+                    var within = duration <= TimeSpan.Zero ? 1 : Math.Clamp((now - start).TotalSeconds / duration.TotalSeconds, 0, 1);
+                    progress?.Report(new SpeedTestProgress(phase, SpeedMath.Mbps(total, (now - start).TotalSeconds), null, OverallFraction(phase, within)));
                 }
 
                 if (now >= deadline)

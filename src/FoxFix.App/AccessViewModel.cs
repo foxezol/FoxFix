@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using FoxFix.Core;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FoxFix.Core.GoodbyeDpi;
@@ -19,8 +20,25 @@ public sealed partial class AccessRow : ObservableObject
     /// <summary>The ordinary site that shows whether the internet itself works.</summary>
     public bool IsControl { get; }
 
+    /// <summary>While the site is being tried the text moves: "Deneniyor." "Deneniyor.." "Deneniyor...".</summary>
     [ObservableProperty]
-    private string _statusText = "Deneniyor…";
+    private string _statusText = Strings.Get(Strings.UiTestingBase) + ".";
+
+    public bool IsTesting { get; private set; } = true;
+
+    public void AdvanceDots(int step)
+    {
+        if (IsTesting)
+        {
+            StatusText = Strings.Get(Strings.UiTestingBase) + new string('.', step % 3 + 1);
+        }
+    }
+
+    public void Stop()
+    {
+        IsTesting = false;
+        StatusText = "durduruldu";
+    }
 
     /// <summary>Ok, Bad or Neutral; the view maps it to a theme color.</summary>
     [ObservableProperty]
@@ -31,6 +49,7 @@ public sealed partial class AccessRow : ObservableObject
 
     public void Apply(AccessResult result)
     {
+        IsTesting = false;
         StatusText = result.Text;
         Kind = result.Opened ? "Ok" : "Bad";
         ElapsedText = result.Opened ? $" · {result.Elapsed.TotalSeconds:0.0} sn" : "";
@@ -82,8 +101,8 @@ public sealed partial class AccessViewModel : ObservableObject
     /// <summary>Tells whether FoxDPI is on, so the result is not read the wrong way round.</summary>
     public string DpiNote => _dpi?.IsActive switch
     {
-        true => "Şu anda FoxDPI aktif. Açılmayan bir site varsa FoxDPI'ya rağmen erişilemiyor demektir.",
-        false => "Şu anda FoxDPI devre dışı. Kesin bir karşılaştırma için FoxDPI aktifken testi tekrarlayabilirsiniz.",
+        true => Strings.Get(Strings.AccessNoteDpiOn),
+        false => Strings.Get(Strings.AccessNoteDpiOff),
         null => "",
     };
 
@@ -93,7 +112,7 @@ public sealed partial class AccessViewModel : ObservableObject
         var sites = TrialTargets.Parse(Hosts);
         if (sites.Count == 0)
         {
-            SummaryText = "Denenecek bir site adı yaz. Örnek: discord.com";
+            SummaryText = Strings.Get(Strings.AccessNeedHost);
             return;
         }
 
@@ -110,6 +129,9 @@ public sealed partial class AccessViewModel : ObservableObject
 
         OnPropertyChanged(nameof(HasRows));
 
+        using var dotsCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var dots = AnimateDotsAsync(dotsCts.Token);
+
         try
         {
             // Not Progress<T>: it posts later, so a row could change after the run ended.
@@ -118,21 +140,45 @@ public sealed partial class AccessViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
-            foreach (var row in Rows.Where(r => r.StatusText == "Deneniyor…"))
+            foreach (var row in Rows.Where(r => r.IsTesting))
             {
-                row.StatusText = "durduruldu";
+                row.Stop();
             }
 
-            SummaryText = "Test durduruldu.";
+            SummaryText = Strings.Get(Strings.AccessStopped);
         }
         finally
         {
+            dotsCts.Cancel();
+            await dots;
             IsRunning = false;
         }
     }
 
+    /// <summary>The dots after "Deneniyor" move while a site is being tried, so the screen does not look stuck.</summary>
+    private async Task AnimateDotsAsync(CancellationToken ct)
+    {
+        var step = 0;
+        try
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                await Task.Delay(400, ct);
+                step++;
+                foreach (var row in Rows)
+                {
+                    row.AdvanceDots(step);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // The test is over.
+        }
+    }
+
     private void Show(AccessResult result) =>
-        Rows.FirstOrDefault(r => r.Host == result.Host && r.StatusText == "Deneniyor…")?.Apply(result);
+        Rows.FirstOrDefault(r => r.Host == result.Host && r.IsTesting)?.Apply(result);
 
     private void Summarize(IReadOnlyList<AccessResult> results)
     {
@@ -142,20 +188,20 @@ public sealed partial class AccessViewModel : ObservableObject
         // One ordinary site may be down on its own; only when none opens is it the connection.
         if (controls.All(c => !c.Opened))
         {
-            SummaryText = "Normal sitelerin hiçbiri açılmadı. Sorun sitelerde değil, internet bağlantında olabilir. Bağlantı kontrolünü dene.";
+            SummaryText = Strings.Get(Strings.AccessNoNormal);
             return;
         }
 
         if (sites.Count == 0)
         {
-            SummaryText = "Normal siteler açılıyor.";
+            SummaryText = Strings.Get(Strings.AccessNormalOpen);
             return;
         }
 
         var opened = sites.Count(s => s.Opened);
         SummaryText = opened == sites.Count
-            ? sites.Count == 1 ? "Site açılıyor." : $"{sites.Count} sitenin hepsi açılıyor."
-            : $"{sites.Count} siteden {opened} tanesi açılıyor.";
+            ? sites.Count == 1 ? Strings.Get(Strings.AccessOneOpens) : Strings.Format(Strings.AccessAllOpen, sites.Count)
+            : Strings.Format(Strings.AccessSomeOpen, sites.Count, opened);
     }
 
     private sealed class InlineProgress(Action<AccessResult> handler) : IProgress<AccessResult>

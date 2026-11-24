@@ -1,3 +1,5 @@
+using FoxFix.Core;
+
 namespace FoxFix.App;
 
 /// <summary>Turns "how far" and "how long so far" into the line under a progress bar: "%42 · yaklaşık 20 saniye kaldı".</summary>
@@ -11,12 +13,12 @@ public static class ProgressEstimate
     public static string Format(double fraction, TimeSpan elapsed)
     {
         fraction = Math.Clamp(fraction, 0, 1);
-        var text = $"%{(int)Math.Floor(fraction * 100)}";
+        var text = Strings.Format(Strings.ProgressPercent, (int)Math.Floor(fraction * 100));
 
         if (fraction >= MinimumFraction && fraction < 1 && elapsed >= MinimumElapsed)
         {
             var remaining = TimeSpan.FromSeconds(elapsed.TotalSeconds * (1 - fraction) / fraction);
-            text += $" · yaklaşık {Duration(remaining)} kaldı";
+            text += Strings.Format(Strings.ProgressAbout, Duration(remaining));
         }
 
         return text;
@@ -29,17 +31,17 @@ public static class ProgressEstimate
 
         if (seconds <= 5)
         {
-            return "birkaç saniye";
+            return Strings.Get(Strings.DurationFewSeconds);
         }
 
         if (seconds < 60)
         {
-            return $"{seconds} saniye";
+            return Strings.Format(Strings.DurationSeconds, seconds);
         }
 
         var minutes = seconds / 60;
         var rest = seconds % 60;
-        return rest == 0 ? $"{minutes} dakika" : $"{minutes} dakika {rest} saniye";
+        return rest == 0 ? Strings.Format(Strings.DurationMinutes, minutes) : Strings.Format(Strings.DurationMinutesSeconds, minutes, rest);
     }
 }
 

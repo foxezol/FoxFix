@@ -1,0 +1,11 @@
+<Window x:Class="FoxFix.App.OverlayWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FoxFix" WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" ShowActivated="False" Topmost="True" Focusable="False" SizeToContent="WidthAndHeight"
+        FontFamily="{StaticResource UiFont}" TextOptions.TextFormattingMode="Display" UseLayoutRounding="True">
+    <!-- The strip itself: the background, the corner radius and the text colours are set from the choices (see OverlayWindow.xaml.cs) -->
+    <Border x:Name="Card" CornerRadius="10" Padding="12,6" BorderThickness="1">
+        <TextBlock x:Name="Line" Typography.NumeralAlignment="Tabular" />
+    </Border>
+</Window>

@@ -1,3 +1,4 @@
+﻿using FoxFix.Core;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -36,13 +37,13 @@ public sealed partial class SettingsViewModel : ObservableObject
 {
     public static IReadOnlyList<(string Name, string Hex)> Presets { get; } =
     [
-        ("Mor", AppSettings.DefaultAccent),
-        ("Mavi", "#2F7DF6"),
-        ("Camgöbeği", "#14A3C7"),
-        ("Yeşil", "#1FA971"),
-        ("Turuncu", "#F28C28"),
-        ("Kırmızı", "#E5484D"),
-        ("Pembe", "#E5509F"),
+        (Strings.Get(Strings.SwatchPurple), AppSettings.DefaultAccent),
+        (Strings.Get(Strings.SwatchBlue), "#2F7DF6"),
+        (Strings.Get(Strings.SwatchCyan), "#14A3C7"),
+        (Strings.Get(Strings.SwatchGreen), "#1FA971"),
+        (Strings.Get(Strings.SwatchOrange), "#F28C28"),
+        (Strings.Get(Strings.SwatchRed), "#E5484D"),
+        (Strings.Get(Strings.SwatchPink), "#E5509F"),
     ];
 
     private readonly AppSettingsStore _store;
@@ -51,23 +52,39 @@ public sealed partial class SettingsViewModel : ObservableObject
     // While the values are being filled in (or one field follows another) nothing is saved or applied again.
     private bool _quiet = true;
 
-    public SettingsViewModel(AppSettingsStore store, AppSettings initial, Action<AppSettings> apply, UpdateViewModel? updates = null)
+    private readonly Action? _restart;
+
+    public SettingsViewModel(AppSettingsStore store, AppSettings initial, Action<AppSettings> apply, UpdateViewModel? updates = null, Action? restart = null)
     {
         _store = store;
         _apply = apply;
+        _restart = restart;
         Updates = updates;
 
         var settings = initial.Sanitized();
         _autoCheckUpdates = settings.AutoCheckUpdates;
         _theme = settings.Theme;
         _accent = settings.AccentColor;
-        _accentInput = settings.AccentColor;
         _recolorLogo = settings.RecolorLogo;
+        _language = settings.Language.Length > 0 ? settings.Language : Strings.Language;
+        Tour = settings.Tour;
+        DpiHintSeen = settings.DpiHintSeen;
+        _experimentalDevices = settings.ExperimentalDevices;
+        Overlay = settings.Overlay;
 
         foreach (var (name, hex) in Presets)
         {
             Swatches.Add(new AccentSwatch(name, hex) { IsSelected = hex.Equals(_accent, StringComparison.OrdinalIgnoreCase) });
         }
+
+        Picker = new AccentPickerViewModel(() => Accent, hex => Accent = hex);
+        Picker.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AccentPickerViewModel.IsOpen))
+            {
+                OnPropertyChanged(nameof(CustomSwatchSelected));
+            }
+        };
 
         _quiet = false;
     }
@@ -76,6 +93,15 @@ public sealed partial class SettingsViewModel : ObservableObject
     public UpdateViewModel? Updates { get; }
 
     public ObservableCollection<AccentSwatch> Swatches { get; } = [];
+
+    /// <summary>The colour wheel under the ready-made colours: previews first, applies on "Uygula".</summary>
+    public AccentPickerViewModel Picker { get; }
+
+    /// <summary>True when the colour in use is none of the ready-made ones: the wheel's circle shows it.</summary>
+    public bool IsCustomAccent => !Swatches.Any(s => s.IsSelected);
+
+    /// <summary>The wheel's circle is ringed while a custom colour is in use or its panel is open.</summary>
+    public bool CustomSwatchSelected => IsCustomAccent || Picker.IsOpen;
 
     [ObservableProperty]
     private bool _autoCheckUpdates;
@@ -114,16 +140,6 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private string _accent = AppSettings.DefaultAccent;
 
-    /// <summary>What is typed in the colour box. It becomes the accent colour as soon as it is a complete colour.</summary>
-    [ObservableProperty]
-    private string _accentInput = AppSettings.DefaultAccent;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(HasAccentError))]
-    private string _accentError = "";
-
-    public bool HasAccentError => AccentError.Length > 0;
-
     [ObservableProperty]
     private bool _recolorLogo;
 
@@ -140,7 +156,92 @@ public sealed partial class SettingsViewModel : ObservableObject
         Theme = Theme,
         AccentColor = Accent,
         RecolorLogo = RecolorLogo,
+        Language = Language,
+        Tour = Tour,
+        DpiHintSeen = DpiHintSeen,
+        ExperimentalDevices = ExperimentalDevices,
+        Overlay = Overlay,
     };
+
+    /// <summary>"tr" or "en". Saved at once; it is used when FoxFix opens the next time (a restart is offered).</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsTurkish), nameof(IsEnglish))]
+    private string _language = Strings.Turkish;
+
+    public bool IsTurkish
+    {
+        get => Language == Strings.Turkish;
+        set => ChooseLanguage(value, Strings.Turkish);
+    }
+
+    public bool IsEnglish
+    {
+        get => Language == Strings.English;
+        set => ChooseLanguage(value, Strings.English);
+    }
+
+    private void ChooseLanguage(bool selected, string code)
+    {
+        if (selected)
+        {
+            Language = code;
+        }
+    }
+
+    /// <summary>Set after the language was changed: "FoxFix has to reopen" with Reopen now / Later.</summary>
+    [ObservableProperty]
+    private bool _isRestartPromptOpen;
+
+    partial void OnLanguageChanged(string value)
+    {
+        Persist();
+        if (!_quiet)
+        {
+            IsRestartPromptOpen = true;
+        }
+    }
+
+    [RelayCommand]
+    private void RestartNow()
+    {
+        IsRestartPromptOpen = false;
+        _restart?.Invoke();
+    }
+
+    [RelayCommand]
+    private void RestartLater() => IsRestartPromptOpen = false;
+
+    /// <summary>Where the first-use tour stands (not shown on the page; kept with the other settings).</summary>
+    public TourState Tour { get; private set; }
+
+    public bool DpiHintSeen { get; private set; }
+
+    /// <summary>The game overlay's choices; the overlay page keeps them and saves them here.</summary>
+    public FoxFix.Core.Overlay.OverlaySettings Overlay { get; private set; }
+
+    public void SetOverlay(FoxFix.Core.Overlay.OverlaySettings overlay)
+    {
+        Overlay = overlay;
+        Persist();
+    }
+
+    public void SetTour(TourState state)
+    {
+        Tour = state;
+        Persist();
+    }
+
+    public void MarkDpiHintSeen()
+    {
+        DpiHintSeen = true;
+        Persist();
+    }
+
+    /// <summary>Experimental settings: the "Ses ve kamera" page and its menu item exist only while this is on.</summary>
+    [ObservableProperty]
+    private bool _experimentalDevices;
+
+    partial void OnExperimentalDevicesChanged(bool value) => Persist();
 
     partial void OnAutoCheckUpdatesChanged(bool value) => Persist();
 
@@ -155,32 +256,10 @@ public sealed partial class SettingsViewModel : ObservableObject
             swatch.IsSelected = swatch.Hex.Equals(value, StringComparison.OrdinalIgnoreCase);
         }
 
-        if (!AccentInput.Equals(value, StringComparison.OrdinalIgnoreCase))
-        {
-            AccentInput = value;
-        }
-
+        OnPropertyChanged(nameof(IsCustomAccent));
+        OnPropertyChanged(nameof(CustomSwatchSelected));
+        Picker?.Close();
         Persist();
-    }
-
-    partial void OnAccentInputChanged(string value)
-    {
-        var text = value.Trim();
-        if (text.Length > 0 && !text.StartsWith('#'))
-        {
-            text = "#" + text;
-        }
-
-        if (AppSettings.IsValidColor(text))
-        {
-            AccentError = "";
-            Accent = text.ToUpperInvariant();
-        }
-        else
-        {
-            // Not while somebody is still typing: the message only appears once a whole colour's worth of characters is there.
-            AccentError = text.Length >= 7 ? "Renk #RRGGBB biçiminde olmalıdır. Örnek: #2F7DF6" : "";
-        }
     }
 
     [RelayCommand]
@@ -206,6 +285,6 @@ public sealed partial class SettingsViewModel : ObservableObject
         _apply(settings);
         SaveError = _store.Save(settings)
             ? ""
-            : "Ayarlar kaydedilemedi. Seçiminiz bu oturumda geçerli olur ama sonraki açılışta kaybolabilir.";
+            : Strings.Get(Strings.SettingsSaveFailed);
     }
 }

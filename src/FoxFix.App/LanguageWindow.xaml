@@ -1,0 +1,36 @@
+<Window x:Class="FoxFix.App.LanguageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FoxFix" Width="440" SizeToContent="Height" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        Icon="Assets/FoxFix.ico"
+        Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
+        FontFamily="{StaticResource UiFont}" FontSize="14"
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="38" ResizeBorderThickness="0" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <!-- Shown once, before anything else: the language is not known yet, so this window speaks both. -->
+    <StackPanel>
+    <Grid Height="38">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0" IsHitTestVisible="False">
+            <Image Source="{DynamicResource FoxIconImage}" Width="16" Height="16" RenderOptions.BitmapScalingMode="HighQuality" />
+            <TextBlock Text="FoxFix" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource Muted}" Margin="10,0,0,0" VerticalAlignment="Center" />
+        </StackPanel>
+        <Button Content="&#xE8BB;" Style="{StaticResource CaptionCloseButton}" HorizontalAlignment="Right" Click="OnClose"
+                AutomationProperties.Name="Kapat / Close" ToolTip="Kapat / Close" />
+    </Grid>
+    <StackPanel Margin="32,0,32,30">
+        <Image Source="{DynamicResource FoxLogoImage}" Height="72" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"
+               AutomationProperties.Name="FoxFix" />
+        <TextBlock Text="Dil / Language" Style="{StaticResource PageTitle}" FontSize="26" HorizontalAlignment="Center" Margin="0,16,0,0" AutomationProperties.HeadingLevel="Level1" />
+        <TextBlock Text="FoxFix hangi dilde açılsın?" Style="{StaticResource BodyMuted}" HorizontalAlignment="Center" Margin="0,10,0,0" />
+        <TextBlock Text="Which language should FoxFix use?" Style="{StaticResource BodyMuted}" HorizontalAlignment="Center" Margin="0,2,0,0" />
+        <Button x:Name="TurkishButton" Content="Türkçe" Style="{StaticResource HeroButton}" Margin="0,24,0,0" Click="OnTurkish"
+                AutomationProperties.Name="Türkçe" IsDefault="True" />
+        <Button x:Name="EnglishButton" Content="English" Style="{StaticResource HeroButton}" Margin="0,10,0,0" Click="OnEnglish"
+                AutomationProperties.Name="English" />
+        <TextBlock Text="Ayarlar'dan sonra değiştirebilirsiniz. / You can change it later in Settings." Style="{StaticResource Caption}"
+                   HorizontalAlignment="Center" TextAlignment="Center" Margin="0,18,0,0" />
+    </StackPanel>
+    </StackPanel>
+</Window>

@@ -290,7 +290,7 @@ public sealed class RecycleBinTarget : ICleanupTarget
         var result = SHEmptyRecycleBin(IntPtr.Zero, null, NoConfirmation | NoProgressUi | NoSound);
         return result == 0
             ? new CleanupOutcome(before, 0)
-            : throw new IOException($"Çöp kutusu boşaltılamadı (0x{result:X8}).");
+            : throw new IOException(Strings.Format(Strings.RecycleBinFailed, result));
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]

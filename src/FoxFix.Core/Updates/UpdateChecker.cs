@@ -107,7 +107,7 @@ public sealed class GitHubReleaseSource : IReleaseSource
         using var document = JsonDocument.Parse(json);
         if (document.RootElement.ValueKind != JsonValueKind.Array)
         {
-            throw new JsonException("Sürüm listesi bekleniyordu.");
+            throw new JsonException(Strings.Get(Strings.ReleaseListExpected));
         }
 
         ReleaseInfo? newest = null;
@@ -139,7 +139,7 @@ public sealed class GitHubReleaseSource : IReleaseSource
         var tag = Text(root, "tag_name");
         if (!ReleaseVersion.TryParse(tag, out var version))
         {
-            throw new JsonException($"Sürüm etiketi anlaşılamadı: '{tag}'");
+            throw new JsonException(Strings.Format(Strings.ReleaseTagUnreadable, tag));
         }
 
         return new ReleaseInfo(version, tag, Text(root, "html_url"), Text(root, "body"), ReadAssets(root));

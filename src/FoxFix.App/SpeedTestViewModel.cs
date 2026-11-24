@@ -32,6 +32,28 @@ public sealed partial class SpeedTestViewModel : ObservableObject
     [ObservableProperty]
     private string _status = Strings.Get(Strings.SpeedIdle);
 
+    /// <summary>0 to 100: how far the test is. The bar fills as it goes instead of moving back and forth.</summary>
+    [ObservableProperty]
+    private double _percent;
+
+    /// <summary>"%42 · yaklaşık 12 saniye kaldı" under the bar.</summary>
+    [ObservableProperty]
+    private string _progressText = "";
+
+    private System.Diagnostics.Stopwatch _clock = new();
+
+    private void ShowFraction(double? fraction)
+    {
+        if (fraction is not { } value)
+        {
+            return;
+        }
+
+        // It only moves forward: a late or out-of-order report must not make the bar step back.
+        Percent = Math.Max(Percent, Math.Clamp(value, 0, 1) * 100);
+        ProgressText = ProgressEstimate.Format(Percent / 100, _clock.Elapsed);
+    }
+
     [ObservableProperty]
     private string _downloadText = NoValue;
 
@@ -48,7 +70,7 @@ public sealed partial class SpeedTestViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(ShareCommand))]
     private bool _hasResult;
 
-    /// <summary>"PNG kopyalandı" after the share button was used; empty before.</summary>
+    /// <summary>Strings.Get(Strings.SpeedPngCopied) after the share button was used; empty before.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasShareStatus))]
     private string _shareStatus = "";
@@ -64,11 +86,11 @@ public sealed partial class SpeedTestViewModel : ObservableObject
         try
         {
             _clipboard!.Copy(new SpeedCard(DownloadText, UploadText, LatencyText, JitterText, DateTime.Now));
-            ShareStatus = "PNG kopyalandı";
+            ShareStatus = Strings.Get(Strings.SpeedPngCopied);
         }
         catch (Exception ex) when (ex is System.Runtime.InteropServices.ExternalException or InvalidOperationException or System.IO.IOException)
         {
-            ShareStatus = $"{ErrorCodes.Tag(ErrorCodes.ClipboardFailed)}Kopyalanamadı: {ex.Message}";
+            ShareStatus = ErrorCodes.Tag(ErrorCodes.ClipboardFailed) + Strings.Format(Strings.CopyFailed, ex.Message);
         }
     }
 
@@ -87,6 +109,9 @@ public sealed partial class SpeedTestViewModel : ObservableObject
         ShareStatus = "";
         DownloadText = UploadText = LatencyText = JitterText = NoValue;
         Status = Strings.Get(Strings.SpeedLatencyPhase);
+        Percent = 0;
+        ProgressText = ProgressEstimate.Format(0, TimeSpan.Zero);
+        _clock = System.Diagnostics.Stopwatch.StartNew();
 
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
@@ -100,6 +125,8 @@ public sealed partial class SpeedTestViewModel : ObservableObject
             LatencyText = Milliseconds(result.LatencyMs);
             JitterText = Milliseconds(result.JitterMs);
             HasResult = true;
+            Percent = 100;
+            ProgressText = "";
             Status = Strings.Get(Strings.SpeedDone);
         }
         catch (OperationCanceledException)
@@ -128,6 +155,8 @@ public sealed partial class SpeedTestViewModel : ObservableObject
         {
             return;
         }
+
+        ShowFraction(progress.Fraction);
 
         switch (progress.Phase)
         {

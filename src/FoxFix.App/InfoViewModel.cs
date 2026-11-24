@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using FoxFix.Core;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -15,6 +16,8 @@ public sealed partial class InfoViewModel : ObservableObject
 
     public const string ErrorCodesUrl = "https://github.com/foxezol/FoxFix/blob/main/docs/HATA-KODLARI.md";
 
+    public const string EnglishErrorCodesUrl = "https://github.com/foxezol/FoxFix/blob/main/docs/ERROR-CODES.md";
+
     private readonly Action<string> _openLink;
 
     public InfoViewModel(Action<string> openLink)
@@ -28,7 +31,7 @@ public sealed partial class InfoViewModel : ObservableObject
     public static string Version =>
         Assembly.GetEntryAssembly()?.GetName().Version is { } v ? $"{v.Major}.{v.Minor}.{Math.Max(v.Build, 0)}" : "0.1.0";
 
-    public string VersionText => "Sürüm " + Version;
+    public string VersionText => Strings.Format(Strings.VersionText, Version);
 
     [RelayCommand]
     private void Open() => IsOpen = true;
@@ -43,7 +46,7 @@ public sealed partial class InfoViewModel : ObservableObject
     private void OpenTurkeyFork() => _openLink(TurkeyForkUrl);
 
     [RelayCommand]
-    private void OpenErrorCodes() => _openLink(ErrorCodesUrl);
+    private void OpenErrorCodes() => _openLink(Strings.IsEnglish ? EnglishErrorCodesUrl : ErrorCodesUrl);
 
     [RelayCommand]
     private void OpenWin11Debloat() => _openLink(Win11DebloatUrl);

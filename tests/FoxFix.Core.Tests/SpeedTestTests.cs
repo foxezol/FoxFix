@@ -140,6 +140,40 @@ public class SpeedTestServiceTests
         result.DownloadMbps.Should().BeApproximately(80, 2, "slow start belongs to warm-up");
     }
 
+    private sealed class Collect : IProgress<SpeedTestProgress>
+    {
+        public List<SpeedTestProgress> Items { get; } = [];
+
+        public void Report(SpeedTestProgress value) => Items.Add(value);
+    }
+
+    [Fact]
+    public async Task The_whole_test_reports_how_far_it_is_and_never_goes_backwards()
+    {
+        var (service, _) = Create();
+        var seen = new Collect();
+
+        await service.RunAsync(seen, CancellationToken.None);
+
+        var fractions = seen.Items.Select(i => i.Fraction).ToList();
+        fractions.Should().OnlyContain(f => f != null && f >= 0 && f <= 1);
+        fractions.Should().BeInAscendingOrder();
+        fractions.First().Should().BeLessThan(0.2, "the latency samples come first and are a small part");
+        fractions.Last().Should().BeGreaterThan(0.8, "the last reports come from the upload");
+    }
+
+    [Fact]
+    public async Task The_download_fills_the_middle_and_the_upload_the_rest_by_their_length()
+    {
+        var (service, _) = Create(options: SingleStream with { DownloadDuration = TimeSpan.FromSeconds(8), UploadDuration = TimeSpan.FromSeconds(8) });
+        var seen = new Collect();
+
+        await service.RunAsync(seen, CancellationToken.None);
+
+        seen.Items.Where(i => i.Phase == SpeedTestPhase.Download).Max(i => i.Fraction).Should().BeApproximately(0.55, 0.06);
+        seen.Items.Where(i => i.Phase == SpeedTestPhase.Upload).Min(i => i.Fraction).Should().BeGreaterThan(0.5);
+    }
+
     [Fact]
     public async Task Latency_is_the_median_of_the_samples_after_a_discarded_first_one()
     {

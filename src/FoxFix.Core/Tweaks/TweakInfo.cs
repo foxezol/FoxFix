@@ -1,3 +1,4 @@
+
 namespace FoxFix.Core.Tweaks;
 
 /// <summary>What a setting mostly affects.</summary>
@@ -25,11 +26,11 @@ public sealed record TweakInfo(TweakArea Area, int Percent, bool Recommended)
 
     public string AreaName => Area switch
     {
-        TweakArea.Speed => "Hız",
-        TweakArea.Privacy => "Gizlilik",
-        TweakArea.Look => "Görünüm",
-        TweakArea.Comfort => "Kullanım",
-        _ => "Pil",
+        TweakArea.Speed => Strings.Get(Strings.AreaSpeed),
+        TweakArea.Privacy => Strings.Get(Strings.AreaPrivacy),
+        TweakArea.Look => Strings.Get(Strings.AreaLook),
+        TweakArea.Comfort => Strings.Get(Strings.AreaComfort),
+        _ => Strings.Get(Strings.AreaBattery),
     };
 }
 

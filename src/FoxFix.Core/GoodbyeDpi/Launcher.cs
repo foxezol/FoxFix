@@ -40,7 +40,7 @@ public sealed class SystemGoodbyeDpiLauncher : IGoodbyeDpiLauncher
             WorkingDirectory = Path.GetDirectoryName(exePath)!,
             UseShellExecute = false,
             CreateNoWindow = true,
-        }) ?? throw new InvalidOperationException($"{_processName}.exe başlatılamadı.");
+        }) ?? throw new InvalidOperationException(Strings.Format(Strings.ProcessStartFailed, _processName));
 
         // If FoxFix itself dies (crash, killed), Windows ends GoodbyeDPI with it instead of leaving it running unseen.
         KillOnCloseJob.TryAdd(process);

@@ -1,4 +1,5 @@
-using FluentAssertions;
+﻿using FluentAssertions;
+using FoxFix.Core;
 using FoxFix.App;
 using FoxFix.Core.Settings;
 using FoxFix.Core.Updates;
@@ -34,7 +35,6 @@ public sealed class SettingsViewModelTests : IDisposable
         vm.AutoCheckUpdates.Should().BeFalse();
         vm.IsDarkTheme.Should().BeTrue();
         vm.Accent.Should().Be("#2F7DF6");
-        vm.AccentInput.Should().Be("#2F7DF6");
         vm.RecolorLogo.Should().BeFalse();
         _applied.Should().BeEmpty();
         File.Exists(FilePath).Should().BeFalse();
@@ -93,14 +93,13 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Picking_a_colour_applies_it_selects_it_and_fills_the_box()
+    public void Picking_a_colour_applies_it_and_selects_it()
     {
         var vm = Create();
 
         vm.PickAccentCommand.Execute("#e5484d");
 
         vm.Accent.Should().Be("#E5484D");
-        vm.AccentInput.Should().Be("#E5484D");
         vm.Swatches.Single(s => s.IsSelected).Name.Should().Be("Kırmızı");
         _applied.Last().AccentColor.Should().Be("#E5484D");
     }
@@ -120,70 +119,176 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
-    public void A_complete_typed_colour_becomes_the_accent_without_rewriting_what_was_typed()
+    public void A_colour_outside_the_list_is_shown_by_the_wheels_circle()
     {
-        var vm = Create();
+        var custom = Create(new AppSettings { AccentColor = "#123456" });
+        var ready = Create(new AppSettings { AccentColor = "#1FA971" });
 
-        vm.AccentInput = "#2f7df6";
-
-        vm.Accent.Should().Be("#2F7DF6");
-        vm.AccentInput.Should().Be("#2f7df6");
-        vm.AccentError.Should().BeEmpty();
-        _applied.Last().AccentColor.Should().Be("#2F7DF6");
+        custom.IsCustomAccent.Should().BeTrue();
+        custom.CustomSwatchSelected.Should().BeTrue();
+        ready.IsCustomAccent.Should().BeFalse();
+        ready.CustomSwatchSelected.Should().BeFalse();
     }
 
     [Fact]
-    public void The_hash_sign_may_be_left_out()
+    public void Opening_the_wheel_starts_from_the_colour_in_use_and_changes_nothing()
+    {
+        var vm = Create(new AppSettings { AccentColor = "#2F7DF6" });
+
+        vm.Picker.ToggleCommand.Execute(null);
+
+        vm.Picker.IsOpen.Should().BeTrue();
+        vm.Picker.Hex.Should().Be("#2F7DF6");
+        vm.CustomSwatchSelected.Should().BeTrue("the circle is ringed while its panel is open");
+        _applied.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Moving_the_wheel_only_previews_and_does_not_change_the_theme()
     {
         var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
 
-        vm.AccentInput = "2F7DF6";
+        vm.Picker.Hue = 120;
+        vm.Picker.Saturation = 1;
+        vm.Picker.Brightness = 100;
 
-        vm.Accent.Should().Be("#2F7DF6");
-        vm.AccentInput.Should().Be("#2F7DF6");
+        vm.Picker.Hex.Should().Be("#00FF00");
+        vm.Accent.Should().Be(AppSettings.DefaultAccent);
+        _applied.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void The_slider_darkens_the_preview_without_applying_it()
+    {
+        var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+        vm.Picker.Hue = 0;
+        vm.Picker.Saturation = 1;
+
+        vm.Picker.Brightness = 50;
+
+        vm.Picker.Hex.Should().Be("#800000");
+        _applied.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void A_typed_hex_moves_the_wheel_without_being_rewritten()
+    {
+        var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+
+        vm.Picker.Hex = "#2f7df6";
+
+        vm.Picker.Hex.Should().Be("#2f7df6", "typing must not jump");
+        vm.Picker.Hue.Should().BeApproximately(215, 2);
+        vm.Picker.Saturation.Should().BeApproximately(0.81, 0.02);
+        vm.Picker.Brightness.Should().Be(96);
+        _applied.Should().BeEmpty();
     }
 
     [Theory]
     [InlineData("#2F7D")]
     [InlineData("#")]
     [InlineData("")]
-    public void A_colour_still_being_typed_says_nothing_and_changes_nothing(string typed)
+    public void A_hex_still_being_typed_says_nothing_and_leaves_the_wheel_alone(string typed)
     {
         var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+        var hue = vm.Picker.Hue;
 
-        vm.AccentInput = typed;
+        vm.Picker.Hex = typed;
 
-        vm.AccentError.Should().BeEmpty();
-        vm.Accent.Should().Be(AppSettings.DefaultAccent);
-        _applied.Should().BeEmpty();
+        vm.Picker.HasError.Should().BeFalse();
+        vm.Picker.Hue.Should().Be(hue);
+    }
+
+    [Fact]
+    public void Apply_sets_the_accent_saves_it_and_closes_the_panel()
+    {
+        var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+        vm.Picker.Hex = "2f7df6";
+
+        vm.Picker.ApplyCommand.Execute(null);
+
+        vm.Accent.Should().Be("#2F7DF6");
+        vm.Picker.IsOpen.Should().BeFalse();
+        _applied.Last().AccentColor.Should().Be("#2F7DF6");
+        new AppSettingsStore(FilePath).Load().AccentColor.Should().Be("#2F7DF6");
     }
 
     [Theory]
     [InlineData("#GGGGGG")]
-    [InlineData("#12345Z")]
     [InlineData("mavi renk")]
-    public void A_full_length_wrong_colour_is_explained_and_not_applied(string typed)
+    [InlineData("#12")]
+    public void Apply_with_a_wrong_hex_explains_and_changes_nothing(string typed)
     {
         var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+        vm.Picker.Hex = typed;
 
-        vm.AccentInput = typed;
+        vm.Picker.ApplyCommand.Execute(null);
 
-        vm.AccentError.Should().Contain("#RRGGBB");
-        vm.HasAccentError.Should().BeTrue();
+        vm.Picker.Error.Should().Contain("#RRGGBB");
+        vm.Picker.IsOpen.Should().BeTrue();
         vm.Accent.Should().Be(AppSettings.DefaultAccent);
         _applied.Should().BeEmpty();
     }
 
     [Fact]
-    public void A_correction_clears_the_explanation()
+    public void Cancel_closes_the_panel_and_changes_nothing()
     {
         var vm = Create();
-        vm.AccentInput = "#GGGGGG";
+        vm.Picker.ToggleCommand.Execute(null);
+        vm.Picker.Hex = "#2F7DF6";
 
-        vm.AccentInput = "#00FF00";
+        vm.Picker.CloseCommand.Execute(null);
 
-        vm.HasAccentError.Should().BeFalse();
-        vm.Accent.Should().Be("#00FF00");
+        vm.Picker.IsOpen.Should().BeFalse();
+        vm.Accent.Should().Be(AppSettings.DefaultAccent);
+        _applied.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Picking_a_ready_made_colour_closes_the_open_panel()
+    {
+        var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+
+        vm.PickAccentCommand.Execute("#E5484D");
+
+        vm.Picker.IsOpen.Should().BeFalse();
+        vm.Accent.Should().Be("#E5484D");
+    }
+
+    [Fact]
+    public void The_wheel_keeps_its_hue_when_a_grey_is_typed()
+    {
+        var vm = Create();
+        vm.Picker.ToggleCommand.Execute(null);
+        vm.Picker.Hue = 200;
+        vm.Picker.Saturation = 0.5;
+
+        vm.Picker.Hex = "#808080";
+
+        vm.Picker.Hue.Should().Be(200);
+        vm.Picker.Saturation.Should().Be(0);
+    }
+
+    [Theory]
+    [InlineData(0, 1, 1, "#FF0000")]
+    [InlineData(120, 1, 1, "#00FF00")]
+    [InlineData(240, 1, 1, "#0000FF")]
+    [InlineData(60, 1, 0.5, "#808000")]
+    [InlineData(0, 0, 1, "#FFFFFF")]
+    public void Hue_saturation_and_value_make_the_expected_colour_and_back(double h, double s, double v, string hex)
+    {
+        var color = ColorMath.FromHsv(h, s, v);
+
+        ColorMath.ToHex(color).Should().Be(hex);
+        var (h2, s2, v2) = ColorMath.ToHsv(color);
+        ColorMath.ToHex(ColorMath.FromHsv(h2, s2, v2)).Should().Be(hex);
     }
 
     [Fact]
@@ -194,7 +299,6 @@ public sealed class SettingsViewModelTests : IDisposable
         vm.ResetAccentCommand.Execute(null);
 
         vm.Accent.Should().Be("#9E20E6");
-        vm.AccentInput.Should().Be("#9E20E6");
         vm.Swatches.Single(s => s.IsSelected).Name.Should().Be("Mor");
     }
 
@@ -217,7 +321,7 @@ public sealed class SettingsViewModelTests : IDisposable
         vm.PickAccentCommand.Execute("#14A3C7");
         vm.AutoCheckUpdates = false;
 
-        _applied.Last().Should().Be(new AppSettings { Theme = ThemeMode.Light, AccentColor = "#14A3C7", AutoCheckUpdates = false, RecolorLogo = true });
+        _applied.Last().Should().Be(new AppSettings { Theme = ThemeMode.Light, AccentColor = "#14A3C7", AutoCheckUpdates = false, RecolorLogo = true, Language = Strings.Language });
     }
 
     [Fact]

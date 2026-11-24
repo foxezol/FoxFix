@@ -2,6 +2,7 @@
 using System.IO;
 using FoxFix.Core;
 using FoxFix.Core.Commands;
+using FoxFix.Core.Devices;
 using FoxFix.Core.Diagnostics;
 using FoxFix.Core.Diagnostics.Checks;
 using FoxFix.Core.Cleanup;
@@ -29,6 +30,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        // The shortcut goes back to Windows and no measuring session is left behind.
+        _main?.Overlay?.Shutdown();
         _theme?.Dispose();
         base.OnExit(e);
     }
@@ -55,7 +58,7 @@ public partial class App : Application
         {
             var logPath = CrashLog.Write(args.Exception);
             MessageBox.Show(
-                $"{ErrorCodes.Tag(ErrorCodes.Unexpected)}FoxFix beklenmedik bir hata verdi ve kapanacak.\n\n{args.Exception.Message}\n\nAyrıntılar şu dosyada: {logPath}",
+                ErrorCodes.Tag(ErrorCodes.Unexpected) + Strings.Format(Strings.AppCrashed, args.Exception.Message, logPath),
                 "FoxFix", MessageBoxButton.OK, MessageBoxImage.Error);
             args.Handled = true;
             Shutdown(1);
@@ -72,6 +75,20 @@ public partial class App : Application
 
         // FoxDPI.exe opens only FoxDPI: no splash, no main window.
         var onlyFoxDpi = e.Args.Contains(DirectStart.Argument);
+
+        // The language is the first thing: every text below is built in it. The very first start asks (a window that speaks both).
+        if (settings.Language.Length == 0 && !onlyFoxDpi)
+        {
+            var language = new LanguageWindow(_theme);
+            language.ShowDialog();
+            if (language.Chosen is { } chosen)
+            {
+                settings = settings with { Language = chosen };
+                settingsStore.Save(settings);
+            }
+        }
+
+        Strings.SetLanguage(settings.Language);
 
         // Something to look at right away; the rest of the start-up happens behind it.
         SplashWindow? splash = null;
@@ -170,7 +187,16 @@ public partial class App : Application
             () => foxDpi.StopAsync(),
             StartDetached,
             () => _ = Task.Delay(1500).ContinueWith(_ => Dispatcher.InvokeAsync(Shutdown)));
-        var settingsVm = new SettingsViewModel(settingsStore, settings, _theme.Configure, updates);
+        var settingsVm = new SettingsViewModel(settingsStore, settings, _theme.Configure, updates, restart: () => _ = RestartAsync(foxDpi));
+        var devicesVm = new DevicesViewModel(
+            new DeviceChecker(new SystemDeviceSource(), new PrivacyReader(new SystemRegistryReader())),
+            new SoundPlayerToneTester(), OpenSettingsPage);
+        var overlayVm = new OverlayViewModel(
+            settingsVm, new WpfOverlayHost(),
+            () => new FoxFix.Core.Overlay.OverlayService(
+                new FoxFix.Core.Overlay.EtwPresentFeed(), new FoxFix.Core.Overlay.SystemCpuSource(), new FoxFix.Core.Overlay.WmiGpuSource(),
+                foreground: ForegroundProcessId.Get, ignore: FoxFix.Core.Overlay.OverlayService.IgnoreSystemPrograms()));
+        var onboardingVm = new OnboardingViewModel(settingsVm, page => _main.OpenPageCommand.Execute(page));
         _main = new MainViewModel(
             engine, fixFlow, reports, new WpfClipboardService(), new WindowsReportFileSaver(),
             speed, startupVm, cleanupVm, gdpi, OpenLink, notice, new AccessViewModel(new AccessTester(new SystemHttpsProbe()), gdpi),
@@ -179,7 +205,9 @@ public partial class App : Application
                 tweakCatalog, tweakFix, Environment.OSVersion.Version.Build,
                 () => fixFlow.StartOptionalCommand.ExecuteAsync(WindowsTweakFix.FixIdValue),
                 tweakBackupService, tweakBackups, tweakRestore,
-                () => fixFlow.StartOptionalCommand.ExecuteAsync(TweakRestoreFix.FixIdValue)));
+                () => fixFlow.StartOptionalCommand.ExecuteAsync(TweakRestoreFix.FixIdValue)),
+            devicesVm, onboardingVm, overlayVm);
+        overlayVm.Start();
         splash?.Report(0.45);
 
         // The small FoxDPI window (and its notification-area icon) exists exactly while FoxDPI runs.
@@ -241,6 +269,9 @@ public partial class App : Application
         splash.Close();
         WindowFocus.BringToFront(window);
 
+        // The first start asks once whether to take the tour (the language was chosen just before).
+        onboardingVm.OfferTourIfFirstRun();
+
         // Quiet: nothing is shown unless a newer version exists. The Ayarlar page switches it off.
         if (settingsVm.AutoCheckUpdates)
         {
@@ -254,11 +285,17 @@ public partial class App : Application
         }
         else if (e.Args.Contains("--goster=bildirim"))
         {
-            notice.Show("FoxDPI başlamadı", Strings.Get(Strings.GdpiBlockedForeign));
+            notice.Show(Strings.Get(Strings.DpiNotStartedTitle), Strings.Get(Strings.GdpiBlockedForeign));
         }
         else if (e.Args.Contains("--goster=guncelleme"))
         {
             updates.Offer(new ReleaseInfo(new Version(9, 9, 9), "v9.9.9", UpdateViewModel.ReleasesUrl, "- Örnek bir yenilik\n- Başka bir yenilik"), "Yeni sürüm yayımlandı: 9.9.9");
+        }
+
+        // The reopening after a language change comes back to the Ayarlar page.
+        if (e.Args.Contains("--sayfa=ayarlar"))
+        {
+            _main.OpenPageCommand.Execute(AppPage.Settings);
         }
 
         // The elevated relaunch from the GoodbyeDPI page comes back to that page.
@@ -279,9 +316,37 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"{ErrorCodes.Tag(ErrorCodes.JournalUnreadable)}Geri alma kayıtları okunamadı: {ex.Message}", "FoxFix", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(ErrorCodes.Tag(ErrorCodes.JournalUnreadable) + Strings.Format(Strings.JournalUnreadable, ex.Message), "FoxFix", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
+
+    /// <summary>
+    /// The language is applied when FoxFix opens, so changing it reopens the program (FoxDPI is stopped first: it ends with the program anyway).
+    /// The new process is started by this one, so an elevated FoxFix stays elevated without asking again.
+    /// </summary>
+    private async Task RestartAsync(FoxDpiSession foxDpi)
+    {
+        try
+        {
+            await foxDpi.StopAsync();
+            using var started = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Environment.ProcessPath!, "--sayfa=ayarlar") { UseShellExecute = false });
+            if (started is null)
+            {
+                return;
+            }
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException or IOException)
+        {
+            _main.Notice.Show(Strings.Get(Strings.LangRestartTitle), ex.Message);
+            return;
+        }
+
+        Shutdown();
+    }
+
+    /// <summary>Opens a Windows Settings page (ms-settings:...). The device wizard only ever asks for those.</summary>
+    private static void OpenSettingsPage(string uri) =>
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(uri) { UseShellExecute = true })?.Dispose();
 
     private MainWindow CreateMainWindow()
     {
@@ -350,7 +415,7 @@ public partial class App : Application
         await HideStartingScreenAsync();
         if (!result.Started)
         {
-            MessageBox.Show(result.Message, "FoxDPI başlamadı", MessageBoxButton.OK, MessageBoxImage.Warning);
+            MessageBox.Show(result.Message, Strings.Get(Strings.DpiNotStartedTitle), MessageBoxButton.OK, MessageBoxImage.Warning);
             Shutdown(1);
             return;
         }
@@ -367,7 +432,7 @@ public partial class App : Application
             return;
         }
 
-        _startingScreen = new SplashWindow("FoxDPI", (System.Windows.Media.ImageSource)Resources[ThemeManager.DpiLogoKey], "FoxDPI başlatılıyor…");
+        _startingScreen = new SplashWindow("FoxDPI", (System.Windows.Media.ImageSource)Resources[ThemeManager.DpiLogoKey], Strings.Get(Strings.DpiStarting));
         _startingScreen.Show();
         _startingScreen.Report(0.92, TimeSpan.FromSeconds(3.2));
     }
@@ -418,7 +483,7 @@ public partial class App : Application
         }
         catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            notice.Show("Bağlantı açılamadı", ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
+            notice.Show(Strings.Get(Strings.LinkFailedTitle), ErrorCodes.Tag(ErrorCodes.LinkFailed) + ex.Message);
         }
     }
 

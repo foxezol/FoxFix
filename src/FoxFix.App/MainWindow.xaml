@@ -6,47 +6,105 @@
         Icon="Assets/FoxFix.ico"
         Background="{DynamicResource Background}" Foreground="{DynamicResource Foreground}"
         FontFamily="{StaticResource UiFont}" FontSize="14"
-        TextOptions.TextFormattingMode="Display">
+        TextOptions.TextFormattingMode="Display" UseLayoutRounding="True" SnapsToDevicePixels="True">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="38" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
-        <DataTemplate x:Key="StartupRow">
-            <CheckBox IsChecked="{Binding IsEnabled}" Margin="0,6,0,0" AutomationProperties.Name="{Binding Name}">
-                <StackPanel Orientation="Horizontal">
-                    <!-- The program's own icon; its first letter on a plain tile when it has none -->
-                    <Grid Width="28" Height="28" Margin="4,0,12,0" VerticalAlignment="Center">
-                        <Border CornerRadius="6" Background="{DynamicResource ButtonSecondary}"
-                                Visibility="{Binding HasIcon, Converter={StaticResource InverseBoolToVis}}">
-                            <TextBlock Text="{Binding Initial}" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                       FontWeight="SemiBold" Foreground="{DynamicResource Muted}" />
-                        </Border>
-                        <Image Source="{Binding Icon}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"
-                               Visibility="{Binding HasIcon, Converter={StaticResource BoolToVis}}" />
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock>
-                            <Run Text="{Binding Name, Mode=OneWay}" FontWeight="SemiBold" />
-                            <Run Text="  yönetici izni gerekir" Foreground="{DynamicResource Muted}" FontSize="12"
-                                 x:Name="AdminTag" />
-                        </TextBlock>
-                        <TextBlock Text="{Binding Command}" Style="{StaticResource Caption}"
-                                   TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" MaxWidth="560" />
-                    </StackPanel>
-                </StackPanel>
-            </CheckBox>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding NeedsAdmin}" Value="False">
-                    <Setter TargetName="AdminTag" Property="Text" Value="" />
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
+        <!-- The slider for the colour wheel's brightness: a 6 px track filled with the accent colour and a round thumb -->
+        <Style x:Key="BrightnessSlider" TargetType="Slider">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid Background="Transparent" SnapsToDevicePixels="True">
+                            <Border Height="6" CornerRadius="3" Background="{DynamicResource Divider}" />
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="6" CornerRadius="3" Background="{DynamicResource Accent}" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="6" Background="Transparent" />
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Focusable="True">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse x:Name="Knob" Width="18" Height="18" Fill="{DynamicResource Foreground}" Stroke="{DynamicResource Accent}" StrokeThickness="2" />
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsKeyboardFocused" Value="True">
+                                                        <Setter TargetName="Knob" Property="Stroke" Value="{DynamicResource AccentText}" />
+                                                        <Setter TargetName="Knob" Property="StrokeThickness" Value="3" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- The last circle after the ready-made colours: the wheel itself; ringed when a custom colour is in use or the panel is open -->
+        <Style x:Key="WheelSwatch" TargetType="Button">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Margin" Value="0,0,6,6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <Ellipse x:Name="Halo" StrokeThickness="2" Stroke="Transparent" />
+                            <Ellipse Margin="5">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{x:Static local:ColorWheel.SharedWheel}" Stretch="Fill" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse x:Name="Dot" Width="12" Height="12" Fill="{DynamicResource Accent}" Stroke="{DynamicResource Background}" StrokeThickness="2"
+                                     Visibility="{Binding DataContext.Settings.IsCustomAccent, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Halo" Property="Stroke" Value="{DynamicResource Muted}" /></Trigger>
+                            <DataTrigger Binding="{Binding DataContext.Settings.CustomSwatchSelected, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                <Setter TargetName="Halo" Property="Stroke" Value="{DynamicResource Foreground}" />
+                            </DataTrigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Halo" Property="Stroke" Value="{DynamicResource AccentText}" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="WindowFrame">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="0" />
+        <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="1">
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="0" />
         <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
-    <ScrollViewer x:Name="Scroller" Grid.Column="1" Margin="232,0,0,0" VerticalScrollBarVisibility="Auto" Focusable="False">
-        <StackPanel x:Name="PageHost" MaxWidth="760" Margin="36,30,36,36">
+    <ScrollViewer x:Name="Scroller" Grid.Column="1" Margin="232,38,0,0" VerticalScrollBarVisibility="Auto" Focusable="False">
+        <StackPanel x:Name="PageHost" MaxWidth="760" Margin="36,8,36,36">
             <StackPanel.RenderTransform>
                 <TranslateTransform />
             </StackPanel.RenderTransform>
@@ -66,6 +124,14 @@
             <!-- ============ HOME ============ -->
             <StackPanel Visibility="{Binding IsHome, Converter={StaticResource BoolToVis}}">
 
+                <!-- After a repair: what the repair changed, set against the check from before it -->
+                <Border Style="{StaticResource Callout}" Margin="0,0,0,12" Visibility="{Binding HasComparison, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{local:T CompareTitle}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ComparisonText}" TextWrapping="Wrap" LineHeight="21" Margin="0,6,0,0" AutomationProperties.LiveSetting="Polite" />
+                    </StackPanel>
+                </Border>
+
                 <!-- The verdict and the line from this computer to the internet: the one thing this screen is about.
                      The band takes the verdict's colour, quietly; the words and the symbols carry the meaning. -->
                 <Border Style="{StaticResource VerdictBand}" BorderThickness="1" CornerRadius="12" Padding="24,22,24,24">
@@ -84,15 +150,15 @@
                                            Foreground="{DynamicResource Foreground}" Opacity="0.82" />
                                 <StackPanel Margin="0,14,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
                                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding DiagnosisPercent}" Height="4"
-                                                 AutomationProperties.Name="Kontrol ilerlemesi" />
+                                                 AutomationProperties.Name="{local:T UiKontrolIlerlemesi}" />
                                     <TextBlock Text="{Binding DiagnosisProgressText}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
                                 </StackPanel>
                                 <WrapPanel Margin="0,18,0,0">
-                                    <Button Content="Beni Düzelt" Command="{Binding RepairPicker.OpenCommand}"
-                                            Style="{StaticResource HeroButton}" AutomationProperties.Name="Beni Düzelt"
-                                            ToolTip="Önce neyin değişeceğini seçersiniz ve önizlemede görürsünüz" />
-                                    <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
-                                            Style="{StaticResource SecondaryButton}" MinHeight="44" AutomationProperties.Name="Yeniden kontrol et" />
+                                    <Button x:Name="TourFixButton" Content="{local:T UiBeniDuzelt}" Command="{Binding RepairPicker.OpenCommand}" IsEnabled="{Binding IsIdle}"
+                                            Style="{StaticResource HeroButton}" AutomationProperties.Name="{local:T UiBeniDuzelt}"
+                                            ToolTip="{local:T UiOnceNeyinDegiseceginiSecersinizVeO}" />
+                                    <Button Content="{local:T UiYenidenKontrolEt}" Command="{Binding RunDiagnosticsCommand}"
+                                            Style="{StaticResource SecondaryButton}" MinHeight="44" AutomationProperties.Name="{local:T UiYenidenKontrolEt}" />
                                 </WrapPanel>
                             </StackPanel>
                         </Grid>
@@ -147,9 +213,9 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <Button Content="Ayrıntıları göster" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}"
+                            <Button Content="{local:T UiAyrintilariGoster}" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}"
                                     Style="{StaticResource GhostButton}" HorizontalAlignment="Left" Margin="-10,14,0,0"
-                                    AutomationProperties.Name="Bağlantı kontrolünün ayrıntılarını göster" />
+                                    AutomationProperties.Name="{local:T UiBaglantiKontrolununAyrintilariniGo}" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -163,7 +229,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <Image Source="{DynamicResource FoxDpiLogoImage}" Height="38" Margin="0,0,14,0" RenderOptions.BitmapScalingMode="HighQuality"
-                                   AutomationProperties.Name="FoxDPI logosu" />
+                                   AutomationProperties.Name="{local:T UiFoxdpiLogosu}" />
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="FoxDPI" Style="{StaticResource SectionTitle}" />
                                 <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
@@ -182,10 +248,10 @@
                                     <TextBlock AutomationProperties.LiveSetting="Polite">
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock" BasedOn="{StaticResource Caption}">
-                                                <Setter Property="Text" Value="Kapalı, engelli sitelere doğrudan bağlanılıyor" />
+                                                <Setter Property="Text" Value="{local:T UiDpiOffDirect}" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Dpi.IsActive}" Value="True">
-                                                        <Setter Property="Text" Value="Açık, erişim engellerini aşıyor" />
+                                                        <Setter Property="Text" Value="{local:T UiDpiOnBypassing}" />
                                                         <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
@@ -197,10 +263,10 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                             <Button Content="{Binding Dpi.FoxDpiButtonText}" Command="{Binding Dpi.ToggleFoxDpiCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="FoxDPI'yı başlat ya da penceresini göster" />
-                            <Button Content="DPI ayarları" Command="{Binding OpenPageCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiFoxdpiYiBaslatYaDaPenceresini}" />
+                            <Button Content="{local:T UiDpiAyarlari}" Command="{Binding OpenPageCommand}"
                                     CommandParameter="{x:Static local:AppPage.DnsDpi}" Style="{StaticResource SecondaryButton}"
-                                    Margin="0" AutomationProperties.Name="DPI ayarları" />
+                                    Margin="0" AutomationProperties.Name="{local:T UiDpiAyarlari}" />
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -213,12 +279,12 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Bağlantı hızı" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
+                            <TextBlock Text="{local:T UiBaglantiHizi}" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Content="Hız testini başlat" Command="{Binding Speed.StartCommand}"
-                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini başlat" />
-                                <Button Content="Durdur" Command="{Binding Speed.CancelCommand}" Margin="0"
-                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testini durdur" />
+                                <Button Content="{local:T UiHizTestiniBaslat}" Command="{Binding Speed.StartCommand}"
+                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiHizTestiniBaslat}" />
+                                <Button Content="{local:T UiDurdur}" Command="{Binding Speed.CancelCommand}" Margin="0"
+                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiHizTestiniDurdur}" />
                             </StackPanel>
                         </Grid>
                         <Grid Margin="0,18,0,0">
@@ -230,32 +296,34 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="İndirme" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{local:T UiIndirme}" Style="{StaticResource Caption}" />
                                 <TextBlock Text="{Binding Speed.DownloadText}" Style="{StaticResource Reading}" Margin="0,2,0,0" />
                             </StackPanel>
                             <Border Grid.Column="1" Width="1" Background="{DynamicResource Divider}" Margin="16,4" />
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Yükleme" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{local:T UiYukleme}" Style="{StaticResource Caption}" />
                                 <TextBlock Text="{Binding Speed.UploadText}" Style="{StaticResource Reading}" Margin="0,2,0,0" />
                             </StackPanel>
                             <Border Grid.Column="3" Width="1" Background="{DynamicResource Divider}" Margin="16,4" />
                             <StackPanel Grid.Column="4">
-                                <TextBlock Text="Ping" Style="{StaticResource Caption}" />
+                                <TextBlock Text="{local:T UiPing}" Style="{StaticResource Caption}" />
                                 <TextBlock Text="{Binding Speed.LatencyText}" Style="{StaticResource Reading}" Margin="0,2,0,0" />
                                 <TextBlock Style="{StaticResource Caption}">
-                                    <Run Text="Titreşim" />
+                                    <Run Text="{local:T UiTitresim}" />
                                     <Run Text="{Binding Speed.JitterText, Mode=OneWay}" />
                                 </TextBlock>
                             </StackPanel>
                         </Grid>
-                        <ProgressBar IsIndeterminate="True" Height="4" Margin="0,16,0,0"
-                                     Visibility="{Binding Speed.IsRunning, Converter={StaticResource BoolToVis}}"
-                                     AutomationProperties.Name="Hız testi sürüyor" />
+                        <StackPanel Margin="0,16,0,0" Visibility="{Binding Speed.IsRunning, Converter={StaticResource BoolToVis}}">
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Speed.Percent}" Height="4"
+                                         AutomationProperties.Name="{local:T UiHizTestiSuruyor}" />
+                            <TextBlock Text="{Binding Speed.ProgressText}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
+                        </StackPanel>
                         <TextBlock Text="{Binding Speed.Status}" Style="{StaticResource BodyMuted}" Margin="0,12,0,0"
                                    AutomationProperties.LiveSetting="Polite" />
                         <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Visibility="{Binding Speed.HasResult, Converter={StaticResource BoolToVis}}">
-                            <Button Content="Sonucu paylaş" Command="{Binding Speed.ShareCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hız testi sonucunu paylaş" />
+                            <Button Content="{local:T UiSonucuPaylas}" Command="{Binding Speed.ShareCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiHizTestiSonucunuPaylas}" />
                             <!-- After the picture is copied: say so -->
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
                                         Visibility="{Binding Speed.HasShareStatus, Converter={StaticResource BoolToVis}}">
@@ -266,7 +334,7 @@
                             </StackPanel>
                         </StackPanel>
                         <TextBlock Style="{StaticResource Caption}" Margin="0,12,0,0"
-                                   Text="Ölçüm Cloudflare sunucularıyla yapılır ve bağlantı hızınıza göre yüzlerce MB veri kullanabilir. Karşı tarafa yalnızca IP adresiniz iletilir." />
+                                   Text="{local:T UiOlcumCloudflareSunuculariylaYapili}" />
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -284,14 +352,14 @@
                             <TextBlock Text="{Binding VerdictTitle}" Style="{StaticResource SectionTitle}" FontSize="19" AutomationProperties.LiveSetting="Polite" />
                             <TextBlock Text="{Binding VerdictDetail}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                             <StackPanel Margin="0,14,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
-                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding DiagnosisPercent}" AutomationProperties.Name="Kontrol ilerlemesi" />
+                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding DiagnosisPercent}" AutomationProperties.Name="{local:T UiKontrolIlerlemesi}" />
                                 <TextBlock Text="{Binding DiagnosisProgressText}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
                             </StackPanel>
                             <WrapPanel Margin="0,16,0,0">
-                                <Button Content="Beni Düzelt" Command="{Binding RepairPicker.OpenCommand}"
-                                        Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Beni Düzelt" />
-                                <Button Content="Yeniden kontrol et" Command="{Binding RunDiagnosticsCommand}"
-                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Yeniden kontrol et" />
+                                <Button Content="{local:T UiBeniDuzelt}" Command="{Binding RepairPicker.OpenCommand}"
+                                        Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiBeniDuzelt}" />
+                                <Button Content="{local:T UiYenidenKontrolEt}" Command="{Binding RunDiagnosticsCommand}"
+                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiYenidenKontrolEt}" />
                             </WrapPanel>
                         </StackPanel>
                     </Grid>
@@ -347,15 +415,15 @@
                 <!-- Startup programs -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Açılışta başlayan programlar" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiAcilistaBaslayanProgramlar}" Style="{StaticResource SectionTitle}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="İşaretini kaldırdığınız program silinmez, yalnızca Windows açılırken başlamaz. Ne olduğunu bilmediğiniz bir girişi kapatmayın." />
+                                   Text="{local:T UiIsaretiniKaldirdiginizProgramSilin}" />
 
                         <Border Style="{StaticResource Callout}" Background="{DynamicResource BadSoft}" Margin="0,12,0,0"
                                 Visibility="{Binding Startup.HasLoadError, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="{Binding Startup.LoadError}" TextWrapping="Wrap" />
                         </Border>
-                        <TextBlock Text="Windows açılışında başlayan bir program bulunamadı." Style="{StaticResource BodyMuted}" Margin="0,12,0,0"
+                        <TextBlock Text="{local:T UiWindowsAcilisindaBaslayanBirProgra}" Style="{StaticResource BodyMuted}" Margin="0,12,0,0"
                                    Visibility="{Binding Startup.IsEmpty, Converter={StaticResource BoolToVis}}" />
 
                         <Expander Header="{Binding Startup.EnabledHeader}" Style="{StaticResource FoldSection}" Margin="0,14,0,0">
@@ -366,10 +434,10 @@
                         </Expander>
 
                         <WrapPanel Margin="0,16,0,0">
-                            <Button Content="Değişiklikleri uygula" Command="{Binding Startup.ApplyCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Açılış değişikliklerini uygula" />
-                            <Button Content="Listeyi yenile" Command="{Binding Startup.RefreshCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Listeyi yenile" />
+                            <Button Content="{local:T UiDegisiklikleriUygula}" Command="{Binding Startup.ApplyCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiAcilisDegisiklikleriniUygula}" />
+                            <Button Content="{local:T UiListeyiYenile}" Command="{Binding Startup.RefreshCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiListeyiYenile}" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -377,9 +445,9 @@
                 <!-- Disk cleanup -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Disk temizliği" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiDiskTemizligi}" Style="{StaticResource SectionTitle}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Seçtiğiniz gereksiz dosyalar silinir. Bu işlem geri alınamaz: dosyalar Geri Dönüşüm Kutusu'na gitmez." />
+                                   Text="{local:T UiSectiginizGereksizDosyalarSilinirB}" />
 
                         <ItemsControl ItemsSource="{Binding Cleanup.Items}" Margin="0,6,0,0" Focusable="False">
                             <ItemsControl.ItemTemplate>
@@ -409,13 +477,13 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <WrapPanel>
-                                <Button Content="Seçilenleri temizle" Command="{Binding Cleanup.CleanCommand}"
-                                        Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Seçilenleri temizle" />
-                                <Button Content="Boyutları yeniden hesapla" Command="{Binding Cleanup.ScanCommand}"
-                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Boyutları yeniden hesapla" />
+                                <Button Content="{local:T UiSecilenleriTemizle}" Command="{Binding Cleanup.CleanCommand}"
+                                        Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiSecilenleriTemizle}" />
+                                <Button Content="{local:T UiBoyutlariYenidenHesapla}" Command="{Binding Cleanup.ScanCommand}"
+                                        Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiBoyutlariYenidenHesapla}" />
                             </WrapPanel>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="16,0,0,0">
-                                <TextBlock Text="Seçilenlerin toplamı" Style="{StaticResource Caption}" HorizontalAlignment="Right" />
+                                <TextBlock Text="{local:T UiSecilenlerinToplami}" Style="{StaticResource Caption}" HorizontalAlignment="Right" />
                                 <TextBlock Text="{Binding Cleanup.SelectedTotalText}" FontFamily="{StaticResource NumberFont}" FontSize="18"
                                            FontWeight="SemiBold" HorizontalAlignment="Right" />
                             </StackPanel>
@@ -430,13 +498,13 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <StackPanel>
-                        <TextBlock Text="Windows ayarları" Style="{StaticResource SectionTitle}" FontSize="20" AutomationProperties.HeadingLevel="Level2" />
+                        <TextBlock Text="{local:T UiWindowsAyarlari}" Style="{StaticResource SectionTitle}" FontSize="20" AutomationProperties.HeadingLevel="Level2" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Gizlilik, öneriler, yapay zeka, görev çubuğu, Gezgin ve performans. Uygulamadan önce neyin değişeceği listelenir; her değişiklik Geri Al ile geri alınabilir." />
+                                   Text="{local:T UiGizlilikOnerilerYapayZekaGorevCubu}" />
                     </StackPanel>
-                    <Button Grid.Column="1" Content="Kaynak: Win11Debloat" Command="{Binding OpenWin11DebloatCommand}"
+                    <Button Grid.Column="1" Content="{local:T UiKaynakWin11debloat}" Command="{Binding OpenWin11DebloatCommand}"
                             Style="{StaticResource GhostButton}" VerticalAlignment="Top" Margin="12,0,-10,0"
-                            ToolTip="Ayar listesinin alındığı açık kaynak proje (MIT)" AutomationProperties.Name="Win11Debloat GitHub sayfası" />
+                            ToolTip="{local:T UiAyarListesininAlindigiAcikKaynakPr}" AutomationProperties.Name="{local:T UiWin11debloatGithubSayfasi}" />
                 </Grid>
 
                 <!-- In the app's accent colour until the settings have been saved once -->
@@ -447,29 +515,29 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="Mevcut Windows ayarlarınız henüz kaydedilmedi" FontWeight="SemiBold"
+                            <TextBlock Text="{local:T UiMevcutWindowsAyarlarinizHenuzKayde}" FontWeight="SemiBold"
                                        TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
                             <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0" Foreground="{DynamicResource Foreground}" Opacity="0.85"
-                                       Text="Bir sorun çıkarsa önceki hâline dönebilmek için işlem yapmadan önce kaydetmeniz önerilir. Kaydetmek hiçbir ayarı değiştirmez." />
+                                       Text="{local:T UiBirSorunCikarsaOncekiHalineDonebil}" />
                         </StackPanel>
-                        <Button Grid.Column="1" Content="Mevcut ayarları kaydet" Command="{Binding Tweaks.SaveBackupCommand}" Style="{StaticResource PrimaryButton}"
-                                VerticalAlignment="Center" Margin="16,0,0,0" AutomationProperties.Name="Mevcut ayarları kaydet" />
+                        <Button Grid.Column="1" Content="{local:T UiMevcutAyarlariKaydet}" Command="{Binding Tweaks.SaveBackupCommand}" Style="{StaticResource PrimaryButton}"
+                                VerticalAlignment="Center" Margin="16,0,0,0" AutomationProperties.Name="{local:T UiMevcutAyarlariKaydet}" />
                     </Grid>
                 </Border>
 
                 <!-- Ready-made picks and saved settings -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Hazır ayarlar" Style="{StaticResource SectionTitle}" FontSize="15.5" />
+                        <TextBlock Text="{local:T UiHazirAyarlar}" Style="{StaticResource SectionTitle}" FontSize="15.5" />
                         <TextBlock Style="{StaticResource Caption}" Margin="0,4,0,0"
-                                   Text="Seçmek hiçbir şeyi değiştirmez; uygulamak için listenin üstündeki &quot;Seçilenleri uygula&quot;ya basın." />
+                                   Text="{local:T UiSecmekHicbirSeyiDegistirmezUygulam}" />
                         <WrapPanel Margin="0,12,0,0">
-                            <Button Content="Önerilen ayarları seç" Command="{Binding Tweaks.SelectRecommendedCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Önerilen ayarları seç"
-                                    ToolTip="Çoğu kullanıcı için güvenli ve yararlı olanlar" />
-                            <Button Content="Windows varsayılanına döndür" Command="{Binding Tweaks.ResetToDefaultsCommand}"
-                                    Style="{StaticResource SecondaryButton}" ToolTip="FoxFix'in değiştirdiği ayarlar Windows'un kendi değerine döner"
-                                    AutomationProperties.Name="Windows varsayılanına döndür" />
+                            <Button Content="{local:T UiOnerilenAyarlariSec}" Command="{Binding Tweaks.SelectRecommendedCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiOnerilenAyarlariSec}"
+                                    ToolTip="{local:T UiCoguKullaniciIcinGuvenliVeYararli}" />
+                            <Button Content="{local:T UiWindowsVarsayilaninaDondur}" Command="{Binding Tweaks.ResetToDefaultsCommand}"
+                                    Style="{StaticResource SecondaryButton}" ToolTip="{local:T UiFoxfixInDegistirdigiAyarlarWindows}"
+                                    AutomationProperties.Name="{local:T UiWindowsVarsayilaninaDondur}" />
                         </WrapPanel>
 
                         <Border Style="{StaticResource Hairline}" Margin="0,18,0,14" />
@@ -478,11 +546,11 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="Kayıtlı ayarlarım" Style="{StaticResource SectionTitle}" FontSize="15.5" VerticalAlignment="Center" />
-                            <Button Grid.Column="1" Content="Mevcut ayarları kaydet" Command="{Binding Tweaks.SaveBackupCommand}"
-                                    Style="{StaticResource RowButton}" AutomationProperties.Name="Mevcut ayarları kaydet" />
+                            <TextBlock Text="{local:T UiKayitliAyarlarim}" Style="{StaticResource SectionTitle}" FontSize="15.5" VerticalAlignment="Center" />
+                            <Button Grid.Column="1" Content="{local:T UiMevcutAyarlariKaydet}" Command="{Binding Tweaks.SaveBackupCommand}"
+                                    Style="{StaticResource RowButton}" AutomationProperties.Name="{local:T UiMevcutAyarlariKaydet}" />
                         </Grid>
-                        <TextBlock Text="Henüz kayıt yok. Kaydettiğiniz ayarlar burada listelenir ve tek tıkla geri yüklenebilir."
+                        <TextBlock Text="{local:T UiHenuzKayitYokKaydettiginizAyarlarB}"
                                    Style="{StaticResource Caption}" Margin="0,8,0,0"
                                    Visibility="{Binding Tweaks.HasBackups, Converter={StaticResource InverseBoolToVis}}" />
                         <ItemsControl ItemsSource="{Binding Tweaks.Backups}" Margin="0,6,0,0" Focusable="False">
@@ -498,12 +566,12 @@
                                             <TextBlock Text="{Binding DateText}" Style="{StaticResource Caption}" />
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Content="Geri yükle" Style="{StaticResource RowButton}"
+                                            <Button Content="{local:T UiGeriYukle}" Style="{StaticResource RowButton}"
                                                     Command="{Binding DataContext.Tweaks.RestoreBackupCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" AutomationProperties.Name="Bu kayıttaki ayarları geri yükle" />
-                                            <Button Content="Sil" Style="{StaticResource RowButton}"
+                                                    CommandParameter="{Binding}" AutomationProperties.Name="{local:T UiBuKayittakiAyarlariGeriYukle}" />
+                                            <Button Content="{local:T UiSil}" Style="{StaticResource RowButton}"
                                                     Command="{Binding DataContext.Tweaks.DeleteBackupCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" AutomationProperties.Name="Bu kaydı sil" />
+                                                    CommandParameter="{Binding}" AutomationProperties.Name="{local:T UiBuKaydiSil}" />
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>
@@ -537,7 +605,7 @@
                         <Path Width="15" Height="15" Stretch="Uniform" VerticalAlignment="Center" Stroke="{DynamicResource Muted}" StrokeThickness="1.6"
                               StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M6.5,1.5 A5,5 0 1 0 6.5,11.5 A5,5 0 1 0 6.5,1.5 M10.2,10.2 L14.5,14.5" />
                         <Grid Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                            <TextBlock Text="Ayar ara (örneğin: reklam, Copilot, animasyon)" IsHitTestVisible="False">
+                            <TextBlock Text="{local:T UiAyarAraOrneginReklamCopilotAnimasy}" IsHitTestVisible="False">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock" BasedOn="{StaticResource BodyMuted}">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -550,7 +618,7 @@
                                 </TextBlock.Style>
                             </TextBlock>
                             <TextBox Text="{Binding Tweaks.SearchText, UpdateSourceTrigger=PropertyChanged}" Background="Transparent" BorderThickness="0"
-                                     Padding="0" AutomationProperties.Name="Ayar ara" VerticalAlignment="Center">
+                                     Padding="0" AutomationProperties.Name="{local:T UiAyarAra}" VerticalAlignment="Center">
                                 <TextBox.Template>
                                     <ControlTemplate TargetType="TextBox">
                                         <ScrollViewer x:Name="PART_ContentHost" />
@@ -558,8 +626,8 @@
                                 </TextBox.Template>
                             </TextBox>
                         </Grid>
-                        <Button Grid.Column="2" Style="{StaticResource IconButton}" Width="30" Height="30" ToolTip="Aramayı temizle"
-                                AutomationProperties.Name="Aramayı temizle" Command="{Binding Tweaks.ClearSearchCommand}"
+                        <Button Grid.Column="2" Style="{StaticResource IconButton}" Width="30" Height="30" ToolTip="{local:T UiAramayiTemizle}"
+                                AutomationProperties.Name="{local:T UiAramayiTemizle}" Command="{Binding Tweaks.ClearSearchCommand}"
                                 Visibility="{Binding Tweaks.HasSearch, Converter={StaticResource BoolToVis}}">
                             <Path Width="10" Height="10" Stretch="Uniform" Data="M2,2 L12,12 M12,2 L2,12" StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                   Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
@@ -572,20 +640,20 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Button Content="Seçilenleri uygula" Command="{Binding Tweaks.ApplyCommand}"
-                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Seçilen ayarları uygula" />
+                    <Button Content="{local:T UiSecilenleriUygula}" Command="{Binding Tweaks.ApplyCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiSecilenAyarlariUygula}" />
                     <TextBlock Grid.Column="1" Text="{Binding Tweaks.SelectedText}" Style="{StaticResource BodyMuted}" VerticalAlignment="Center"
                                Margin="4,0,0,0" AutomationProperties.LiveSetting="Polite" />
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button Content="Tümünü aç" Command="{Binding Tweaks.ExpandAllCommand}" Margin="0"
-                                Style="{StaticResource GhostButton}" AutomationProperties.Name="Tüm listeleri aç" />
-                        <Button Content="Tümünü kapat" Command="{Binding Tweaks.CollapseAllCommand}" Margin="0,0,-10,0"
-                                Style="{StaticResource GhostButton}" AutomationProperties.Name="Tüm listeleri kapat" />
+                        <Button Content="{local:T UiTumunuAc}" Command="{Binding Tweaks.ExpandAllCommand}" Margin="0"
+                                Style="{StaticResource GhostButton}" AutomationProperties.Name="{local:T UiTumListeleriAc}" />
+                        <Button Content="{local:T UiTumunuKapat}" Command="{Binding Tweaks.CollapseAllCommand}" Margin="0,0,-10,0"
+                                Style="{StaticResource GhostButton}" AutomationProperties.Name="{local:T UiTumListeleriKapat}" />
                     </StackPanel>
                 </Grid>
                 <TextBlock Style="{StaticResource Caption}" Margin="0,10,0,0"
-                           Text="Yüzdeler ne kadar fark yaratacağına dair kabaca bir tahmindir, ölçüm değildir. Kırmızı yüksek, sarı orta, yeşil düşük etki demektir." />
-                <TextBlock Text="Aramanıza uyan ayar yok. Başka bir kelime deneyin." Style="{StaticResource BodyMuted}" Margin="0,16,0,0"
+                           Text="{local:T UiYuzdelerNeKadarFarkYaratacaginaDai}" />
+                <TextBlock Text="{local:T UiAramanizaUyanAyarYokBaskaBir}" Style="{StaticResource BodyMuted}" Margin="0,16,0,0"
                            Visibility="{Binding Tweaks.HasResults, Converter={StaticResource InverseBoolToVis}}" />
 
                 <!-- The lists: one surface, a hairline between lists -->
@@ -616,8 +684,8 @@
                                     </Button>
 
                                     <StackPanel Margin="34,0,12,14" Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVis}}">
-                                        <Button Content="Bu listedeki önerilenleri seç" Command="{Binding SelectRecommendedCommand}" Style="{StaticResource GhostButton}"
-                                                HorizontalAlignment="Left" Margin="-10,0,0,0" AutomationProperties.Name="Bu listedeki önerilenleri seç"
+                                        <Button Content="{local:T UiBuListedekiOnerilenleriSec}" Command="{Binding SelectRecommendedCommand}" Style="{StaticResource GhostButton}"
+                                                HorizontalAlignment="Left" Margin="-10,0,0,0" AutomationProperties.Name="{local:T UiBuListedekiOnerilenleriSec}"
                                                 Visibility="{Binding HasToggles, Converter={StaticResource BoolToVis}}" />
 
                                         <ItemsControl ItemsSource="{Binding Toggles}" Focusable="False">
@@ -674,21 +742,21 @@
                                                                     </Border>
                                                                     <Border BorderBrush="{DynamicResource AccentText}" BorderThickness="1" CornerRadius="10" Padding="7,1" Margin="0,0,8,0"
                                                                             VerticalAlignment="Center" Visibility="{Binding IsRecommended, Converter={StaticResource BoolToVis}}">
-                                                                        <TextBlock Text="Önerilen" FontSize="12" Foreground="{DynamicResource AccentText}" />
+                                                                        <TextBlock Text="{local:T UiOnerilen}" FontSize="12" Foreground="{DynamicResource AccentText}" />
                                                                     </Border>
                                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding IsApplied, Converter={StaticResource BoolToVis}}">
                                                                         <Path Width="11" Height="11" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
                                                                               StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                                                               VerticalAlignment="Center" Margin="0,0,5,0" />
-                                                                        <TextBlock Text="Uygulandı" FontSize="12" Foreground="{DynamicResource Foreground}" />
+                                                                        <TextBlock Text="{local:T UiUygulandi}" FontSize="12" Foreground="{DynamicResource Foreground}" />
                                                                     </StackPanel>
                                                                 </WrapPanel>
                                                             </StackPanel>
                                                         </CheckBox>
-                                                        <Button Grid.Column="1" Content="Geri aç" VerticalAlignment="Top" Style="{StaticResource RowButton}"
-                                                                ToolTip="Bu ayarı Windows'un kendi değerine döndürür; önce önizleme gösterilir"
+                                                        <Button Grid.Column="1" Content="{local:T UiGeriAc}" VerticalAlignment="Top" Style="{StaticResource RowButton}"
+                                                                ToolTip="{local:T UiBuAyariWindowsUnKendiDegerine}"
                                                                 Command="{Binding DataContext.Tweaks.RevertCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                                CommandParameter="{Binding}" AutomationProperties.Name="Bu ayarı geri aç"
+                                                                CommandParameter="{Binding}" AutomationProperties.Name="{local:T UiBuAyariGeriAc}"
                                                                 Visibility="{Binding CanRevert, Converter={StaticResource BoolToVis}}" />
                                                     </Grid>
                                                 </DataTemplate>
@@ -708,7 +776,7 @@
                                                                     <RadioButton IsChecked="{Binding IsSelected}" Margin="0,7,0,0" AutomationProperties.Name="{Binding Label}">
                                                                         <WrapPanel>
                                                                             <TextBlock Text="{Binding Label}" TextWrapping="Wrap" />
-                                                                            <TextBlock Text="şu an" Foreground="{DynamicResource AccentText}" FontWeight="SemiBold" FontSize="12"
+                                                                            <TextBlock Text="{local:T UiSuAn}" Foreground="{DynamicResource AccentText}" FontWeight="SemiBold" FontSize="12"
                                                                                        Margin="8,1,0,0" VerticalAlignment="Center"
                                                                                        Visibility="{Binding IsCurrent, Converter={StaticResource BoolToVis}}" />
                                                                         </WrapPanel>
@@ -732,6 +800,31 @@
             <!-- ============ DNS AND DPI ============ -->
             <StackPanel Visibility="{Binding IsDnsDpi, Converter={StaticResource BoolToVis}}">
 
+                <!-- Windows DNS comes first: on many computers FoxDPI does not work without it, so it gets the accent frame and a "recommended" tag -->
+                <Border Style="{StaticResource Panel}" BorderBrush="{DynamicResource Accent}" BorderThickness="2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <WrapPanel>
+                                <TextBlock Text="{local:T UiWindowsDnsAyari}" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
+                                <Border Background="{DynamicResource AccentSoft}" BorderBrush="{DynamicResource AccentText}" BorderThickness="1" CornerRadius="10"
+                                        Padding="9,2" Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{local:T DnsRecommendedTag}" FontSize="12.5" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                                </Border>
+                            </WrapPanel>
+                            <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
+                                       Text="{local:T UiFoxdpiAcikkenHalaBaglanamiyorsaniz}" />
+                            <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0" TextWrapping="Wrap" Text="{local:T DnsRecommendedWhy}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="{local:T UiDnsI1111}" Command="{Binding Dpi.SetCloudflareDnsCommand}"
+                                Style="{StaticResource PrimaryButton}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                AutomationProperties.Name="{local:T UiDnsI11112}" />
+                    </Grid>
+                </Border>
+
                 <!-- FoxDPI: what it is, its state now, and what may need admin rights -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
@@ -741,11 +834,11 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <Image Source="{DynamicResource FoxDpiLogoImage}" Height="40" Margin="0,0,14,0" VerticalAlignment="Top"
-                                   RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="FoxDPI logosu" />
+                                   RenderOptions.BitmapScalingMode="HighQuality" AutomationProperties.Name="{local:T UiFoxdpiLogosu}" />
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="FoxDPI" Style="{StaticResource SectionTitle}" />
                                 <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                           Text="Erişim engeli olan sitelere bağlanmanızı sağlar. Açık kaynaklı GoodbyeDPI'a dayanır; ağınızda çalışan ayarı deneyerek bulur." />
+                                           Text="{local:T UiErisimEngeliOlanSitelereBaglanmani}" />
                             </StackPanel>
                         </Grid>
                         <Border Background="{DynamicResource Background}" CornerRadius="8" Padding="14,10" Margin="0,14,0,0">
@@ -759,10 +852,10 @@
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock TextWrapping="Wrap" VerticalAlignment="Center"
-                                           Text="Denemek ve kurmak için yönetici izni gerekir. FoxFix yönetici olarak yeniden açılır ve bu sayfaya döner." />
-                                <Button Grid.Column="1" Content="Yönetici olarak yeniden aç" Command="{Binding Dpi.ElevateCommand}"
+                                           Text="{local:T UiDenemekVeKurmakIcinYoneticiIzni}" />
+                                <Button Grid.Column="1" Content="{local:T UiYoneticiOlarakYenidenAc}" Command="{Binding Dpi.ElevateCommand}"
                                         Style="{StaticResource PrimaryButton}" Margin="16,0,0,0" VerticalAlignment="Center"
-                                        AutomationProperties.Name="Yönetici olarak yeniden aç" />
+                                        AutomationProperties.Name="{local:T UiYoneticiOlarakYenidenAc}" />
                             </Grid>
                         </Border>
 
@@ -776,9 +869,9 @@
                                       StrokeThickness="1.6" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
                                       Data="M8,1.8 L14.6,13.6 L1.4,13.6 Z M8,6 L8,9.4 M8,11.6 L8,11.7" />
                                 <StackPanel Grid.Column="1">
-                                    <TextBlock Text="Oyunlar ve hile önleme sistemleri" FontWeight="SemiBold" />
+                                    <TextBlock Text="{local:T UiOyunlarVeHileOnlemeSistemleri}" FontWeight="SemiBold" />
                                     <TextBlock Style="{StaticResource Caption}" Margin="0,3,0,0" Foreground="{DynamicResource Foreground}" Opacity="0.85"
-                                               Text="EasyAntiCheat, Vanguard, FACEIT gibi sistemler FoxDPI'ın kullandığı WinDivert sürücüsünü engelleyebilir. Oyunu açmadan önce FoxDPI penceresini kapatın; sürücü kendiliğinden bellekten kalkar, yeniden başlatma gerekmez." />
+                                               Text="{local:T UiEasyanticheatVanguardFaceitGibiSis}" />
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -788,22 +881,22 @@
                 <!-- Find the setting that works here, then pick it -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="En uygun ayarı bul" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiEnUygunAyariBul}" Style="{StaticResource SectionTitle}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Her ayar aşağıdaki sitelerde denenir. Birkaç dakika sürebilir; bu sırada bağlantı kısa süre kesilebilir." />
-                        <TextBlock Text="Denenecek siteler" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,6" />
-                        <TextBox Text="{Binding Dpi.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler"
+                                   Text="{local:T UiHerAyarAsagidakiSitelerdeDenenirBi}" />
+                        <TextBlock Text="{local:T UiDenenecekSiteler}" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,6" />
+                        <TextBox Text="{Binding Dpi.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{local:T UiDenenecekSiteler}"
                                  IsEnabled="{Binding Dpi.CanAct}" />
-                        <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0" Text="Siteleri virgülle ayırın." />
+                        <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0" Text="{local:T UiSiteleriVirgulleAyirin}" />
 
                         <WrapPanel Margin="0,16,0,0">
-                            <Button Content="En uygun ayarı bul" Command="{Binding Dpi.RunTrialCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="En uygun ayarı bul" />
-                            <Button Content="Durdur" Command="{Binding Dpi.RunTrialCancelCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Denemeyi durdur" />
+                            <Button Content="{local:T UiEnUygunAyariBul}" Command="{Binding Dpi.RunTrialCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiEnUygunAyariBul}" />
+                            <Button Content="{local:T UiDurdur}" Command="{Binding Dpi.RunTrialCancelCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiDenemeyiDurdur}" />
                         </WrapPanel>
                         <StackPanel Margin="0,14,0,0" Visibility="{Binding Dpi.IsTesting, Converter={StaticResource BoolToVis}}">
-                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Dpi.TrialPercent}" AutomationProperties.Name="Deneme ilerlemesi" />
+                            <ProgressBar Minimum="0" Maximum="100" Value="{Binding Dpi.TrialPercent}" AutomationProperties.Name="{local:T UiDenemeIlerlemesi}" />
                             <TextBlock Text="{Binding Dpi.TrialProgressText}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
                         </StackPanel>
 
@@ -814,7 +907,7 @@
                         <!-- The settings, one per line: pick the one to use -->
                         <Border Style="{StaticResource Hairline}" Margin="0,18,0,8" />
                         <TextBlock Style="{StaticResource Caption}" Margin="0,0,0,6"
-                                   Text="FoxDPI hizmet olarak kurulu olduğu için ayar değiştirilemez. Değiştirmek için önce hizmeti kaldırın."
+                                   Text="{local:T UiFoxdpiHizmetOlarakKuruluOlduguIcin}"
                                    Visibility="{Binding Dpi.IsServiceInstalled, Converter={StaticResource BoolToVis}}" />
                         <ItemsControl ItemsSource="{Binding Dpi.Rows}" IsEnabled="{Binding Dpi.CanChangeSetting}" Focusable="False">
                             <ItemsControl.ItemTemplate>
@@ -827,7 +920,7 @@
                                         <RadioButton GroupName="gdpi" IsChecked="{Binding IsSelected}" Margin="0,4" AutomationProperties.Name="{Binding Title}">
                                             <WrapPanel>
                                                 <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
-                                                <TextBlock Text="önerilen" Foreground="{DynamicResource AccentText}" FontWeight="SemiBold" FontSize="12"
+                                                <TextBlock Text="{local:T UiOnerilen2}" Foreground="{DynamicResource AccentText}" FontWeight="SemiBold" FontSize="12"
                                                            Margin="8,1,0,0" VerticalAlignment="Center"
                                                            Visibility="{Binding IsBest, Converter={StaticResource BoolToVis}}" />
                                             </WrapPanel>
@@ -846,47 +939,29 @@
                 <!-- How FoxDPI runs -->
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Çalıştırma" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiCalistirma}" Style="{StaticResource SectionTitle}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Elle başlatabilir, Windows açılınca başlatabilir ya da hizmet olarak kurabilirsiniz. Hizmet, Windows her açıldığında arka planda kendiliğinden çalışır." />
+                                   Text="{local:T UiElleBaslatabilirWindowsAcilincaBas}" />
                         <WrapPanel Margin="0,14,0,0">
                             <Button Content="{Binding Dpi.FoxDpiButtonText}" Command="{Binding Dpi.ToggleFoxDpiCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="FoxDPI'yı başlat" />
-                            <Button Content="Durdur" Command="{Binding Dpi.StopCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="FoxDPI durdur" />
-                            <Button Content="Hizmet olarak kur" Command="{Binding Dpi.InstallServiceCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmet olarak kur" />
-                            <Button Content="Hizmeti kaldır" Command="{Binding Dpi.RemoveServiceCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Hizmeti kaldır"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiFoxdpiYiBaslat}" />
+                            <Button Content="{local:T UiDurdur}" Command="{Binding Dpi.StopCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiFoxdpiDurdur}" />
+                            <Button Content="{local:T UiHizmetOlarakKur}" Command="{Binding Dpi.InstallServiceCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiHizmetOlarakKur}" />
+                            <Button Content="{local:T UiHizmetiKaldir}" Command="{Binding Dpi.RemoveServiceCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiHizmetiKaldir}"
                                     Visibility="{Binding Dpi.IsServiceInstalled, Converter={StaticResource BoolToVis}}" />
                         </WrapPanel>
                         <CheckBox IsChecked="{Binding Dpi.IsAutoStart, Mode=OneWay}" Command="{Binding Dpi.ToggleAutoStartCommand}"
-                                  Margin="0,16,0,0" HorizontalAlignment="Left" AutomationProperties.Name="FoxDPI'yı Windows açılınca başlat">
+                                  Margin="0,16,0,0" HorizontalAlignment="Left" AutomationProperties.Name="{local:T UiFoxdpiYiWindowsAcilincaBaslat}">
                             <StackPanel>
-                                <TextBlock Text="FoxDPI'yı Windows açılınca başlat" />
+                                <TextBlock Text="{local:T UiFoxdpiYiWindowsAcilincaBaslat}" />
                                 <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0" TextWrapping="Wrap"
-                                           Text="Hizmet kurmadan, zamanlanmış görev olarak çalışır. Her açılışta yönetici izni sorulmaz." />
+                                           Text="{local:T UiHizmetKurmadanZamanlanmisGorevOlar}" />
                             </StackPanel>
                         </CheckBox>
                     </StackPanel>
-                </Border>
-
-                <!-- Windows DNS: one setting, one button -->
-                <Border Style="{StaticResource Panel}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel>
-                            <TextBlock Text="Windows DNS ayarı" Style="{StaticResource SectionTitle}" />
-                            <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                       Text="FoxDPI açıkken hâlâ bağlanamıyorsanız DNS'i Cloudflare'e (1.1.1.1 ve 1.0.0.1) alın. Önce önizleme gösterilir; eski ayar kaydedilir ve Geri Al ile döner." />
-                        </StackPanel>
-                        <Button Grid.Column="1" Content="DNS'i 1.1.1.1 yap" Command="{Binding Dpi.SetCloudflareDnsCommand}"
-                                Style="{StaticResource SecondaryButton}" VerticalAlignment="Center" Margin="16,0,0,0"
-                                AutomationProperties.Name="DNS'i 1.1.1.1 ve 1.0.0.1 yap" />
-                    </Grid>
                 </Border>
 
                 <!-- Reset: what it removes, and that it can be undone -->
@@ -898,13 +973,13 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="DPI sıfırlama" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="{local:T UiDpiSifirlama}" Style="{StaticResource SectionTitle}" />
                                 <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                           Text="Ağ ayarlarını temizleyip Windows varsayılanlarına döndürür." />
+                                           Text="{local:T UiAgAyarlariniTemizleyipWindowsVarsa}" />
                             </StackPanel>
-                            <Button Grid.Column="1" Content="DPI sıfırlama" Command="{Binding Dpi.ResetCommand}"
+                            <Button Grid.Column="1" Content="{local:T UiDpiSifirlama}" Command="{Binding Dpi.ResetCommand}"
                                     Style="{StaticResource SecondaryButton}" VerticalAlignment="Center" Margin="16,0,0,0"
-                                    AutomationProperties.Name="DPI sıfırlama" />
+                                    AutomationProperties.Name="{local:T UiDpiSifirlama}" />
                         </Grid>
                         <Grid Margin="0,12,0,0">
                             <Grid.ColumnDefinitions>
@@ -918,15 +993,95 @@
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Text="•" Style="{StaticResource Caption}" />
                             <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource Caption}"
-                                       Text="Eski GoodbyeDPI, WinDivert ve Zapret kalıntıları, FoxDPI ve elle girilmiş DNS ayarları kaldırılır." />
+                                       Text="{local:T UiEskiGoodbyedpiWindivertVeZapretKal}" />
                             <TextBlock Grid.Row="1" Text="•" Style="{StaticResource Caption}" Margin="0,3,0,0" />
                             <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Caption}" Margin="0,3,0,0"
-                                       Text="Yapılacaklar önce listelenir; onaylamadan hiçbir şey değişmez." />
+                                       Text="{local:T UiYapilacaklarOnceListelenirOnaylama}" />
                             <TextBlock Grid.Row="2" Text="•" Style="{StaticResource Caption}" Margin="0,3,0,0" />
                             <TextBlock Grid.Row="2" Grid.Column="1" Style="{StaticResource Caption}" Margin="0,3,0,0"
-                                       Text="DNS ayarları ve kaldırılan hizmetler sonra Rapor ve geçmiş sayfasındaki Geri Al ile geri getirilebilir." />
+                                       Text="{local:T UiDnsAyarlariVeKaldirilanHizmetlerSo}" />
                         </Grid>
                     </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- ============ GAME OVERLAY ============ -->
+            <StackPanel Visibility="{Binding IsOverlay, Converter={StaticResource BoolToVis}}">
+                <Border Style="{StaticResource Callout}" Margin="0,16,0,0">
+                    <TextBlock Text="{local:T OverlayIntro}" TextWrapping="Wrap" LineHeight="21" />
+                </Border>
+
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <CheckBox IsChecked="{Binding Overlay.Enabled}" HorizontalAlignment="Left" AutomationProperties.Name="{local:T OverlayEnable}">
+                            <StackPanel>
+                                <TextBlock Text="{local:T OverlayEnable}" FontWeight="SemiBold" />
+                                <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0" TextWrapping="Wrap" Text="{local:T OverlayEnableText}" />
+                            </StackPanel>
+                        </CheckBox>
+
+                        <WrapPanel Margin="0,14,0,0">
+                            <Button Content="{Binding Overlay.ToggleText}" Command="{Binding Overlay.ToggleVisibleCommand}" Style="{StaticResource PrimaryButton}"
+                                    AutomationProperties.Name="{Binding Overlay.ToggleText}" />
+                        </WrapPanel>
+                        <TextBlock Text="{Binding Overlay.Message}" TextWrapping="Wrap" Margin="0,10,0,0" Foreground="{DynamicResource StatusWarn}"
+                                   Visibility="{Binding Overlay.HasMessage, Converter={StaticResource BoolToVis}}" AutomationProperties.LiveSetting="Polite" />
+
+                        <Border Style="{StaticResource Hairline}" />
+                        <TextBlock Text="{local:T OverlayHotkey}" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="{local:T OverlayHotkeyText}" Style="{StaticResource Caption}" Margin="0,2,0,8" TextWrapping="Wrap" />
+                        <TextBox x:Name="HotkeyBox" Text="{Binding Overlay.Hotkey, Mode=OneWay}" IsReadOnly="True" Width="200" HorizontalAlignment="Left"
+                                 HorizontalContentAlignment="Center" PreviewKeyDown="OnHotkeyKeyDown" AutomationProperties.Name="{local:T OverlayHotkeyBoxName}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="{local:T OverlayWhat}" Style="{StaticResource SectionTitle}" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <CheckBox Content="{local:T OverlayFps}" IsChecked="{Binding Overlay.ShowFps}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayFps}" />
+                            <CheckBox Content="{local:T OverlayFrameTime}" IsChecked="{Binding Overlay.ShowFrameTime}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayFrameTime}" />
+                            <CheckBox Content="{local:T OverlayGpu}" IsChecked="{Binding Overlay.ShowGpu}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayGpu}" />
+                            <CheckBox Content="{local:T OverlayCpu}" IsChecked="{Binding Overlay.ShowCpu}" Margin="0,0,0,6" AutomationProperties.Name="{local:T OverlayCpu}" />
+                        </WrapPanel>
+                        <TextBlock Text="{local:T OverlayNothing}" Style="{StaticResource Caption}" Foreground="{DynamicResource StatusWarn}"
+                                   Visibility="{Binding Overlay.AnythingShown, Converter={StaticResource InverseBoolToVis}}" />
+
+                        <Border Style="{StaticResource Hairline}" />
+                        <TextBlock Text="{local:T OverlayBackground}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" />
+                        <WrapPanel>
+                            <RadioButton GroupName="ovbg" Content="{local:T OverlayBgTranslucent}" IsChecked="{Binding Overlay.IsTranslucent}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayBgTranslucent}" />
+                            <RadioButton GroupName="ovbg" Content="{local:T OverlayBgThemed}" IsChecked="{Binding Overlay.IsThemed}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayBgThemed}" />
+                            <RadioButton GroupName="ovbg" Content="{local:T OverlayBgNone}" IsChecked="{Binding Overlay.IsNoBackground}" Margin="0,0,0,6" AutomationProperties.Name="{local:T OverlayBgNone}" />
+                        </WrapPanel>
+
+                        <Border Style="{StaticResource Hairline}" />
+                        <TextBlock Text="{local:T OverlayCorner}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,8" />
+                        <WrapPanel>
+                            <RadioButton GroupName="ovcorner" Content="{local:T OverlayTopLeft}" IsChecked="{Binding Overlay.IsTopLeft}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayTopLeft}" />
+                            <RadioButton GroupName="ovcorner" Content="{local:T OverlayTopRight}" IsChecked="{Binding Overlay.IsTopRight}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayTopRight}" />
+                            <RadioButton GroupName="ovcorner" Content="{local:T OverlayBottomLeft}" IsChecked="{Binding Overlay.IsBottomLeft}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayBottomLeft}" />
+                            <RadioButton GroupName="ovcorner" Content="{local:T OverlayBottomRight}" IsChecked="{Binding Overlay.IsBottomRight}" Margin="0,0,24,6" AutomationProperties.Name="{local:T OverlayBottomRight}" />
+                            <RadioButton GroupName="ovcorner" Content="{local:T OverlayFree}" IsChecked="{Binding Overlay.IsFree}" Margin="0,0,0,6" AutomationProperties.Name="{local:T OverlayFree}" />
+                        </WrapPanel>
+                        <!-- Free place: the strip is shown with sample numbers and dragged where it should be -->
+                        <StackPanel Visibility="{Binding Overlay.IsFree, Converter={StaticResource BoolToVis}}" Margin="0,4,0,0">
+                            <Button Content="{Binding Overlay.PlaceText}" Command="{Binding Overlay.PlaceCommand}" HorizontalAlignment="Left"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{Binding Overlay.PlaceText}" />
+                            <TextBlock Text="{local:T OverlayFreeHint}" Style="{StaticResource Caption}" Margin="0,6,0,0" TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Hairline}" />
+                        <TextBlock Text="{local:T OverlaySize}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,2" />
+                        <TextBlock Text="{Binding Overlay.ScaleText}" Style="{StaticResource Caption}" />
+                        <Slider Style="{StaticResource BrightnessSlider}" Minimum="50" Maximum="250" SmallChange="5" LargeChange="25" TickFrequency="5"
+                                IsSnapToTickEnabled="True" Margin="0,6,0,0" Value="{Binding Overlay.ScalePercent, Mode=TwoWay}"
+                                AutomationProperties.Name="{local:T OverlaySize}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CalloutWarn}" Margin="0,12,0,0">
+                    <TextBlock Text="{local:T OverlayLimits}" TextWrapping="Wrap" LineHeight="21" />
                 </Border>
             </StackPanel>
 
@@ -934,15 +1089,15 @@
             <StackPanel Visibility="{Binding IsAccess, Converter={StaticResource BoolToVis}}">
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Denenecek siteler" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6" />
-                        <TextBox Text="{Binding Access.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Denenecek siteler" />
+                        <TextBlock Text="{local:T UiDenenecekSiteler}" FontWeight="SemiBold" FontSize="13" Margin="0,0,0,6" />
+                        <TextBox Text="{Binding Access.Hosts, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{local:T UiDenenecekSiteler}" />
                         <TextBlock Style="{StaticResource Caption}" Margin="0,6,0,0"
-                                   Text="Siteleri virgülle ayırın. Karşılaştırma için engelsiz bir site her zaman eklenir. Bağlantı güvenli (HTTPS) olarak denenir." />
+                                   Text="{local:T UiSiteleriVirgulleAyirinKarsilastirm}" />
                         <WrapPanel Margin="0,16,0,0">
-                            <Button Content="Testi başlat" Command="{Binding Access.RunCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Testi başlat" />
-                            <Button Content="Durdur" Command="{Binding Access.RunCancelCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Testi durdur" />
+                            <Button Content="{local:T UiTestiBaslat}" Command="{Binding Access.RunCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiTestiBaslat}" />
+                            <Button Content="{local:T UiDurdur}" Command="{Binding Access.RunCancelCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiTestiDurdur}" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -962,7 +1117,7 @@
                                             </Grid.ColumnDefinitions>
                                             <WrapPanel VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding Host}" />
-                                                <TextBlock Text="karşılaştırma sitesi" Style="{StaticResource Caption}" Margin="8,0,0,0" VerticalAlignment="Center"
+                                                <TextBlock Text="{local:T UiKarsilastirmaSitesi}" Style="{StaticResource Caption}" Margin="8,0,0,0" VerticalAlignment="Center"
                                                            Visibility="{Binding IsControl, Converter={StaticResource BoolToVis}}" />
                                             </WrapPanel>
                                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0,0,0">
@@ -981,13 +1136,171 @@
                 </Border>
             </StackPanel>
 
+            <!-- ============ SOUND AND CAMERA (wizard: looks, listens or shows only; changes nothing, records nothing) ============ -->
+            <StackPanel Visibility="{Binding IsDevices, Converter={StaticResource BoolToVis}}">
+                <Border Style="{StaticResource Callout}" Margin="0,16,0,0">
+                    <TextBlock Text="{local:T DevIntro}" TextWrapping="Wrap" LineHeight="21" />
+                </Border>
+
+                <Border Style="{StaticResource Panel}" DataContext="{Binding Devices.Current}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource SectionTitle}" FontSize="20" AutomationProperties.HeadingLevel="Level2" />
+                            <TextBlock Grid.Column="1" Text="{Binding DataContext.Devices.StepText, RelativeSource={RelativeSource AncestorType=Window}}"
+                                       Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                        </Grid>
+
+                        <!-- The finding: a dot, and the words that carry the meaning -->
+                        <Grid Margin="0,14,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Ellipse Width="10" Height="10" Margin="0,6,10,0" VerticalAlignment="Top">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource StatusNeutral}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding VerdictKind}" Value="Ok"><Setter Property="Fill" Value="{DynamicResource StatusOk}" /></DataTrigger>
+                                            <DataTrigger Binding="{Binding VerdictKind}" Value="Warn"><Setter Property="Fill" Value="{DynamicResource StatusWarn}" /></DataTrigger>
+                                            <DataTrigger Binding="{Binding VerdictKind}" Value="Bad"><Setter Property="Fill" Value="{DynamicResource StatusBad}" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Grid.Column="1" Text="{Binding VerdictText}" TextWrapping="Wrap" LineHeight="21" FontWeight="SemiBold"
+                                       AutomationProperties.LiveSetting="Polite" />
+                        </Grid>
+                        <StackPanel Margin="0,10,0,0" Visibility="{Binding IsChecking, Converter={StaticResource BoolToVis}}">
+                            <ProgressBar IsIndeterminate="True" AutomationProperties.Name="{local:T DevChecking}" />
+                            <TextBlock Text="{local:T DevChecking}" Style="{StaticResource Caption}" Margin="0,6,0,0" />
+                        </StackPanel>
+
+                        <Border Style="{StaticResource Hairline}" />
+
+                        <Expander Header="{Binding DevicesHeader}" Style="{StaticResource FoldSection}" Margin="0,2,0,0">
+                            <StackPanel>
+                                <TextBlock Text="{local:T DevNoDevices}" Style="{StaticResource Caption}" Margin="0,6,0,0"
+                                           Visibility="{Binding HasNoDevices, Converter={StaticResource BoolToVis}}" />
+                                <ItemsControl ItemsSource="{Binding Devices}" Margin="0,4,0,0" Focusable="False">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" TextWrapping="Wrap" />
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center">
+                                                    <Ellipse Style="{StaticResource KindDot}" />
+                                                    <TextBlock Text="{Binding StateText}" Style="{StaticResource Caption}" Foreground="{DynamicResource Foreground}" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Expander>
+
+                        <StackPanel Visibility="{Binding HasPrivacy, Converter={StaticResource BoolToVis}}">
+                            <Border Style="{StaticResource Hairline}" />
+                            <TextBlock Text="{local:T DevPrivacyHeader}" FontWeight="SemiBold" FontSize="13" />
+                            <Grid Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="8" Height="8" Margin="0,6,8,0" VerticalAlignment="Top">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="{DynamicResource StatusNeutral}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding PrivacyKind}" Value="Ok"><Setter Property="Fill" Value="{DynamicResource StatusOk}" /></DataTrigger>
+                                                <DataTrigger Binding="{Binding PrivacyKind}" Value="Bad"><Setter Property="Fill" Value="{DynamicResource StatusBad}" /></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" Text="{Binding PrivacyText}" TextWrapping="Wrap" LineHeight="20" />
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding HasSettingsLink, Converter={StaticResource BoolToVis}}" Margin="0,14,0,0">
+                            <Button Content="{Binding SettingsLabel}" HorizontalAlignment="Left" Style="{StaticResource SecondaryButton}"
+                                    Command="{Binding DataContext.Devices.OpenSettingsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding SettingsUri}" AutomationProperties.Name="{Binding SettingsLabel}" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding DataContext.Devices.ActionError, RelativeSource={RelativeSource AncestorType=Window}}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource StatusBad}" Margin="0,8,0,0" AutomationProperties.LiveSetting="Polite" />
+                    </StackPanel>
+                </Border>
+
+                <!-- The test sound: started and stopped by the person. Only the speakers have a test; microphone and camera are checked, never listened to or filmed. -->
+                <Border Style="{StaticResource Panel}" DataContext="{Binding Devices.Current}" Visibility="{Binding IsSpeaker, Converter={StaticResource BoolToVis}}">
+                    <StackPanel>
+                        <TextBlock Text="{local:T DevToneHint}" Style="{StaticResource BodyMuted}" />
+
+                        <WrapPanel Margin="0,14,0,0">
+                            <Button Style="{StaticResource PrimaryButton}" IsEnabled="{Binding CanStartTest}" Content="{local:T DevPlayTone}"
+                                    Command="{Binding DataContext.Devices.StartTestCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    AutomationProperties.Name="{local:T DevPlayTone}" />
+                            <Button Content="{local:T DevStop}" Style="{StaticResource SecondaryButton}" IsEnabled="{Binding IsTesting}"
+                                    Command="{Binding DataContext.Devices.StopTestCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    AutomationProperties.Name="{local:T DevStop}" />
+                        </WrapPanel>
+
+                        <Grid Margin="0,12,0,0" Visibility="{Binding HasTestStatus, Converter={StaticResource BoolToVis}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Ellipse Width="8" Height="8" Margin="0,6,8,0" VerticalAlignment="Top">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource StatusNeutral}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding TestKind}" Value="Ok"><Setter Property="Fill" Value="{DynamicResource StatusOk}" /></DataTrigger>
+                                            <DataTrigger Binding="{Binding TestKind}" Value="Warn"><Setter Property="Fill" Value="{DynamicResource StatusWarn}" /></DataTrigger>
+                                            <DataTrigger Binding="{Binding TestKind}" Value="Bad"><Setter Property="Fill" Value="{DynamicResource StatusBad}" /></DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Grid.Column="1" Text="{Binding TestStatus}" TextWrapping="Wrap" LineHeight="21" AutomationProperties.LiveSetting="Polite" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Steps -->
+                <Grid Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <WrapPanel>
+                        <Button Content="{local:T DevPrevious}" Command="{Binding Devices.PreviousCommand}" Style="{StaticResource SecondaryButton}"
+                                AutomationProperties.Name="{local:T DevPrevious}" />
+                        <Button Content="{local:T DevNextStep}" Command="{Binding Devices.NextCommand}" Style="{StaticResource PrimaryButton}"
+                                AutomationProperties.Name="{local:T DevNextStep}" />
+                        <Button Content="{local:T DevFinish}" Command="{Binding GoHomeCommand}" Style="{StaticResource SecondaryButton}"
+                                AutomationProperties.Name="{local:T DevFinish}" />
+                    </WrapPanel>
+                    <Button Grid.Column="1" Content="{local:T DevCheckAgain}" Command="{Binding Devices.CheckAgainCommand}" Style="{StaticResource GhostButton}"
+                            Margin="0,0,-10,0" AutomationProperties.Name="{local:T DevCheckAgain}" />
+                </Grid>
+            </StackPanel>
+
             <!-- ============ REPORT AND HISTORY ============ -->
             <StackPanel Visibility="{Binding IsReport, Converter={StaticResource BoolToVis}}">
 
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Yapılan değişiklikler" Style="{StaticResource SectionTitle}" />
-                        <TextBlock Text="FoxFix'in yaptığı her değişiklik burada durur ve geri alınabilir. En yenisi en üstte." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        <TextBlock Text="{local:T UiYapilanDegisiklikler}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiFoxfixInYaptigiHerDegisiklikBurada}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                         <Border Background="{DynamicResource Background}" CornerRadius="8" Padding="14,12" Margin="0,14,0,0">
                             <Border.Style>
                                 <Style TargetType="Border">
@@ -999,7 +1312,7 @@
                                     </Style.Triggers>
                                 </Style>
                             </Border.Style>
-                            <TextBlock Text="FoxFix henüz bir değişiklik yapmadı. Beni Düzelt veya bir ayar uyguladığınızda burada görünür." Style="{StaticResource BodyMuted}" />
+                            <TextBlock Text="{local:T UiFoxfixHenuzBirDegisiklikYapmadiBen}" Style="{StaticResource BodyMuted}" />
                         </Border>
                         <ItemsControl ItemsSource="{Binding Fix.UndoItems}" Margin="0,8,0,0" Focusable="False">
                             <ItemsControl.ItemTemplate>
@@ -1011,9 +1324,9 @@
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Text="{Binding Text}" TextWrapping="Wrap" VerticalAlignment="Center" LineHeight="21" />
-                                            <Button Grid.Column="1" Content="Geri Al" Style="{StaticResource RowButton}" Margin="16,0,0,0"
+                                            <Button Grid.Column="1" Content="{local:T UiGeriAl}" Style="{StaticResource RowButton}" Margin="16,0,0,0"
                                                     Command="{Binding DataContext.Fix.UndoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                    CommandParameter="{Binding}" AutomationProperties.Name="Bu değişikliği geri al" />
+                                                    CommandParameter="{Binding}" AutomationProperties.Name="{local:T UiBuDegisikligiGeriAl}" />
                                         </Grid>
                                         <Border Height="1" Background="{DynamicResource Divider}" />
                                     </StackPanel>
@@ -1025,20 +1338,20 @@
 
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Destek raporu" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiDestekRaporu}" Style="{StaticResource SectionTitle}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Yardım isterken paylaşabileceğiniz bir sistem raporu. Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri varsayılan olarak gizlenir." />
+                                   Text="{local:T UiYardimIsterkenPaylasabileceginizBi}" />
                         <WrapPanel Margin="0,14,0,0">
-                            <Button Content="Raporu kopyala" Command="{Binding CopyReportCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kopyala" />
-                            <Button Content="Raporu kaydet…" Command="{Binding SaveReportCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Raporu kaydet" />
+                            <Button Content="{local:T UiRaporuKopyala}" Command="{Binding CopyReportCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiRaporuKopyala}" />
+                            <Button Content="{local:T UiRaporuKaydet}" Command="{Binding SaveReportCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiRaporuKaydet2}" />
                         </WrapPanel>
-                        <CheckBox IsChecked="{Binding ShowPersonalData}" Margin="0,16,0,0" AutomationProperties.Name="Kişisel bilgileri rapora ekle">
+                        <CheckBox IsChecked="{Binding ShowPersonalData}" Margin="0,16,0,0" AutomationProperties.Name="{local:T UiKisiselBilgileriRaporaEkle}">
                             <StackPanel>
-                                <TextBlock Text="Kişisel bilgileri rapora ekle" />
+                                <TextBlock Text="{local:T UiKisiselBilgileriRaporaEkle}" />
                                 <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0"
-                                           Text="Kullanıcı adı, bilgisayar adı, MAC ve IP adresleri rapora açıkça yazılır." />
+                                           Text="{local:T UiKullaniciAdiBilgisayarAdiMacVe}" />
                             </StackPanel>
                         </CheckBox>
                     </StackPanel>
@@ -1050,35 +1363,64 @@
 
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
+                        <TextBlock Text="{local:T UiLanguage}" Style="{StaticResource SectionTitle}" />
+                        <WrapPanel Margin="0,12,0,0">
+                            <RadioButton GroupName="language" Content="{local:T LangTurkish}" IsChecked="{Binding Settings.IsTurkish}"
+                                         Margin="0,0,24,6" AutomationProperties.Name="Türkçe" />
+                            <RadioButton GroupName="language" Content="{local:T LangEnglish}" IsChecked="{Binding Settings.IsEnglish}"
+                                         Margin="0,0,0,6" AutomationProperties.Name="English" />
+                        </WrapPanel>
+                        <TextBlock Text="{local:T UiLanguageNote}" Style="{StaticResource Caption}" />
+
+                        <Border Style="{StaticResource Hairline}" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Güncellemeler" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="{local:T UiTourSection}" FontWeight="SemiBold" />
+                                <TextBlock Text="{local:T UiTourSectionNote}" Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                            </StackPanel>
+                            <Button Grid.Column="1" Content="{local:T UiStartTour}" Command="{Binding Onboarding.StartTourFromSettingsCommand}"
+                                    Style="{StaticResource SecondaryButton}" VerticalAlignment="Center" Margin="16,0,0,0"
+                                    AutomationProperties.Name="{local:T UiStartTour}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="{local:T UiGuncellemeler}" Style="{StaticResource SectionTitle}" />
                                 <TextBlock Text="{Binding Updates.CurrentVersionText}" Style="{StaticResource BodyMuted}" Margin="0,2,0,0" />
                             </StackPanel>
-                            <Button Grid.Column="1" Content="Güncellemeleri denetle" Command="{Binding Updates.CheckNowCommand}" Margin="16,0,0,0"
-                                    VerticalAlignment="Center" Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Güncellemeleri denetle" />
+                            <Button Grid.Column="1" Content="{local:T UiGuncellemeleriDenetle}" Command="{Binding Updates.CheckNowCommand}" Margin="16,0,0,0"
+                                    VerticalAlignment="Center" Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiGuncellemeleriDenetle}" />
                         </Grid>
                         <TextBlock Text="{Binding Updates.StatusText}" Margin="0,12,0,0" TextWrapping="Wrap"
                                    AutomationProperties.LiveSetting="Polite"
                                    Visibility="{Binding Updates.HasStatus, Converter={StaticResource BoolToVis}}" />
                         <WrapPanel Margin="0,12,0,0" Visibility="{Binding Updates.HasUpdate, Converter={StaticResource BoolToVis}}">
-                            <Button Content="Şimdi güncelle" Command="{Binding Updates.InstallCommand}"
-                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Şimdi güncelle"
+                            <Button Content="{local:T UiSimdiGuncelle}" Command="{Binding Updates.InstallCommand}"
+                                    Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiSimdiGuncelle}"
                                     Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
-                            <Button Content="Sürüm sayfasını aç" Command="{Binding Updates.OpenReleaseCommand}"
-                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sürüm sayfasını aç" />
+                            <Button Content="{local:T UiSurumSayfasiniAc}" Command="{Binding Updates.OpenReleaseCommand}"
+                                    Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiSurumSayfasiniAc}" />
                         </WrapPanel>
                         <Border Style="{StaticResource Hairline}" Margin="0,16,0,4" />
                         <CheckBox IsChecked="{Binding Settings.AutoCheckUpdates}" HorizontalAlignment="Left"
-                                  AutomationProperties.Name="Güncellemeleri her açılışta otomatik denetle">
+                                  AutomationProperties.Name="{local:T UiGuncellemeleriHerAcilistaOtomatikD}">
                             <StackPanel>
-                                <TextBlock Text="Her açılışta güncellemeleri denetle" />
+                                <TextBlock Text="{local:T UiHerAcilistaGuncellemeleriDenetle}" />
                                 <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0" TextWrapping="Wrap"
-                                           Text="FoxFix açılınca GitHub'a en son sürümü sorar; yeni sürüm varsa haber verir. Siz &quot;Şimdi güncelle&quot; demeden hiçbir şey indirilmez ve bilgisayarınız hakkında bilgi gönderilmez." />
+                                           Text="{local:T UiFoxfixAcilincaGithubAEnSon}" />
                             </StackPanel>
                         </CheckBox>
                     </StackPanel>
@@ -1086,78 +1428,124 @@
 
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
-                        <TextBlock Text="Görünüm" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T UiGorunum}" Style="{StaticResource SectionTitle}" />
 
-                        <TextBlock Text="Tema" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" />
+                        <TextBlock Text="{local:T UiTema}" FontWeight="SemiBold" FontSize="13" Margin="0,14,0,8" />
                         <WrapPanel>
-                            <RadioButton GroupName="theme" Content="Windows'a uy" IsChecked="{Binding Settings.IsSystemTheme}"
-                                         Margin="0,0,24,6" AutomationProperties.Name="Tema: Windows'a uy" />
-                            <RadioButton GroupName="theme" Content="Aydınlık" IsChecked="{Binding Settings.IsLightTheme}"
-                                         Margin="0,0,24,6" AutomationProperties.Name="Tema: Aydınlık" />
-                            <RadioButton GroupName="theme" Content="Karanlık" IsChecked="{Binding Settings.IsDarkTheme}"
-                                         Margin="0,0,0,6" AutomationProperties.Name="Tema: Karanlık" />
+                            <RadioButton GroupName="theme" Content="{local:T UiWindowsAUy}" IsChecked="{Binding Settings.IsSystemTheme}"
+                                         Margin="0,0,24,6" AutomationProperties.Name="{local:T UiTemaWindowsAUy}" />
+                            <RadioButton GroupName="theme" Content="{local:T UiAydinlik}" IsChecked="{Binding Settings.IsLightTheme}"
+                                         Margin="0,0,24,6" AutomationProperties.Name="{local:T UiTemaAydinlik}" />
+                            <RadioButton GroupName="theme" Content="{local:T UiKaranlik}" IsChecked="{Binding Settings.IsDarkTheme}"
+                                         Margin="0,0,0,6" AutomationProperties.Name="{local:T UiTemaKaranlik}" />
                         </WrapPanel>
 
                         <Border Style="{StaticResource Hairline}" />
-                        <TextBlock Text="Vurgu rengi" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="{local:T UiVurguRengi}" FontWeight="SemiBold" FontSize="13" />
                         <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,10"
-                                   Text="Düğmeler, seçili sayfa ve seçimler bu renkte olur. Okunması zor bir renk, okunur olacak kadar açılır ya da koyulaştırılır." />
-                        <ItemsControl ItemsSource="{Binding Settings.Swatches}" Focusable="False">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <WrapPanel />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Command="{Binding DataContext.Settings.PickAccentCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                            CommandParameter="{Binding Hex}" ToolTip="{Binding Name}" AutomationProperties.Name="{Binding Name}"
-                                            Margin="0,0,6,6" Cursor="Hand" FocusVisualStyle="{x:Null}">
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="Ring" Width="36" Height="36" CornerRadius="18" BorderThickness="2" Padding="3"
-                                                        BorderBrush="Transparent" Background="Transparent">
-                                                    <Ellipse Fill="{Binding Fill}" />
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Muted}" />
-                                                    </Trigger>
-                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Foreground}" />
-                                                    </DataTrigger>
-                                                    <Trigger Property="IsKeyboardFocused" Value="True">
-                                                        <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource AccentText}" />
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Button.Template>
-                                    </Button>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-
-                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <TextBox Text="{Binding Settings.AccentInput, UpdateSourceTrigger=PropertyChanged}" Width="120" MaxLength="7"
-                                     HorizontalAlignment="Left" AutomationProperties.Name="Vurgu rengi (#RRGGBB)" ToolTip="#RRGGBB biçiminde bir renk" />
-                            <Border Width="38" Height="38" CornerRadius="8" Margin="10,0,0,0" Background="{DynamicResource Accent}"
-                                    BorderBrush="{DynamicResource Divider}" BorderThickness="1" ToolTip="Kullanılan renk" />
-                            <Button Content="Varsayılan renk" Command="{Binding Settings.ResetAccentCommand}"
-                                    Style="{StaticResource SecondaryButton}" Margin="10,0,0,0" AutomationProperties.Name="Varsayılan renge dön" />
+                                   Text="{local:T UiDugmelerSeciliSayfaVeSecimlerBu}" />
+                        <StackPanel Orientation="Horizontal">
+                            <ItemsControl ItemsSource="{Binding Settings.Swatches}" Focusable="False">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding DataContext.Settings.PickAccentCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                CommandParameter="{Binding Hex}" ToolTip="{Binding Name}" AutomationProperties.Name="{Binding Name}"
+                                                Margin="0,0,6,6" Cursor="Hand" FocusVisualStyle="{x:Null}">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Ring" Width="36" Height="36" CornerRadius="18" BorderThickness="2" Padding="3"
+                                                            BorderBrush="Transparent" Background="Transparent">
+                                                        <Ellipse Fill="{Binding Fill}" />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Muted}" />
+                                                        </Trigger>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource Foreground}" />
+                                                        </DataTrigger>
+                                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                                            <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource AccentText}" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Style="{StaticResource WheelSwatch}" Command="{Binding Settings.Picker.ToggleCommand}"
+                                    ToolTip="{local:T AccentCustom}" AutomationProperties.Name="{local:T AccentCustom}" />
                         </StackPanel>
-                        <TextBlock Text="{Binding Settings.AccentError}" Foreground="{DynamicResource StatusBad}" FontSize="12.5" Margin="0,6,0,0"
-                                   TextWrapping="Wrap" Visibility="{Binding Settings.HasAccentError, Converter={StaticResource BoolToVis}}" />
+
+                        <!-- The wheel's panel: moving things here only previews; the theme changes on "Uygula" -->
+                        <Border x:Name="AccentPickerPanel" Visibility="Collapsed" CornerRadius="12" Background="{DynamicResource ButtonSecondary}" Padding="16" Margin="0,4,0,6">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <local:ColorWheel Hue="{Binding Settings.Picker.Hue, Mode=TwoWay}" Saturation="{Binding Settings.Picker.Saturation, Mode=TwoWay}"
+                                                      Brightness="{Binding Settings.Picker.Brightness}" VerticalAlignment="Top" Margin="0,0,22,0"
+                                                      AutomationProperties.Name="{local:T AccentWheelName}" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="{local:T AccentBrightness}" Style="{StaticResource Caption}" />
+                                        <Slider Style="{StaticResource BrightnessSlider}" Minimum="10" Maximum="100" SmallChange="2" LargeChange="10" Margin="0,4,0,0"
+                                                Value="{Binding Settings.Picker.Brightness, Mode=TwoWay}" AutomationProperties.Name="{local:T AccentBrightness}" />
+                                        <TextBlock Text="{local:T AccentHexCode}" Style="{StaticResource Caption}" Margin="0,12,0,6" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Border Width="40" Height="40" CornerRadius="10" Background="{Binding Settings.Picker.Preview}"
+                                                    BorderBrush="{DynamicResource Divider}" BorderThickness="1" ToolTip="{local:T UiKullanilanRenk}" />
+                                            <TextBox Text="{Binding Settings.Picker.Hex, UpdateSourceTrigger=PropertyChanged}" Width="118" MaxLength="7" Margin="10,0,0,0"
+                                                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                                     AutomationProperties.Name="{local:T UiVurguRengiRrggbb}" ToolTip="{local:T UiRrggbbBicimindeBirRenk}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                                <TextBlock Text="{local:T AccentPickNote}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                                <TextBlock Text="{Binding Settings.Picker.Error}" Foreground="{DynamicResource StatusBad}" FontSize="12.5" Margin="0,6,0,0"
+                                           TextWrapping="Wrap" Visibility="{Binding Settings.Picker.HasError, Converter={StaticResource BoolToVis}}" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                                    <Button Content="{local:T AccentCancel}" Command="{Binding Settings.Picker.CloseCommand}" Style="{StaticResource SecondaryButton}"
+                                            Background="{DynamicResource Raised}" AutomationProperties.Name="{local:T AccentCancel}" />
+                                    <Button Content="{local:T AccentApply}" Command="{Binding Settings.Picker.ApplyCommand}" Style="{StaticResource PrimaryButton}"
+                                            AutomationProperties.Name="{local:T AccentApply}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="{local:T UiVarsayilanRenk}" Command="{Binding Settings.ResetAccentCommand}" HorizontalAlignment="Left"
+                                Style="{StaticResource SecondaryButton}" Margin="0,4,0,0" AutomationProperties.Name="{local:T UiVarsayilanRengeDon}" />
 
                         <CheckBox IsChecked="{Binding Settings.RecolorLogo}" Margin="0,18,0,0" HorizontalAlignment="Left"
-                                  AutomationProperties.Name="Logoyu ve pencere simgesini de bu renge boya">
+                                  AutomationProperties.Name="{local:T UiLogoyuVePencereSimgesiniDeBu}">
                             <StackPanel>
-                                <TextBlock Text="Logoyu ve pencere simgesini de bu renge boya" />
+                                <TextBlock Text="{local:T UiLogoyuVePencereSimgesiniDeBu}" />
                                 <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0" TextWrapping="Wrap"
-                                           Text="Uygulamadaki logo ile çalışırken pencere ve görev çubuğu simgesi değişir. Kısayol ve program dosyasının simgesi Windows'ta aynı kalır." />
+                                           Text="{local:T UiUygulamadakiLogoIleCalisirkenPence}" />
                             </StackPanel>
                         </CheckBox>
                         <TextBlock Text="{Binding Settings.SaveError}" Foreground="{DynamicResource StatusBad}" Margin="0,12,0,0" TextWrapping="Wrap"
                                    Visibility="{Binding Settings.HasSaveError, Converter={StaticResource BoolToVis}}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Panel}">
+                    <StackPanel>
+                        <TextBlock Text="{local:T ExpTitle}" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{local:T ExpIntro}" Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,2,0,10" />
+                        <CheckBox IsChecked="{Binding Settings.ExperimentalDevices}" HorizontalAlignment="Left" AutomationProperties.Name="{local:T ExpDevices}">
+                            <StackPanel>
+                                <TextBlock Text="{local:T ExpDevices}" />
+                                <TextBlock Style="{StaticResource Caption}" Margin="0,2,0,0" TextWrapping="Wrap" Text="{local:T ExpDevicesText}" />
+                            </StackPanel>
+                        </CheckBox>
                     </StackPanel>
                 </Border>
 
@@ -1168,12 +1556,12 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="FoxFix'i kaldır" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="{local:T UiFoxfixIKaldir}" Style="{StaticResource SectionTitle}" />
                             <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                       Text="FoxDPI, hizmet, zamanlanmış görev, ayarlar ve program silinir. Geri alınamaz; önce silinecekler gösterilir ve onayınız istenir." />
+                                       Text="{local:T UiFoxdpiHizmetZamanlanmisGorevAyarla}" />
                         </StackPanel>
-                        <Button Grid.Column="1" Content="FoxFix'i kaldır" Command="{Binding UninstallCommand}" Style="{StaticResource DangerButton}"
-                                VerticalAlignment="Center" Margin="16,0,0,0" AutomationProperties.Name="FoxFix'i kaldır" />
+                        <Button Grid.Column="1" Content="{local:T UiFoxfixIKaldir}" Command="{Binding UninstallCommand}" Style="{StaticResource DangerButton}"
+                                VerticalAlignment="Center" Margin="16,0,0,0" AutomationProperties.Name="{local:T UiFoxfixIKaldir}" />
                     </Grid>
                 </Border>
             </StackPanel>
@@ -1191,7 +1579,7 @@
             <StackPanel DockPanel.Dock="Bottom">
                 <!-- FoxDPI's state, wherever the person is; a press opens its settings -->
                 <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}"
-                        AutomationProperties.Name="FoxDPI durumu, DNS ve DPI sayfasını aç" ToolTip="DNS ve DPI sayfasını aç">
+                        AutomationProperties.Name="{local:T UiFoxdpiDurumuDnsVeDpiSayfasini}" ToolTip="{local:T UiDnsVeDpiSayfasiniAc}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}" />
                     </Button.Style>
@@ -1213,10 +1601,10 @@
                         <TextBlock>
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Text" Value="FoxDPI kapalı" />
+                                    <Setter Property="Text" Value="{local:T UiFoxDpiOff}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Dpi.IsActive}" Value="True">
-                                            <Setter Property="Text" Value="FoxDPI açık" />
+                                            <Setter Property="Text" Value="{local:T UiFoxDpiOn}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -1227,19 +1615,19 @@
                 <Border Height="1" Background="{DynamicResource Divider}" Margin="4,8,4,8" />
                 <StackPanel Orientation="Horizontal">
                     <Button Command="{Binding Info.OpenCommand}" Style="{StaticResource NavItem}" HorizontalAlignment="Left"
-                            ToolTip="Sürüm, yapımcı ve kullanılan açık kaynak projeler" AutomationProperties.Name="Bilgi">
+                            ToolTip="{local:T UiSurumYapimciVeKullanilanAcikKaynak}" AutomationProperties.Name="{local:T UiBilgi}">
                         <StackPanel Orientation="Horizontal">
                             <Path Style="{StaticResource NavIcon}" Margin="0,0,9,0"
                                   Data="M8,1.5 A6.5,6.5 0 1 0 8,14.5 A6.5,6.5 0 1 0 8,1.5 M8,7 L8,11.2 M8,4.6 L8,4.7" />
-                            <TextBlock Text="Bilgi" />
+                            <TextBlock Text="{local:T UiBilgi}" />
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding ShareRepoCommand}" Style="{StaticResource NavItem}" Margin="4,0,0,0"
-                            ToolTip="FoxFix'in GitHub bağlantısını kopyala" AutomationProperties.Name="Bağlantıyı paylaş">
+                            ToolTip="{local:T UiFoxfixInGithubBaglantisiniKopyala}" AutomationProperties.Name="{local:T UiBaglantiyiPaylas}">
                         <StackPanel Orientation="Horizontal">
                             <Path Style="{StaticResource NavIcon}" Margin="0,0,9,0"
                                   Data="M4,9 L4,13.5 L12,13.5 L12,9 M8,10 L8,2.5 M5.2,5.2 L8,2.4 L10.8,5.2" />
-                            <TextBlock Text="Paylaş" />
+                            <TextBlock Text="{local:T UiPaylas}" />
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -1248,12 +1636,12 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="10,0,0,24">
                     <Image Source="{DynamicResource FoxLogoImage}" Height="36" RenderOptions.BitmapScalingMode="HighQuality"
-                           AutomationProperties.Name="FoxFix logosu" />
+                           AutomationProperties.Name="{local:T UiFoxfixLogosu}" />
                     <TextBlock Text="FoxFix" FontFamily="{StaticResource DisplayFont}" FontSize="22" FontWeight="SemiBold"
                                Margin="10,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
 
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Home}" AutomationProperties.Name="Genel bakış">
+                <Button x:Name="NavHome" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Home}" AutomationProperties.Name="{local:T UiGenelBakis}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1263,10 +1651,10 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M2,8 L8,2.8 L14,8 M3.8,6.6 L3.8,13.5 L12.2,13.5 L12.2,6.6 M6.6,13.5 L6.6,9.6 L9.4,9.6 L9.4,13.5" />
-                        <TextBlock Text="Genel bakış" />
+                        <TextBlock Text="{local:T UiGenelBakis}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}" AutomationProperties.Name="Bağlantı kontrolü">
+                <Button x:Name="NavConnection" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Connection}" AutomationProperties.Name="{local:T UiBaglantiKontrolu}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1276,10 +1664,10 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M1.5,8.5 L4.5,8.5 L6.4,3.5 L9.6,12.5 L11.5,8.5 L14.5,8.5" />
-                        <TextBlock Text="Bağlantı kontrolü" />
+                        <TextBlock Text="{local:T UiBaglantiKontrolu}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Tweaks}" AutomationProperties.Name="Hızlandırma ve ayarlar">
+                <Button x:Name="NavTweaks" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Tweaks}" AutomationProperties.Name="{local:T UiHizlandirmaVeAyarlar}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1289,10 +1677,10 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M2,4.5 L14,4.5 M2,11.5 L14,11.5 M5.5,2.5 L5.5,6.5 M10.5,9.5 L10.5,13.5" />
-                        <TextBlock Text="Hızlandırma ve ayarlar" />
+                        <TextBlock Text="{local:T UiHizlandirmaVeAyarlar}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}" AutomationProperties.Name="DNS ve DPI">
+                <Button x:Name="NavDnsDpi" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.DnsDpi}" AutomationProperties.Name="{local:T UiDnsVeDpi}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1302,10 +1690,10 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M8,1.8 L13.4,4 L13.4,8 C13.4,11.1 11,13.3 8,14.3 C5,13.3 2.6,11.1 2.6,8 L2.6,4 Z M5.6,8.1 L7.3,9.8 L10.5,6.4" />
-                        <TextBlock Text="DNS ve DPI" />
+                        <TextBlock Text="{local:T UiDnsVeDpi}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Access}" AutomationProperties.Name="Erişim testi">
+                <Button x:Name="NavAccess" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Access}" AutomationProperties.Name="{local:T UiErisimTesti}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1315,10 +1703,36 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M8,1.8 A6.2,6.2 0 1 0 8,14.2 A6.2,6.2 0 1 0 8,1.8 M1.8,8 L14.2,8 M8,1.8 C5.6,4.4 5.6,11.6 8,14.2 M8,1.8 C10.4,4.4 10.4,11.6 8,14.2" />
-                        <TextBlock Text="Erişim testi" />
+                        <TextBlock Text="{local:T UiErisimTesti}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Report}" AutomationProperties.Name="Rapor ve geçmiş">
+                <Button x:Name="NavOverlay" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Overlay}" AutomationProperties.Name="{local:T OverlayNav}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsOverlay}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <Path Style="{StaticResource NavIcon}" Data="M2,12 A6,6 0 1 1 14,12 M8,12 L11,7.5 M3.2,12 L2,12 M14,12 L12.8,12 M8,5 L8,6.2" />
+                        <TextBlock Text="{local:T OverlayNav}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="NavDevices" Visibility="{Binding Settings.ExperimentalDevices, Converter={StaticResource BoolToVis}}" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Devices}" AutomationProperties.Name="{local:T UiDevicesNav}">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDevices}" Value="True"><Setter Property="Tag" Value="active" /></DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <StackPanel Orientation="Horizontal">
+                        <Path Style="{StaticResource NavIcon}" Data="M6,3.5 A2,2 0 0 1 10,3.5 L10,8 A2,2 0 0 1 6,8 Z M3.5,7.5 C3.5,10.2 5.5,11.8 8,11.8 C10.5,11.8 12.5,10.2 12.5,7.5 M8,11.8 L8,14.5 M5.5,14.5 L10.5,14.5" />
+                        <TextBlock Text="{local:T UiDevicesNav}" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="NavReport" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Report}" AutomationProperties.Name="{local:T UiRaporVeGecmis}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1328,10 +1742,10 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M2.6,5.2 A6,6 0 1 1 2,8 M2.2,2.4 L2.6,5.4 L5.6,5.2 M8,4.8 L8,8.2 L10.4,9.8" />
-                        <TextBlock Text="Rapor ve geçmiş" />
+                        <TextBlock Text="{local:T UiRaporVeGecmis}" />
                     </StackPanel>
                 </Button>
-                <Button Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Settings}" AutomationProperties.Name="Ayarlar">
+                <Button x:Name="NavSettings" Command="{Binding OpenPageCommand}" CommandParameter="{x:Static local:AppPage.Settings}" AutomationProperties.Name="{local:T UiAyarlar}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource NavItem}">
                             <Style.Triggers>
@@ -1341,7 +1755,7 @@
                     </Button.Style>
                     <StackPanel Orientation="Horizontal">
                         <Path Style="{StaticResource NavIcon}" Data="M8,5.6 A2.4,2.4 0 1 0 8,10.4 A2.4,2.4 0 1 0 8,5.6 M8,1.5 L8,3.4 M8,12.6 L8,14.5 M1.5,8 L3.4,8 M12.6,8 L14.5,8 M3.4,3.4 L4.8,4.8 M11.2,11.2 L12.6,12.6 M3.4,12.6 L4.8,11.2 M11.2,4.8 L12.6,3.4" />
-                        <TextBlock Text="Ayarlar" />
+                        <TextBlock Text="{local:T UiAyarlar}" />
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -1359,15 +1773,15 @@
         <StackPanel Orientation="Horizontal">
             <Path Width="12" Height="12" Stretch="Uniform" Data="M3,8.5 L6.5,12 L13,4.5" Stroke="{DynamicResource StatusOk}"
                   StrokeThickness="1.8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" VerticalAlignment="Center" />
-            <TextBlock Text="Kopyalandı" FontSize="13" Margin="7,0,0,0" />
+            <TextBlock Text="{local:T UiKopyalandi}" FontSize="13" Margin="7,0,0,0" />
         </StackPanel>
     </Border>
     </Grid>
 
     <!-- Three lines: fold the whole menu away (only these stay); press once more to bring it back -->
-    <Button x:Name="SidebarToggle" Click="OnSidebarToggle" Style="{StaticResource IconButton}" Width="34" Height="34"
+    <Button x:Name="SidebarToggle" WindowChrome.IsHitTestVisibleInChrome="True" Click="OnSidebarToggle" Style="{StaticResource IconButton}" Width="34" Height="34"
             Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="12,14,0,0"
-            ToolTip="Menüyü daralt" AutomationProperties.Name="Menüyü daralt ya da aç">
+            ToolTip="{local:T UiMenuyuDaralt}" AutomationProperties.Name="{local:T UiMenuyuDaraltYaDaAc}">
         <Path Width="16" Height="16" Stretch="Uniform" Data="M2,4 L14,4 M2,8 L14,8 M2,12 L14,12"
               Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.6"
               StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
@@ -1383,13 +1797,13 @@
             </Border.RenderTransform>
             <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="620">
                 <StackPanel>
-                    <TextBlock Text="Şu değişiklikler yapılacak" Style="{StaticResource SectionTitle}" FontSize="22"
+                    <TextBlock Text="{local:T UiSuDegisikliklerYapilacak}" Style="{StaticResource SectionTitle}" FontSize="22"
                                Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
                     <!-- While it runs: say so, so nobody thinks the app froze -->
                     <StackPanel Visibility="{Binding Fix.ShowBusyNote, Converter={StaticResource BoolToVis}}">
                         <TextBlock Style="{StaticResource SectionTitle}" FontSize="20" TextWrapping="Wrap"
-                                   Text="Yapılan işlem sürüyor, lütfen bekleyiniz." AutomationProperties.LiveSetting="Polite" />
+                                   Text="{local:T UiYapilanIslemSuruyorLutfenBekleyini}" AutomationProperties.LiveSetting="Polite" />
                     </StackPanel>
 
                     <!-- When it is over: say plainly whether it worked -->
@@ -1407,7 +1821,7 @@
                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding Fix.ProgressPercent}" Height="6"
                                  IsIndeterminate="{Binding Fix.IsIndeterminate}" Margin="0,14,0,0"
                                  Visibility="{Binding Fix.IsBusy, Converter={StaticResource BoolToVis}}"
-                                 AutomationProperties.Name="İşlem ilerlemesi" />
+                                 AutomationProperties.Name="{local:T UiIslemIlerlemesi}" />
                     <TextBlock Text="{Binding Fix.ProgressText}" Style="{StaticResource Caption}" Margin="0,6,0,4"
                                AutomationProperties.LiveSetting="Off"
                                Visibility="{Binding Fix.HasProgressText, Converter={StaticResource BoolToVis}}" />
@@ -1438,35 +1852,35 @@
 
                     <!-- A finished change that needs a restart -->
                     <StackPanel Margin="0,18,0,0" Visibility="{Binding Fix.ShowRebootBanner, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Yeniden başlatma gerekiyor" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                        <TextBlock Text="{local:T UiYenidenBaslatmaGerekiyor}" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
                         <TextBlock Style="{StaticResource BodyMuted}" Margin="0,4,0,0"
-                                   Text="Sürücünün bellekten inmesi için bilgisayarı yeniden başlat. İstersen buradan başlatabilirsin." />
-                        <Button Content="Şimdi yeniden başlat" Command="{Binding Fix.RestartNowCommand}"
+                                   Text="{local:T UiSurucununBellektenInmesiIcinBilgis}" />
+                        <Button Content="{local:T UiSimdiYenidenBaslat}" Command="{Binding Fix.RestartNowCommand}"
                                 Style="{StaticResource PrimaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
-                                AutomationProperties.Name="Şimdi yeniden başlat" />
+                                AutomationProperties.Name="{local:T UiSimdiYenidenBaslat}" />
                     </StackPanel>
 
                     <StackPanel Margin="0,18,0,0" Visibility="{Binding Fix.RebootScheduled, Converter={StaticResource BoolToVis}}">
-                        <TextBlock Text="Yeniden başlatma planlandı" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
-                        <Button Content="Yeniden başlatmayı iptal et" Command="{Binding Fix.CancelRestartCommand}"
+                        <TextBlock Text="{local:T UiYenidenBaslatmaPlanlandi}" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" />
+                        <Button Content="{local:T UiYenidenBaslatmayiIptalEt}" Command="{Binding Fix.CancelRestartCommand}"
                                 Style="{StaticResource SecondaryButton}" HorizontalAlignment="Left" Margin="0,12,0,0"
-                                AutomationProperties.Name="Yeniden başlatmayı iptal et" />
+                                AutomationProperties.Name="{local:T UiYenidenBaslatmayiIptalEt}" />
                     </StackPanel>
 
                     <Border Height="1" Background="{DynamicResource Divider}" Margin="0,18,0,6"
                             Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
-                    <CheckBox Content="Yukarıdaki değişiklikleri okudum, onaylıyorum."
+                    <CheckBox Content="{local:T UiYukaridakiDegisiklikleriOkudumOnay}"
                               IsChecked="{Binding Fix.IsConfirmed}"
-                              AutomationProperties.Name="Değişiklikleri onaylıyorum"
+                              AutomationProperties.Name="{local:T UiDegisiklikleriOnayliyorum}"
                               Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
 
                     <CheckBox IsChecked="{Binding Fix.AutoRestart}"
-                              AutomationProperties.Name="Kendiliğinden yeniden başlat (tavsiye edilen)"
+                              AutomationProperties.Name="{local:T UiKendiligindenYenidenBaslatTavsiyeE}"
                               Visibility="{Binding Fix.ShowAutoRestartOption, Converter={StaticResource BoolToVis}}">
                         <TextBlock TextWrapping="Wrap">
-                            <Run Text="İşlemlerden sonra yeniden başlat" />
-                            <Run Text=" (Tavsiye edilen.)" FontSize="11.5" Foreground="{DynamicResource StatusBad}" />
+                            <Run Text="{local:T UiIslemlerdenSonraYenidenBaslat}" />
+                            <Run Text="{local:T UiTavsiyeEdilen}" FontSize="11.5" Foreground="{DynamicResource StatusBad}" />
                         </TextBlock>
                     </CheckBox>
 
@@ -1474,7 +1888,7 @@
                         <Button Content="{Binding Fix.ApplyLabel}" Command="{Binding Fix.ApplyCommand}"
                                 Style="{StaticResource PrimaryButton}"
                                 Visibility="{Binding Fix.ShowConfirmation, Converter={StaticResource BoolToVis}}" />
-                        <Button Content="Kapat" Command="{Binding Fix.CancelCommand}"
+                        <Button Content="{local:T UiKapat}" Command="{Binding Fix.CancelCommand}"
                                 Style="{StaticResource SecondaryButton}" />
                     </StackPanel>
                 </StackPanel>
@@ -1494,8 +1908,8 @@
                 <TextBlock Text="{Binding Notice.Title}" Style="{StaticResource SectionTitle}" FontSize="20"
                            AutomationProperties.LiveSetting="Assertive" />
                 <TextBlock Text="{Binding Notice.Message}" TextWrapping="Wrap" LineHeight="22" Margin="0,10,0,0" />
-                <Button Content="Tamam" Command="{Binding Notice.CloseCommand}" Style="{StaticResource PrimaryButton}"
-                        HorizontalAlignment="Left" Margin="0,20,0,0" AutomationProperties.Name="Tamam" />
+                <Button Content="{local:T UiTamam}" Command="{Binding Notice.CloseCommand}" Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Left" Margin="0,20,0,0" AutomationProperties.Name="{local:T UiTamam}" />
             </StackPanel>
         </Border>
     </Grid>
@@ -1514,18 +1928,18 @@
                         <Path Width="14" Height="14" Stretch="Uniform" Data="M8,3.2 L8,9 M8,12.3 L8,12.4" Stroke="{DynamicResource AccentForeground}"
                               StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
                     </Border>
-                    <TextBlock Text="Ayarlarınızı kaydetmeniz önerilir" Style="{StaticResource SectionTitle}" FontSize="20" Foreground="{DynamicResource AccentText}"
+                    <TextBlock Text="{local:T UiAyarlariniziKaydetmenizOnerilir}" Style="{StaticResource SectionTitle}" FontSize="20" Foreground="{DynamicResource AccentText}"
                                Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap" AutomationProperties.LiveSetting="Assertive" />
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" LineHeight="22" Margin="0,14,0,0"
-                           Text="Bu sayfadaki işlemler Windows ayarlarını değiştirir. Herhangi bir sorun oluşması hâlinde önceki yapılandırmaya dönebilmeniz için, işlem yapmadan önce mevcut ayarlarınızı kaydetmeniz önerilir. Kaydedilen ayarları &quot;Kayıtlı ayarlarım&quot; bölümünden dilediğiniz zaman geri yükleyebilirsiniz." />
+                           Text="{local:T UiBuSayfadakiIslemlerWindowsAyarlari}" />
                 <TextBlock Style="{StaticResource Caption}" TextWrapping="Wrap" Margin="0,10,0,0"
-                           Text="Kaydetme işlemi hiçbir ayarı değiştirmez. Kayıt yalnızca bu bilgisayarda, FoxFix'in veri klasöründe tutulur." />
+                           Text="{local:T UiKaydetmeIslemiHicbirAyariDegistirm}" />
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                    <Button Content="Şimdi kaydet" Command="{Binding Tweaks.SaveBackupCommand}" Style="{StaticResource PrimaryButton}"
-                            AutomationProperties.Name="Mevcut ayarları şimdi kaydet" />
-                    <Button Content="Daha sonra" Command="{Binding Tweaks.CloseBackupPromptCommand}" Style="{StaticResource SecondaryButton}"
-                            AutomationProperties.Name="Daha sonra" />
+                    <Button Content="{local:T UiSimdiKaydet}" Command="{Binding Tweaks.SaveBackupCommand}" Style="{StaticResource PrimaryButton}"
+                            AutomationProperties.Name="{local:T UiMevcutAyarlariSimdiKaydet}" />
+                    <Button Content="{local:T UiDahaSonra}" Command="{Binding Tweaks.CloseBackupPromptCommand}" Style="{StaticResource SecondaryButton}"
+                            AutomationProperties.Name="{local:T UiDahaSonra}" />
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -1554,14 +1968,14 @@
                 </ScrollViewer>
                 <TextBlock Style="{StaticResource Caption}" Margin="0,14,0,0" TextWrapping="Wrap"
                            Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}"
-                           Text="&quot;Şimdi güncelle&quot; yeni sürümü indirir ve dosyasının SHA-256 özetini doğrular. Ardından FoxFix kapanır, yeni sürüm kurulur ve kendiliğinden açılır. FoxDPI çalışıyorsa durur; verileriniz ve ayarlarınız korunur." />
+                           Text="{local:T UiSimdiGuncelleYeniSurumuIndirirVe}" />
                 <TextBlock Style="{StaticResource Caption}" Margin="0,14,0,0" TextWrapping="Wrap"
                            Visibility="{Binding Updates.CanInstall, Converter={StaticResource InverseBoolToVis}}"
-                           Text="Sürüm sayfası tarayıcıda açılır. Yeni sürümü oradan indirebilirsiniz; güncellemeden önce FoxFix ve FoxDPI'ı kapatmanız önerilir." />
+                           Text="{local:T UiSurumSayfasiTarayicidaAcilirYeniSu}" />
                 <StackPanel Margin="0,16,0,0" Visibility="{Binding Updates.IsInstalling, Converter={StaticResource BoolToVis}}">
                     <ProgressBar Minimum="0" Maximum="100" Value="{Binding Updates.InstallPercent}" Height="4"
                                  Foreground="{DynamicResource Accent}" Background="{DynamicResource Divider}" BorderThickness="0"
-                                 AutomationProperties.Name="Güncelleme ilerlemesi" />
+                                 AutomationProperties.Name="{local:T UiGuncellemeIlerlemesi}" />
                     <TextBlock Text="{Binding Updates.InstallText}" Style="{StaticResource Caption}" Margin="0,6,0,0"
                                AutomationProperties.LiveSetting="Polite" />
                 </StackPanel>
@@ -1569,17 +1983,17 @@
                            AutomationProperties.LiveSetting="Assertive"
                            Visibility="{Binding Updates.HasInstallError, Converter={StaticResource BoolToVis}}" />
                 <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                    <Button Content="Şimdi güncelle" Command="{Binding Updates.InstallCommand}"
-                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Şimdi güncelle"
+                    <Button Content="{local:T UiSimdiGuncelle}" Command="{Binding Updates.InstallCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiSimdiGuncelle}"
                             Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
-                    <Button Content="Sürüm sayfasını aç" Command="{Binding Updates.OpenReleaseCommand}"
-                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Sürüm sayfasını aç"
+                    <Button Content="{local:T UiSurumSayfasiniAc}" Command="{Binding Updates.OpenReleaseCommand}"
+                            Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiSurumSayfasiniAc}"
                             Visibility="{Binding Updates.CanInstall, Converter={StaticResource InverseBoolToVis}}" />
-                    <Button Content="Sürüm sayfası" Command="{Binding Updates.OpenReleaseCommand}"
-                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sürüm sayfasını aç"
+                    <Button Content="{local:T UiSurumSayfasi}" Command="{Binding Updates.OpenReleaseCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiSurumSayfasiniAc}"
                             Visibility="{Binding Updates.CanInstall, Converter={StaticResource BoolToVis}}" />
-                    <Button Content="Sonra" Command="{Binding Updates.ClosePromptCommand}"
-                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Sonra" />
+                    <Button Content="{local:T UiSonra}" Command="{Binding Updates.ClosePromptCommand}"
+                            Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiSonra}" />
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -1601,17 +2015,17 @@
                     </StackPanel>
                 </StackPanel>
                 <TextBlock TextWrapping="Wrap" LineHeight="22" Margin="0,18,0,0"
-                           Text="FoxDPI modülü, açık kaynaklı GoodbyeDPI projesini temel alır. İlgili çekirdek dosyalar FoxFix ile bütünleşik olarak gelir ve güvenlik amacıyla her başlatmada doğrulanır. Lisans dosyaları FoxDPI klasöründe yer almaktadır. Windows ayarları listesi açık kaynaklı Win11Debloat projesinden alınmıştır (MIT)." />
+                           Text="{local:T UiFoxdpiModuluAcikKaynakliGoodbyedpi}" />
                 <!-- Links out of the app: plain words, not buttons -->
                 <WrapPanel Margin="0,16,0,0">
                     <Button Content="GoodbyeDPI" Command="{Binding Info.OpenGoodbyeDpiCommand}" Margin="0,0,20,6"
-                            Style="{StaticResource LinkButton}" ToolTip="github.com/ValdikSS/GoodbyeDPI" AutomationProperties.Name="GoodbyeDPI GitHub sayfası" />
-                    <Button Content="Türkiye sürümü" Command="{Binding Info.OpenTurkeyForkCommand}" Margin="0,0,20,6"
-                            Style="{StaticResource LinkButton}" ToolTip="GoodbyeDPI Türkiye sürümü" AutomationProperties.Name="GoodbyeDPI Türkiye sürümü GitHub sayfası" />
+                            Style="{StaticResource LinkButton}" ToolTip="{local:T UiGithubComValdikssGoodbyedpi}" AutomationProperties.Name="{local:T UiGoodbyedpiGithubSayfasi}" />
+                    <Button Content="{local:T UiTurkiyeSurumu}" Command="{Binding Info.OpenTurkeyForkCommand}" Margin="0,0,20,6"
+                            Style="{StaticResource LinkButton}" ToolTip="{local:T UiGoodbyedpiTurkiyeSurumu}" AutomationProperties.Name="{local:T UiGoodbyedpiTurkiyeSurumuGithubSayfa}" />
                     <Button Content="Win11Debloat" Command="{Binding Info.OpenWin11DebloatCommand}" Margin="0,0,20,6"
-                            Style="{StaticResource LinkButton}" ToolTip="Windows ayarlarının alındığı proje" AutomationProperties.Name="Win11Debloat GitHub sayfası" />
-                    <Button Content="Hata kodları" Command="{Binding Info.OpenErrorCodesCommand}" Margin="0,0,0,6"
-                            Style="{StaticResource LinkButton}" ToolTip="Mesajlardaki [FX-xxxx] kodlarının anlamı" AutomationProperties.Name="Hata kodları tablosu" />
+                            Style="{StaticResource LinkButton}" ToolTip="{local:T UiWindowsAyarlarininAlindigiProje}" AutomationProperties.Name="{local:T UiWin11debloatGithubSayfasi}" />
+                    <Button Content="{local:T UiHataKodlari}" Command="{Binding Info.OpenErrorCodesCommand}" Margin="0,0,0,6"
+                            Style="{StaticResource LinkButton}" ToolTip="{local:T UiMesajlardakiFxXxxxKodlarininAnlami}" AutomationProperties.Name="{local:T UiHataKodlariTablosu}" />
                 </WrapPanel>
                 <Border Height="1" Background="{DynamicResource Divider}" Margin="0,22,0,0" />
                 <Grid Margin="0,14,0,0">
@@ -1621,16 +2035,16 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Made by foxezol, Claude Code" VerticalAlignment="Center" />
                     <Button Grid.Column="1" Command="{Binding OpenFeedbackCommand}" Style="{StaticResource IconButton}"
-                            ToolTip="Geri bildirim: Discord profilime ulaş" AutomationProperties.Name="Geri bildirim gönder">
+                            ToolTip="{local:T UiGeriBildirimDiscordProfilimeUlas}" AutomationProperties.Name="{local:T UiGeriBildirimGonder}">
                         <StackPanel Orientation="Horizontal">
                             <Path Width="15" Height="15" Stretch="Uniform" Data="M2,3 L14,3 L14,10.5 L8,10.5 L5,13.5 L5,10.5 L2,10.5 Z"
                                   Stroke="{DynamicResource Muted}" StrokeThickness="1.5" StrokeLineJoin="Round" />
-                            <TextBlock Text="Geri bildirim" Style="{StaticResource BodyMuted}" Margin="8,0,0,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{local:T UiGeriBildirim}" Style="{StaticResource BodyMuted}" Margin="8,0,0,0" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
                 </Grid>                <Grid Margin="0,22,0,0">
-                    <Button Content="Kapat" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
-                            HorizontalAlignment="Left" Margin="0" AutomationProperties.Name="Kapat" />
+                    <Button Content="{local:T UiKapat}" Command="{Binding Info.CloseCommand}" Style="{StaticResource PrimaryButton}"
+                            HorizontalAlignment="Left" Margin="0" AutomationProperties.Name="{local:T UiKapat}" />
 
                 </Grid>
             </StackPanel>
@@ -1647,29 +2061,50 @@
             </Border.RenderTransform>
             <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
                 <StackPanel>
-                    <TextBlock Text="Neleri düzeltelim?" Style="{StaticResource SectionTitle}" FontSize="22" />
+                    <TextBlock Text="{local:T UiNeleriDuzeltelim}" Style="{StaticResource SectionTitle}" FontSize="22" />
                     <TextBlock Style="{StaticResource BodyMuted}" Margin="0,6,0,0"
-                               Text="İstediklerini işaretle. Önizlemede ne değişeceğini görürsün, sen onaylamadan hiçbir şey yapılmaz." />
+                               Text="{local:T UiIstedikleriniIsaretleOnizlemedeNeD}" />
 
-                    <TextBlock Text="İnternet" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,20,0,0" />
-                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDpi}" AutomationProperties.Name="Eski DPI araçlarını temizle">
+                    <!-- What the check found, in words: the ticks below follow it -->
+                    <Border Style="{StaticResource Callout}" Margin="0,14,0,0" Padding="14,10">
+                        <TextBlock Text="{Binding RepairPicker.SummaryText}" TextWrapping="Wrap" AutomationProperties.LiveSetting="Polite" />
+                    </Border>
+
+                    <TextBlock Text="{local:T UiInternet}" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,20,0,0" />
+                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDpi}" AutomationProperties.Name="{local:T UiEskiDpiAraclariniTemizle}">
                         <StackPanel>
-                            <TextBlock Text="Eski DPI araçlarını temizle" />
+                            <WrapPanel>
+                                <TextBlock Text="{local:T UiEskiDpiAraclariniTemizle}" />
+                                <Border BorderBrush="{DynamicResource AccentText}" BorderThickness="1" CornerRadius="10" Padding="7,0" Margin="10,1,0,0"
+                                        Visibility="{Binding RepairPicker.DpiRecommended, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="{local:T PickerRecommendedTag}" FontSize="12" Foreground="{DynamicResource AccentText}" />
+                                </Border>
+                            </WrapPanel>
                             <TextBlock Style="{StaticResource Caption}"
-                                       Text="GoodbyeDPI, WinDivert ve Zapret kalıntıları. Kendi kullandığın GoodbyeDPI da silinir, önizlemede görürsün." />
+                                       Text="{local:T UiGoodbyedpiWindivertVeZapretKalinti}" />
+                            <TextBlock Style="{StaticResource Caption}" Foreground="{DynamicResource Foreground}" Opacity="0.85" Margin="0,2,0,0"
+                                       Text="{Binding RepairPicker.DpiNote}" />
                         </StackPanel>
                     </CheckBox>
-                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDns}" AutomationProperties.Name="DNS ayarını onar">
+                    <CheckBox IsChecked="{Binding RepairPicker.IncludeDns}" AutomationProperties.Name="{local:T UiDnsAyariniOnar}">
                         <StackPanel>
-                            <TextBlock Text="DNS ayarını onar" />
+                            <WrapPanel>
+                                <TextBlock Text="{local:T UiDnsAyariniOnar}" />
+                                <Border BorderBrush="{DynamicResource AccentText}" BorderThickness="1" CornerRadius="10" Padding="7,0" Margin="10,1,0,0"
+                                        Visibility="{Binding RepairPicker.DnsRecommended, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="{local:T PickerRecommendedTag}" FontSize="12" Foreground="{DynamicResource AccentText}" />
+                                </Border>
+                            </WrapPanel>
                             <TextBlock Style="{StaticResource Caption}"
-                                       Text="Çalışmayan DNS'i otomatiğe (modemden) alır. Eski ayar kaydedilir." />
+                                       Text="{local:T UiCalismayanDnsIOtomatigeModemdenAli}" />
+                            <TextBlock Style="{StaticResource Caption}" Foreground="{DynamicResource Foreground}" Opacity="0.85" Margin="0,2,0,0"
+                                       Text="{Binding RepairPicker.DnsNote}" />
                         </StackPanel>
                     </CheckBox>
 
-                    <TextBlock Text="Bilgisayar" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,22,0,0" />
+                    <TextBlock Text="{local:T UiBilgisayar}" FontWeight="SemiBold" Foreground="{DynamicResource AccentText}" Margin="0,22,0,0" />
                     <CheckBox IsChecked="{Binding RepairPicker.IncludeStartup}" IsEnabled="{Binding RepairPicker.StartupAvailable}"
-                              AutomationProperties.Name="Açılış programı değişiklikleri">
+                              AutomationProperties.Name="{local:T UiAcilisProgramiDegisiklikleri}">
                         <TextBlock Text="{Binding RepairPicker.StartupText}" TextWrapping="Wrap" />
                     </CheckBox>
                     <TextBlock Text="{Binding RepairPicker.CleanupText}" Margin="0,14,0,0" TextWrapping="Wrap" />
@@ -1689,15 +2124,156 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
-                        <Button Content="Önizlemeyi göster" Command="{Binding RepairPicker.ContinueCommand}"
-                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="Önizlemeyi göster" />
-                        <Button Content="Vazgeç" Command="{Binding RepairPicker.CloseCommand}"
-                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="Vazgeç" />
+                    <TextBlock Text="{local:T PickerNothingTicked}" Style="{StaticResource Caption}" Margin="0,18,0,0"
+                               Visibility="{Binding RepairPicker.ShowNothingTicked, Converter={StaticResource BoolToVis}}" />
+                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                        <Button Content="{local:T UiOnizlemeyiGoster}" Command="{Binding RepairPicker.ContinueCommand}"
+                                Style="{StaticResource PrimaryButton}" AutomationProperties.Name="{local:T UiOnizlemeyiGoster}" />
+                        <Button Content="{local:T UiVazgec}" Command="{Binding RepairPicker.CloseCommand}"
+                                Style="{StaticResource SecondaryButton}" AutomationProperties.Name="{local:T UiVazgec}" />
+                    </StackPanel>
+
+                    <!-- Not a repair: sound, microphone and camera need no system change, so they have a page of their own -->
+                    <StackPanel Visibility="{Binding Settings.ExperimentalDevices, Converter={StaticResource BoolToVis}}">
+                    <Border Style="{StaticResource Hairline}" Margin="0,18,0,12" />
+                    <TextBlock Text="{local:T PickerDevicesHint}" Style="{StaticResource Caption}" />
+                    <Button Content="{local:T UiOpenDevices}" Command="{Binding RepairPicker.OpenDevicesCommand}" Style="{StaticResource GhostButton}"
+                            HorizontalAlignment="Left" Margin="-10,4,0,0" AutomationProperties.Name="{local:T UiOpenDevices}" />
                     </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </Border>
     </Grid>
+        <!-- ============ TOUR QUESTION (pop-up, once after the language was chosen) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Onboarding.IsTourPromptOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="{DynamicResource Scrim}" />
+        <Border Style="{StaticResource DialogCard}" MaxWidth="460">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{DynamicResource FoxLogoImage}" Height="44" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Grid.Column="1" Text="{local:T TourPromptTitle}" Style="{StaticResource SectionTitle}" FontSize="20" Margin="14,0,0,0"
+                               TextWrapping="Wrap" VerticalAlignment="Center" AutomationProperties.LiveSetting="Assertive" />
+                </Grid>
+                <TextBlock Text="{local:T TourPromptText}" TextWrapping="Wrap" LineHeight="22" Margin="0,16,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="{local:T TourStart}" Command="{Binding Onboarding.StartTourFromPromptCommand}" Style="{StaticResource PrimaryButton}"
+                            AutomationProperties.Name="{local:T TourStart}" />
+                    <Button Content="{local:T TourNotNow}" Command="{Binding Onboarding.DeclineTourCommand}" Style="{StaticResource SecondaryButton}"
+                            AutomationProperties.Name="{local:T TourNotNow}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ============ HOW FOXDPI IS USED (pop-up, once, only for somebody who skipped the tour) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Onboarding.IsDpiHintOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="{DynamicResource Scrim}" />
+        <Border Style="{StaticResource DialogCard}" MaxWidth="500">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{DynamicResource FoxDpiLogoImage}" Height="40" RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Grid.Column="1" Text="{local:T DpiHintTitle}" Style="{StaticResource SectionTitle}" FontSize="20" Margin="14,0,0,0"
+                               TextWrapping="Wrap" VerticalAlignment="Center" AutomationProperties.LiveSetting="Assertive" />
+                </Grid>
+                <TextBlock Text="{local:T DpiHintText}" TextWrapping="Wrap" LineHeight="22" Margin="0,16,0,0" />
+                <Button Content="{local:T DpiHintOk}" Command="{Binding Onboarding.CloseDpiHintCommand}" Style="{StaticResource PrimaryButton}"
+                        HorizontalAlignment="Left" Margin="0,20,0,0" AutomationProperties.Name="{local:T DpiHintOk}" />
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ============ LANGUAGE CHANGED: REOPEN (pop-up) ============ -->
+    <Grid Grid.ColumnSpan="2" Visibility="{Binding Settings.IsRestartPromptOpen, Converter={StaticResource BoolToVis}}"
+          IsVisibleChanged="OnDialogVisibleChanged">
+        <Border Background="{DynamicResource Scrim}" />
+        <Border Style="{StaticResource DialogCard}" MaxWidth="460">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel>
+                <TextBlock Text="{local:T LangRestartTitle}" Style="{StaticResource SectionTitle}" FontSize="20" AutomationProperties.LiveSetting="Assertive" />
+                <TextBlock Text="{local:T LangRestartText}" TextWrapping="Wrap" LineHeight="22" Margin="0,12,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                    <Button Content="{local:T UiRestartNow}" Command="{Binding Settings.RestartNowCommand}" Style="{StaticResource PrimaryButton}"
+                            AutomationProperties.Name="{local:T UiRestartNow}" />
+                    <Button Content="{local:T UiRestartLater}" Command="{Binding Settings.RestartLaterCommand}" Style="{StaticResource SecondaryButton}"
+                            AutomationProperties.Name="{local:T UiRestartLater}" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+
+    <!-- ============ TOUR: the window is dimmed, one element stays lit, a small card says what it is ============ -->
+    <Grid x:Name="TourLayer" Grid.ColumnSpan="2" Visibility="Collapsed" SizeChanged="OnTourLayerSizeChanged">
+        <Path x:Name="TourShade" Fill="{DynamicResource Scrim}" />
+        <Border x:Name="TourRing" HorizontalAlignment="Left" VerticalAlignment="Top" BorderBrush="{DynamicResource AccentText}" BorderThickness="2"
+                CornerRadius="10" IsHitTestVisible="False" Opacity="0" />
+        <Border x:Name="TourCard" Style="{StaticResource DialogCard}" Width="360" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0"
+                RenderTransformOrigin="0.5,0.5" AutomationProperties.Name="{local:T TourDialogName}">
+            <Border.RenderTransform>
+                <ScaleTransform />
+            </Border.RenderTransform>
+            <StackPanel x:Name="TourBody">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform />
+                </StackPanel.RenderTransform>
+                <TextBlock Text="{Binding Onboarding.Tour.StepText}" Style="{StaticResource Caption}" />
+                <TextBlock Text="{Binding Onboarding.Tour.Title}" Style="{StaticResource SectionTitle}" FontSize="19" Margin="0,4,0,0"
+                           AutomationProperties.LiveSetting="Assertive" AutomationProperties.HeadingLevel="Level2" />
+                <TextBlock Text="{Binding Onboarding.Tour.Text}" TextWrapping="Wrap" LineHeight="21" Margin="0,10,0,0" />
+                <Grid Margin="0,18,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Content="{local:T TourSkip}" Command="{Binding Onboarding.Tour.SkipCommand}" Style="{StaticResource GhostButton}"
+                            HorizontalAlignment="Left" Margin="-10,0,0,0" AutomationProperties.Name="{local:T TourSkip}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="{local:T TourBack}" Command="{Binding Onboarding.Tour.BackCommand}" Style="{StaticResource SecondaryButton}"
+                                AutomationProperties.Name="{local:T TourBack}" />
+                        <Button x:Name="TourNextButton" Command="{Binding Onboarding.Tour.NextCommand}" Style="{StaticResource PrimaryButton}" Margin="0">
+                            <Button.Content>
+                                <TextBlock>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="{local:T TourNext}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Onboarding.Tour.IsLast}" Value="True"><Setter Property="Text" Value="{local:T TourFinish}" /></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Button.Content>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Grid>
+
+</Grid>
+    <!-- No title bar at all: only the three buttons float in the top right corner; the top strip still drags the window -->
+    <StackPanel x:Name="TitleBarHost" Grid.RowSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <Button Content="&#xE921;" Style="{StaticResource CaptionButton}" Click="OnMinimize" AutomationProperties.Name="{local:T UiMinimize}" ToolTip="{local:T UiMinimize}" />
+        <Button x:Name="MaximizeButton" Content="&#xE922;" Style="{StaticResource CaptionButton}" Click="OnMaximizeRestore"
+                AutomationProperties.Name="{local:T UiMaximize}" ToolTip="{local:T UiMaximize}" />
+        <Button Content="&#xE8BB;" Style="{StaticResource CaptionCloseButton}" Click="OnCloseWindow" AutomationProperties.Name="{local:T UiCloseWindow}" ToolTip="{local:T UiCloseWindow}" />
+    </StackPanel>
     </Grid>
 </Window>

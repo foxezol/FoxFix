@@ -320,7 +320,7 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
     }
 
     [Fact]
-    public async Task FoxDPI_start_runs_the_chosen_setting_opens_its_window_and_explains_it_in_a_pop_up()
+    public async Task FoxDPI_start_runs_the_chosen_setting_and_opens_its_window_without_a_pop_up()
     {
         var vm = Create(out _);
         var started = new List<GoodbyeDpiProfile>();
@@ -332,9 +332,7 @@ public sealed class GoodbyeDpiViewModelTests : IDisposable
 
         started.Should().ContainSingle().Which.Id.Should().Be(vm.Rows[4].Profile.Id);
         _launcher.Arguments.Should().Equal(vm.Rows[4].Profile.Arguments);
-        _notice.IsOpen.Should().BeTrue("every start from FoxFix explains how FoxDPI works");
-        _notice.Title.Should().Be(Strings.Get(Strings.FoxDpiExplainTitle));
-        _notice.Message.Should().Contain("FoxDPI.exe");
+        _notice.IsOpen.Should().BeFalse("how FoxDPI is used is told in the tour or on the DNS ve DPI page, not at every start");
         vm.IsActive.Should().BeTrue();
         vm.FoxDpiButtonText.Should().Be("Pencereyi göster", "there is no stop button; the window is closed to stop");
     }

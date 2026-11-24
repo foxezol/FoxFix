@@ -77,7 +77,7 @@ public sealed class TweakBackupStore
     {
         if (!IsValidId(backup.Id))
         {
-            return "Geçersiz yedek kimliği.";
+            return Strings.Get(Strings.BackupInvalidId);
         }
 
         try
@@ -101,7 +101,7 @@ public sealed class TweakBackupStore
     {
         if (!IsValidId(id))
         {
-            return "Geçersiz yedek kimliği.";
+            return Strings.Get(Strings.BackupInvalidId);
         }
 
         try
